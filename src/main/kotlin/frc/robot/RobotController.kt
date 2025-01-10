@@ -9,9 +9,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.RunCommand
 
 import frc.robot.commands.TeleOp
-import frc.robot.commands.CringeTote
-import frc.robot.commands.CringeFloorBunny
-import frc.robot.subsystems.Drivetrain
 
 /* Main code for controlling the robot. Mainly just links everything together.
 
