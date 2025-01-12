@@ -21,7 +21,7 @@ object TeleOp : Command() {
      * and that there isn't a time gap between things being called.
      */
     override fun initialize() {
-        addRequirements(Drivetrain) // todo fix this???
+        addRequirements(Drivetrain) // todo add systems
     }
 
     /**

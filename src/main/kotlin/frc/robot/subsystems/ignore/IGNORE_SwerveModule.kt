@@ -1,4 +1,4 @@
-package frc.robot.subsystems
+package frc.robot.subsystems.ignore//package frc.robot.subsystems
 import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.CANcoderConfigurator
 import com.ctre.phoenix6.configs.MagnetSensorConfigs
