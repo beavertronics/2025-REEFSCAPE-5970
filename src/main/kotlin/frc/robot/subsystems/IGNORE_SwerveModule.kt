@@ -13,13 +13,12 @@ import com.revrobotics.spark.config.SparkBaseConfig
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import frc.engine.utils.initMotorControllers
-import kotlin.math.abs
 
 
 /**
  * Represnts a full swerve module class
  */
-class SwerveModule {
+class IGNORE_SwerveModule {
     class SwerveModule(driveMotorCANID: Int, steerMotorCANID: Int, cancoderCANID: Int) {
         // set up motors and encoders
         private val driveMotor: SparkMax
