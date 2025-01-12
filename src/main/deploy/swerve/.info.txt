@@ -1,0 +1,15 @@
+Info we have:
+- IMU: NavX
+- Swerve modules: WCP X2S
+- Estimated robot weight: 55.245
+- Steering ratio: 25.9
+- Wheel diameter: 3.5in
+- Driving ratio: 5.625
+- Module locations (front of robot is right):
+    - front left: (11, 11)
+    - front right: (11, -11)
+    - back left: (-11, 11)
+    - back right: (-11, -11)
+- Drive motors: Kraken x60
+- Steer motors: Neo 550
+- Encoder: SRX Mag, absolute encoder
