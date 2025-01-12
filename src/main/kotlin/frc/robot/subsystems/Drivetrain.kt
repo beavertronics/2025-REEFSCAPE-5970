@@ -1,6 +1,5 @@
 package frc.robot.subsystems
 
-import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import swervelib.SwerveDrive
@@ -8,6 +7,7 @@ import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 import java.io.File
+import java.security.cert.TrustAnchor
 
 /**
  * class for all constants for drivetrain
@@ -23,7 +23,7 @@ object DriveConstants {
  */
 class Drivetrain : SubsystemBase() {
 
-    // initially create variables
+    // create anything that is set later (late init)
     lateinit var swerveDrive: SwerveDrive
 
     /**
