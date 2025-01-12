@@ -1,7 +1,3 @@
-// this is line 1
-// this is line 2
-// this is line 3
-// this is line 4
 package frc.robot.commands
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.XboxController
@@ -9,13 +5,15 @@ import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
-
 import frc.robot.subsystems.Drivetrain
 
+/*
+Controls the robot based off of inputs from the humans operating the driving station.
+ */
 
-////////////////////////////////////////////////////////////////////////////////
-// TeleOp Code - Controls the robot based off of inputs from the humans operating the Driver Station.
-
+/**
+ * class for managing systems and inputs
+ */
 object TeleOp : Command() {
 
     /**
@@ -23,7 +21,7 @@ object TeleOp : Command() {
      * and that there isn't a time gap between things being called.
      */
     override fun initialize() {
-        addRequirements(Drivetrain)
+        addRequirements(Drivetrain) // todo fix this???
     }
 
     /**
@@ -32,9 +30,10 @@ object TeleOp : Command() {
      * Executed very frame
      */
     override fun execute() {
-
         //===== DRIVETRAIN =====//
-
+        // todo
+        //===== SUBSYSTEMS =====//
+        // todo
     }
 
     /**
@@ -64,8 +63,9 @@ object TeleOp : Command() {
         }
 
         /**
-         * Values for controller inputs go here
+         * Values for inputs go here
          */
+        // todo
         // val something get() = function()
     }
 }
