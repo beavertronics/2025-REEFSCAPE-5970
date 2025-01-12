@@ -21,7 +21,7 @@ object DriveConstants {
 /**
  * the main class for the drivetrain, containing everything
  */
-class Drivetrain : SubsystemBase() {
+object Drivetrain : SubsystemBase() {
 
     // create anything that is set later (late init)
     lateinit var swerveDrive: SwerveDrive
