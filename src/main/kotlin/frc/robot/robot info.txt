@@ -1,15 +1,29 @@
 Info we have:
-- IMU: NavX
-- Swerve modules: WCP X2S
-- Estimated robot weight: 55.245
-- Steering ratio: 25.9
-- Wheel diameter: 3.5in
+
+PHYSICAL PROPERTIES
+- Estimated robot weight: 55.245 lb
+- Wheel diameter: 3.5 in
+- Drive motors: Kraken X60
+- Steer motors: Neo 550
+- Swerve module type: WCP X2S
+
+SENSORS
+- Encoder: SRX Mag, absolute encoder
+- IMU/Gyroscope: NavX
+
+RATIOS
+- Steering ratio: 1
 - Driving ratio: 5.625
+
+MODULE POSITIONS FOR YAGSL
 - Module locations (front of robot is right):
     - front left: (11, 11)
     - front right: (11, -11)
     - back left: (-11, 11)
     - back right: (-11, -11)
-- Drive motors: Kraken x60
-- Steer motors: Neo 550
-- Encoder: SRX Mag, absolute encoder
+
+MODULE POSITIONS ON ROBOT (front of robot is forward) (inches)
+- front left: 11 left, 11 forward
+- front right: 11 right, 11 forward
+- back left: 11 left, 11 backward
+- back right: 11 right, 11 backward
