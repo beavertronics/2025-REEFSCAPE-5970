@@ -7,7 +7,6 @@ import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
 import java.io.File
-import java.security.cert.TrustAnchor
 
 /**
  * class for all constants for drivetrain
@@ -15,7 +14,7 @@ import java.security.cert.TrustAnchor
 object DriveConstants {
     // for YAGSL to find swerve directory
     val DriveConfig = File(Filesystem.getDeployDirectory(), "swerve")
-    val MaxSpeed = 10.0
+    val MaxSpeed = 10.0 // in m/s
 }
 
 /**
@@ -24,7 +23,7 @@ object DriveConstants {
 object Drivetrain : SubsystemBase() {
 
     // create anything that is set later (late init)
-    lateinit var swerveDrive: SwerveDrive
+    var swerveDrive: SwerveDrive
 
     /**
      * init file that runs on intialization of drivetrain class
