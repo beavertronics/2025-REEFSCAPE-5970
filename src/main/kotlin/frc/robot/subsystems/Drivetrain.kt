@@ -29,7 +29,10 @@ object Drivetrain : SubsystemBase() {
     var swerveDrive: SwerveDrive
 
     // variables created now
-    var fieldOriented: Boolean = true
+    private var fieldOriented: Boolean = true
+
+    // anything to get values
+    val isFieldOriented get() = fieldOriented
 
     /**
      * init file that runs on intialization of drivetrain class

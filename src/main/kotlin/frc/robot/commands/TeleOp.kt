@@ -33,9 +33,9 @@ object TeleOp : Command() {
     override fun execute() {
         //===== DRIVETRAIN =====//
         if ( OI.toggleFieldOriented > 0.01) { Drivetrain.setFieldOriented(false) }
-        else if (!Drivetrain.fieldOriented) { Drivetrain.setFieldOriented(true) }
+        else if (!Drivetrain.isFieldOriented) { Drivetrain.setFieldOriented(true) }
         var speed = Drivetrain.makeChassisSpeed(OI.driveFieldOrientedForwards, OI.driveFieldOrientedSideways, OI.rotateRobot)
-        if (Drivetrain.fieldOriented) { Drivetrain.driveFieldOriented(speed) }
+        if (Drivetrain.isFieldOriented) { Drivetrain.driveFieldOriented(speed) }
         else { Drivetrain.drive(speed) }
         //===== SUBSYSTEMS =====//
         // todo

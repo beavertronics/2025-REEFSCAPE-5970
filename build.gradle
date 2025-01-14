@@ -47,9 +47,6 @@ def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 // Set to true to use debug for JNI.
 wpi.java.debugJni = false
 
-// Set this to true to enable desktop support.
-def includeDesktopSupport = false
-
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 5.
 dependencies {
@@ -79,6 +76,14 @@ test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
+
+/**
+ * simulation stuff
+ */
+// set up stuff for simulation with Autodesk synthesis
+def includeDesktopSupport = true
+wpi.sim.environment.put("HALSIMWS_HOST", "127.0.0.1")
+wpi.sim.addWebsocketsServer().defaultEnabled = true
 
 // Simulation configuration (e.g. environment variables).
 wpi.sim.addGui().defaultEnabled = true
