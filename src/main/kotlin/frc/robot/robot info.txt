@@ -27,3 +27,18 @@ MODULE POSITIONS ON ROBOT (front of robot is forward) (inches)
 - front right: 11 right, 11 forward
 - back left: 11 left, 11 backward
 - back right: 11 right, 11 backward
+
+CAN IDs
+- front left sparks
+    - drive: 0
+    - steer: o
+- front right sparks
+    - drive: 0
+    - steer: 0
+- back left sparks
+    - drive: 0
+    - steer: 0
+- back right sparks
+    - drive: 0
+    - steer: 0
+- NavX: 0

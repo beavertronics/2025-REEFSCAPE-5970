@@ -1,11 +1,14 @@
 package frc.robot.subsystems
 
+import beaverlib.utils.Units.Linear.metersPerSecond
+import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.math.kinematics.struct.ChassisSpeedsStruct
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import swervelib.SwerveDrive
 import swervelib.parser.SwerveParser
 import swervelib.telemetry.SwerveDriveTelemetry
-import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity
+import swervelib.telemetry.SwerveDriveTelemetry.*
 import java.io.File
 
 /**
@@ -25,6 +28,9 @@ object Drivetrain : SubsystemBase() {
     // create anything that is set later (late init)
     var swerveDrive: SwerveDrive
 
+    // variables created now
+    var fieldOriented: Boolean = true
+
     /**
      * init file that runs on intialization of drivetrain class
      */
@@ -33,4 +39,27 @@ object Drivetrain : SubsystemBase() {
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
         swerveDrive = SwerveParser(DriveConstants.DriveConfig).createSwerveDrive(DriveConstants.MaxSpeed)
     }
+
+    fun makeChassisSpeed(xSpeedMPS: Double, ySpeedMPS: Double, rotationOmegaRPS: Double): ChassisSpeeds {
+        return ChassisSpeeds(xSpeedMPS, ySpeedMPS, rotationOmegaRPS)
+    }
+
+    /**
+     * sets field oriented to inputted state
+     */
+    fun setFieldOriented(state: Boolean) { fieldOriented = state }
+
+    /**
+     * drives the robot field oriented.
+     * this means that no matter the robots rotation, driving "forwards" on the joysticks
+     * makes the robot go forwards on the field
+     */
+    fun driveFieldOriented(speed: ChassisSpeeds) { swerveDrive.driveFieldOriented(speed) }
+
+    /**
+     * drives the robot regardless of field orientation.
+     * this means that driving forwards just makes the robot go in the direction
+     * of the front of the robot
+     */
+    fun drive(speed: ChassisSpeeds) { swerveDrive.drive(speed) }
 }

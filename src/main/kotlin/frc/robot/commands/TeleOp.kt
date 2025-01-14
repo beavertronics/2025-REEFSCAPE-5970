@@ -6,6 +6,7 @@ import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
 import frc.robot.subsystems.Drivetrain
+import org.dyn4j.collision.narrowphase.FallbackCondition
 
 /*
 Controls the robot based off of inputs from the humans operating the driving station.
@@ -31,7 +32,11 @@ object TeleOp : Command() {
      */
     override fun execute() {
         //===== DRIVETRAIN =====//
-        // todo
+        if ( OI.toggleFieldOriented > 0.01) { Drivetrain.setFieldOriented(false) }
+        else if (!Drivetrain.fieldOriented) { Drivetrain.setFieldOriented(true) }
+        var speed = Drivetrain.makeChassisSpeed(OI.driveFieldOrientedForwards, OI.driveFieldOrientedSideways, OI.rotateRobot)
+        if (Drivetrain.fieldOriented) { Drivetrain.driveFieldOriented(speed) }
+        else { Drivetrain.drive(speed) }
         //===== SUBSYSTEMS =====//
         // todo
     }
@@ -41,9 +46,8 @@ object TeleOp : Command() {
      * getting inputs from controllers and whatnot.
      */
     object OI {
-        private val leftJoystick = Joystick(0) //These numbers correspond to the USB order in the Driver Station App
-        private val rightJoystick = Joystick(1)
-        private val controller = XboxController(2)
+        private val drivingController = XboxController(0) // todo fix port ID
+        private val operatorController = XboxController(0) // todo fix port ID
 
         /**
          * Allows you to tweak controller inputs (ie get rid of deadzone, make input more sensitive by squaring or cubing it, etc).
@@ -66,7 +70,10 @@ object TeleOp : Command() {
          * Values for inputs go here
          */
         // todo
-        // val something get() = function()
+        val driveFieldOrientedForwards get() = drivingController.leftY.processInput()
+        val driveFieldOrientedSideways get() = drivingController.leftX.processInput()
+        val rotateRobot get() = drivingController.rightX.processInput()
+        val toggleFieldOriented get() = drivingController.rightTriggerAxis
     }
 }
 
