@@ -12,7 +12,7 @@ SENSORS
 - IMU/Gyroscope: NavX
 
 RATIOS
-- Steering ratio: 1
+- Steering ratio: 360
 - Driving ratio: 5.625
 
 MODULE POSITIONS FOR YAGSL
