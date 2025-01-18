@@ -32,11 +32,7 @@ object TeleOp : Command() {
      */
     override fun execute() {
         //===== DRIVETRAIN =====//
-        if ( OI.toggleFieldOriented > 0.01) { Drivetrain.setFieldOriented(false) }
-        else if (!Drivetrain.fieldOriented) { Drivetrain.setFieldOriented(true) }
-        var speed = Drivetrain.makeChassisSpeed(OI.driveFieldOrientedForwards, OI.driveFieldOrientedSideways, OI.rotateRobot)
-        if (Drivetrain.fieldOriented) { Drivetrain.driveFieldOriented(speed) }
-        else { Drivetrain.drive(speed) }
+        Drivetrain.rawDrive(OI.driveLeft*3, OI.driveRight*3)
         //===== SUBSYSTEMS =====//
         // todo
     }
@@ -46,8 +42,10 @@ object TeleOp : Command() {
      * getting inputs from controllers and whatnot.
      */
     object OI {
-        private val drivingController = XboxController(0) // todo fix port ID
-        private val operatorController = XboxController(0) // todo fix port ID
+        //private val drivingController = XboxController(0) // todo fix port ID
+        private val leftDrive = Joystick(0) // todo fix port ID
+        private val rightDrive = Joystick(1) // todo fix port ID
+
 
         /**
          * Allows you to tweak controller inputs (ie get rid of deadzone, make input more sensitive by squaring or cubing it, etc).
@@ -66,14 +64,17 @@ object TeleOp : Command() {
             return this.absoluteValue > target
         }
 
+        val driveLeft get() = leftDrive.y
+        val driveRight get() = rightDrive.y
+
         /**
          * Values for inputs go here
          */
         // todo
-        val driveFieldOrientedForwards get() = drivingController.leftY.processInput()
-        val driveFieldOrientedSideways get() = drivingController.leftX.processInput()
-        val rotateRobot get() = drivingController.rightX.processInput()
-        val toggleFieldOriented get() = drivingController.rightTriggerAxis
+//        val driveFieldOrientedForwards get() = drivingController.leftY.processInput()
+//        val driveFieldOrientedSideways get() = drivingController.leftX.processInput()
+//        val rotateRobot get() = drivingController.rightX.processInput()
+//        val toggleFieldOriented get() = drivingController.rightTriggerAxis
     }
 }
 

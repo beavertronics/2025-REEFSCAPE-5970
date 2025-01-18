@@ -1,65 +1,96 @@
 package frc.robot.subsystems
 
-import beaverlib.utils.Units.Linear.metersPerSecond
+import beaverlib.controls.Controller
+import com.revrobotics.spark.SparkBase
+import com.revrobotics.spark.SparkLowLevel
+import com.revrobotics.spark.SparkMax
+import com.revrobotics.spark.config.SparkBaseConfig
+
+import com.revrobotics.RelativeEncoder
+import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.math.kinematics.struct.ChassisSpeedsStruct
-import edu.wpi.first.wpilibj.Filesystem
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds
+import edu.wpi.first.math.trajectory.Trajectory
+import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import swervelib.SwerveDrive
-import swervelib.parser.SwerveParser
-import swervelib.telemetry.SwerveDriveTelemetry
-import swervelib.telemetry.SwerveDriveTelemetry.*
-import java.io.File
+import frc.engine.utils.initMotorControllers
+import frc.engine.utils.*
+//import frc.robot.subsystems.Odometry.chassisSpeeds
 
-/**
- * class for all constants for drivetrain
- */
-object DriveConstants {
-    // for YAGSL to find swerve directory
-    val DriveConfig = File(Filesystem.getDeployDirectory(), "swerve")
-    val MaxSpeed = 10.0 // in m/s
-}
 
-/**
- * the main class for the drivetrain, containing everything
- */
 object Drivetrain : SubsystemBase() {
+    private val       leftMain = SparkMax(15, SparkLowLevel.MotorType.kBrushless)
+    private val  leftSecondary = SparkMax(16,  SparkLowLevel.MotorType.kBrushless)
+    private val      rightMain = SparkMax(12, SparkLowLevel.MotorType.kBrushless)
+    private val rightSecondary = SparkMax(13,  SparkLowLevel.MotorType.kBrushless)
 
-    // create anything that is set later (late init)
-    var swerveDrive: SwerveDrive
+    val    leftEncoder: RelativeEncoder = leftMain.encoder
+    val   rightEncoder: RelativeEncoder = rightMain.encoder
 
-    // variables created now
-    var fieldOriented: Boolean = true
+    private val drive = DifferentialDrive(leftMain, rightMain)
 
-    /**
-     * init file that runs on intialization of drivetrain class
-     */
+    private val leftPid = Controller.PID(0.0, 0.0)
+    private val rightPid = Controller.PID(0.0, 0.0)
+    private val leftFeedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
+    private val rightFeedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
+
+    private fun allMotors(code: SparkMax.() -> Unit) { //Run a piece of code for each drive motor controller.
+        for (motor in listOf(leftMain, rightMain, leftSecondary, rightSecondary)) {
+            motor.apply(code)
+        }
+    }
+
     init {
-        // set up swerve drive :D
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
-        swerveDrive = SwerveParser(DriveConstants.DriveConfig).createSwerveDrive(DriveConstants.MaxSpeed)
+        initMotorControllers(20, SparkBaseConfig.IdleMode.kCoast, true, leftMain, rightMain)
+        setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
+        setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
+
+        drive.setDeadband(0.0)
+    }
+    /** Drive by setting left and right power (-1 to 1).
+     * @param left Power for left motors [-1.0.. 1.0]. Forward is positive.
+     * @param right Voltage for right motors [-1.0.. 1.0]. Forward is positive.
+     * */
+    fun tankDrive(left: Double, right: Double) {
+        drive.tankDrive(left, right, false)
+    }
+    /** Drive by setting left and right voltage (-12v to 12v)
+     * @param left Voltage for left motors
+     * @param right Voltage for right motors
+     * */
+    fun rawDrive(left: Double, right: Double) {
+        //TODO: Prevent voltages higher than 12v or less than -12v? Or not neccesary?
+        leftMain.setVoltage(left)
+        rightMain.setVoltage(right)
+        drive.feed()
     }
 
-    fun makeChassisSpeed(xSpeedMPS: Double, ySpeedMPS: Double, rotationOmegaRPS: Double): ChassisSpeeds {
-        return ChassisSpeeds(xSpeedMPS, ySpeedMPS, rotationOmegaRPS)
+    fun stop(){
+        rawDrive(0.0,0.0)
+    }
+    /** Drive by setting left and right speed, in M/s, using PID and FeedForward to correct for errors.
+     * @param left Desired speed for the left motors, in M/s
+     * @param right Desired speed for the right motors, in M/s
+     */
+    fun closedLoopDrive(left: Double, right: Double) {
+        leftPid.setpoint = left
+        rightPid.setpoint = right
+
+        val lPidCalculated = leftPid.calculate(leftEncoder.velocity)
+        val rPidCalculated = rightPid.calculate(rightEncoder.velocity)
+
+        val lFFCalculated = leftFeedForward.calculate(leftPid.setpoint)
+        val rFFCalculated = rightFeedForward.calculate(rightPid.setpoint)
+
+        rawDrive(lPidCalculated+lFFCalculated, rPidCalculated + rFFCalculated )
     }
 
-    /**
-     * sets field oriented to inputted state
-     */
-    fun setFieldOriented(state: Boolean) { fieldOriented = state }
 
-    /**
-     * drives the robot field oriented.
-     * this means that no matter the robots rotation, driving "forwards" on the joysticks
-     * makes the robot go forwards on the field
-     */
-    fun driveFieldOriented(speed: ChassisSpeeds) { swerveDrive.driveFieldOriented(speed) }
 
-    /**
-     * drives the robot regardless of field orientation.
-     * this means that driving forwards just makes the robot go in the direction
-     * of the front of the robot
-     */
-    fun drive(speed: ChassisSpeeds) { swerveDrive.drive(speed) }
+    private fun rawDrive(left: Double) {
+
+    }
+
 }
