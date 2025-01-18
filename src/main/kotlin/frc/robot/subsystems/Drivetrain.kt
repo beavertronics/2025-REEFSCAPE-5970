@@ -1,5 +1,6 @@
 package frc.robot.subsystems
 
+import Engine.setMotorFollow
 import beaverlib.controls.Controller
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
@@ -43,7 +44,7 @@ object Drivetrain : SubsystemBase() {
     }
 
     init {
-        initMotorControllers(20, SparkBaseConfig.IdleMode.kCoast, true, leftMain, rightMain)
+        Engine.initMotorControllers(20, SparkBaseConfig.IdleMode.kCoast, true, leftMain, rightMain)
         setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
         setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
 
