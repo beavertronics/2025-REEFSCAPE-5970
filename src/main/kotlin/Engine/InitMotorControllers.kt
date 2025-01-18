@@ -62,7 +62,7 @@ fun setMotorFollow(currentLimit : Int, idle: SparkBaseConfig.IdleMode, inverted:
     val config = SparkMaxConfig()
     config.idleMode(idle)
     config.smartCurrentLimit(currentLimit)
-    config.follow(leader)
+    config.follow(leader, inverted)
 
     // Don't persist parameters since it takes time and this change is temporary
     follower.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters)

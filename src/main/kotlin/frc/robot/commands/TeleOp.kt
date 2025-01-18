@@ -6,6 +6,8 @@ import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
 import frc.robot.subsystems.Drivetrain
+import frc.robot.subsystems.Intake
+import frc.robot.subsystems.Shooter
 import org.dyn4j.collision.narrowphase.FallbackCondition
 
 /*
@@ -33,6 +35,9 @@ object TeleOp : Command() {
     override fun execute() {
         //===== DRIVETRAIN =====//
         Drivetrain.rawDrive(OI.driveLeft*3, OI.driveRight*3)
+        Intake.runIntake(OI.intake*0.7)
+        Shooter.runOpenLoop(OI.shooter*0.7)
+
         //===== SUBSYSTEMS =====//
         // todo
     }
@@ -42,9 +47,9 @@ object TeleOp : Command() {
      * getting inputs from controllers and whatnot.
      */
     object OI {
-        //private val drivingController = XboxController(0) // todo fix port ID
-        private val leftDrive = Joystick(0) // todo fix port ID
-        private val rightDrive = Joystick(1) // todo fix port ID
+        private val operatorController = XboxController(2) // todo fix port ID
+        private val rightDrive = Joystick(0) // todo fix port ID
+        private val leftDrive = Joystick(1) // todo fix port ID
 
 
         /**
@@ -64,8 +69,11 @@ object TeleOp : Command() {
             return this.absoluteValue > target
         }
 
-        val driveLeft get() = leftDrive.y
-        val driveRight get() = rightDrive.y
+        val driveLeft get() = leftDrive.y.processInput()
+        val driveRight get() = rightDrive.y.processInput()
+        val intake get() = operatorController.rightY.processInput()
+        val shooter get() = operatorController.leftY.processInput()
+
 
         /**
          * Values for inputs go here

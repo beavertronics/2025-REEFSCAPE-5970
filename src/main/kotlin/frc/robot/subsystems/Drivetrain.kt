@@ -22,10 +22,10 @@ import frc.engine.utils.*
 
 
 object Drivetrain : SubsystemBase() {
-    private val       leftMain = SparkMax(15, SparkLowLevel.MotorType.kBrushless)
-    private val  leftSecondary = SparkMax(16,  SparkLowLevel.MotorType.kBrushless)
-    private val      rightMain = SparkMax(12, SparkLowLevel.MotorType.kBrushless)
-    private val rightSecondary = SparkMax(13,  SparkLowLevel.MotorType.kBrushless)
+    private val       leftMain = SparkMax(15, SparkLowLevel.MotorType.kBrushed)
+    private val  leftSecondary = SparkMax(16,  SparkLowLevel.MotorType.kBrushed)
+    private val      rightMain = SparkMax(12, SparkLowLevel.MotorType.kBrushed)
+    private val rightSecondary = SparkMax(13,  SparkLowLevel.MotorType.kBrushed)
 
     val    leftEncoder: RelativeEncoder = leftMain.encoder
     val   rightEncoder: RelativeEncoder = rightMain.encoder
@@ -44,8 +44,9 @@ object Drivetrain : SubsystemBase() {
     }
 
     init {
-        Engine.initMotorControllers(20, SparkBaseConfig.IdleMode.kCoast, true, leftMain, rightMain)
-        setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
+        Engine.initMotorControllers(20, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
+        Engine.initMotorControllers(20, SparkBaseConfig.IdleMode.kCoast, true, rightMain)
+        setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, true, leftSecondary, leftMain)
         setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
 
         drive.setDeadband(0.0)

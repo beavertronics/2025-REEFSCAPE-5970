@@ -2,6 +2,7 @@ package frc.robot
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.TeleOp
+import frc.robot.subsystems.Drivetrain
 
 /*
  Main code for controlling the robot. Mainly just links everything together.
@@ -27,7 +28,8 @@ object RobotController : TimedRobot() {
      * runs when robot turns on, should be used for any initialization of robot
      */
     override fun robotInit() {
-        }
+        Drivetrain
+    }
 
     /**
      * runs when the robot is on, regardless of enabled or not
