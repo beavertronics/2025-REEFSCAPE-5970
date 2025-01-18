@@ -1,7 +1,7 @@
 Info we have:
 
 PHYSICAL PROPERTIES
-- Estimated robot weight: 55.245 lb
+- Estimated robot weight pre-superstructure: 55.245 lb
 - Wheel diameter: 3.5 in
 - Drive motors: Kraken X60
 - Steer motors: Neo 550
@@ -41,3 +41,13 @@ IDs
 - back right sparks
     - drive: 5
     - steer: 9
+
+SUBSYSTEMS
+Climb:
+    Elevator motor: NEO for now, may be changed later
+    Elevator motor will have limit switches through spark max
+
+    Grab: NEO, no limit switches/encoder
+
+    There will be motors for coral manipulation as well
+    and sensor
