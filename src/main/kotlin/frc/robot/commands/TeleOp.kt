@@ -1,12 +1,11 @@
 package frc.robot.commands
-import edu.wpi.first.wpilibj.Joystick
+
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
 import frc.robot.subsystems.Drivetrain
-import org.dyn4j.collision.narrowphase.FallbackCondition
 
 /*
 Controls the robot based off of inputs from the humans operating the driving station.

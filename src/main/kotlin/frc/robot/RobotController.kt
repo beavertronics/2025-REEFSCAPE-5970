@@ -1,4 +1,5 @@
 package frc.robot
+
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.commands.TeleOp
@@ -8,8 +9,7 @@ import frc.robot.commands.TeleOp
 
  Driver control is defined in TeleOp.kt.
 
- The hardware of the robot (what motor controllers, etc) is defined below:
-    - todo put hardware here
+ The hardware of the robot (what motor controllers, etc) is defined in "robot info.txt"
 */
 
 /**
