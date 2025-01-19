@@ -1,8 +1,7 @@
 package frc.robot.subsystems
 
-import beaverlib.utils.Units.Linear.metersPerSecond
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.math.kinematics.struct.ChassisSpeedsStruct
 import edu.wpi.first.wpilibj.Filesystem
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import swervelib.SwerveDrive
@@ -41,6 +40,14 @@ object Drivetrain : SubsystemBase() {
         // set up swerve drive :D
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
         swerveDrive = SwerveParser(DriveConstants.DriveConfig).createSwerveDrive(DriveConstants.MaxSpeed)
+
+        // set up vision
+        swerveDrive.setVisionMeasurementStdDevs(Vision.getStandardDev())
+        // set up listener function that updates swerve position data
+        Vision.listeners.add ( "UpdateOdometry") {
+            val position: Pose2d = Vision.getRobotPosition(it)?.toPose2d() ?: return@add
+            swerveDrive.addVisionMeasurement(position, it.timestampSeconds)
+        }
     }
 
     fun makeChassisSpeed(xSpeedMPS: Double, ySpeedMPS: Double, rotationOmegaRPS: Double): ChassisSpeeds {
