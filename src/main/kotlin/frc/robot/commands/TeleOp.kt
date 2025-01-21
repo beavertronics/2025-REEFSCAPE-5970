@@ -14,6 +14,7 @@ import org.dyn4j.collision.narrowphase.FallbackCondition
 Controls the robot based off of inputs from the humans operating the driving station.
  */
 
+
 /**
  * class for managing systems and inputs
  */
@@ -33,13 +34,21 @@ object TeleOp : Command() {
      * Executed very frame
      */
     override fun execute() {
+        //===== CHANGING STUFF =====//
+        // todo
         //===== DRIVETRAIN =====//
-        Drivetrain.rawDrive(OI.driveLeft*3, OI.driveRight*3)
-        Intake.runIntake(OI.intake*0.7)
-        Shooter.runOpenLoop(OI.shooter*0.7)
+        if (OI.toggleChildMode) {
+            Drivetrain.rawDrive(OI.childModeDriveLeft*3, OI.childModeDriveRight*3)
+        }
+        else {
+            Drivetrain.rawDrive(OI.parentModeDriveLeft*9, OI.parentModeDriveRight*9)
+        }
 
         //===== SUBSYSTEMS =====//
-        // todo
+        var inverted = 1.0
+        if (OI.invertDirection) { inverted = -1.0 }
+        Intake.runIntake(OI.runIntake*(0.7*inverted))
+        Shooter.runOpenLoop(OI.runShooter*(1.0*inverted))
     }
 
     /**
@@ -47,9 +56,9 @@ object TeleOp : Command() {
      * getting inputs from controllers and whatnot.
      */
     object OI {
-        private val operatorController = XboxController(2) // todo fix port ID
-        private val rightDrive = Joystick(0) // todo fix port ID
-        private val leftDrive = Joystick(1) // todo fix port ID
+        private val operatorController = XboxController(2)
+        private val rightDrive = Joystick(0)
+        private val leftDrive = Joystick(1)
 
 
         /**
@@ -69,10 +78,14 @@ object TeleOp : Command() {
             return this.absoluteValue > target
         }
 
-        val driveLeft get() = leftDrive.y.processInput()
-        val driveRight get() = rightDrive.y.processInput()
-        val intake get() = operatorController.rightY.processInput()
-        val shooter get() = operatorController.leftY.processInput()
+        val childModeDriveLeft get() = leftDrive.y.processInput()
+        val childModeDriveRight get() = rightDrive.y.processInput()
+        val parentModeDriveLeft get() = operatorController.leftY.processInput()
+        val parentModeDriveRight get() = operatorController.rightY.processInput()
+        val runIntake get() = operatorController.leftTriggerAxis
+        val runShooter get() = operatorController.rightTriggerAxis * -1.0 // invert direction
+        val invertDirection get() = operatorController.rightBumperButton
+        val toggleChildMode get() = operatorController.leftBumperButton
 
 
         /**
