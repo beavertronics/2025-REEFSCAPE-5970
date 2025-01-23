@@ -8,7 +8,6 @@ import beaverlib.utils.Sugar.within
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Intake
 import frc.robot.subsystems.Shooter
-import org.dyn4j.collision.narrowphase.FallbackCondition
 
 /*
 Controls the robot based off of inputs from the humans operating the driving station.
@@ -35,18 +34,19 @@ object TeleOp : Command() {
      */
     override fun execute() {
         //===== CHANGING STUFF =====//
-        // todo
+        var inverted = 1.0
+        if (OI.invertDirection) { inverted = -1.0 }
         //===== DRIVETRAIN =====//
         if (OI.toggleChildMode) {
             Drivetrain.rawDrive(OI.childModeDriveLeft*3, OI.childModeDriveRight*3)
         }
         else {
-            Drivetrain.rawDrive(OI.parentModeDriveLeft*9, OI.parentModeDriveRight*9)
+            Drivetrain.rawDrive(
+                (OI.parentModeDrive - OI.parentModeStraife) * 9,
+                (OI.parentModeDrive + OI.parentModeStraife) * 9)
         }
 
         //===== SUBSYSTEMS =====//
-        var inverted = 1.0
-        if (OI.invertDirection) { inverted = -1.0 }
         Intake.runIntake(OI.runIntake*(1.0*inverted))
         Shooter.runOpenLoop(OI.runShooter*(1.0*inverted))
     }
@@ -80,8 +80,8 @@ object TeleOp : Command() {
 
         val childModeDriveLeft get() = leftDrive.y.processInput()
         val childModeDriveRight get() = rightDrive.y.processInput()
-        val parentModeDriveLeft get() = operatorController.leftY.processInput()
-        val parentModeDriveRight get() = operatorController.rightY.processInput()
+        val parentModeDrive get() = operatorController.leftY.processInput()
+        val parentModeStraife get() = operatorController.leftX.processInput()
         val runIntake get() = operatorController.leftTriggerAxis
         val runShooter get() = operatorController.rightTriggerAxis * -1.0 // invert direction
         val invertDirection get() = operatorController.rightBumperButton
