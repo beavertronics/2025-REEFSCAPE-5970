@@ -47,7 +47,7 @@ object TeleOp : Command() {
         //===== SUBSYSTEMS =====//
         var inverted = 1.0
         if (OI.invertDirection) { inverted = -1.0 }
-        Intake.runIntake(OI.runIntake*(0.7*inverted))
+        Intake.runIntake(OI.runIntake*(1.0*inverted))
         Shooter.runOpenLoop(OI.runShooter*(1.0*inverted))
     }
 
