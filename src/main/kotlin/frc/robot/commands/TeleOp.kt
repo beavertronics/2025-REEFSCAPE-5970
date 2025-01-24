@@ -82,8 +82,8 @@ object TeleOp : Command() {
         val childModeDriveRight get() = rightDrive.y.processInput()
         val parentModeDrive get() = operatorController.leftY.processInput()
         val parentModeStraife get() = operatorController.leftX.processInput()
-        val runIntake get() = operatorController.leftTriggerAxis
-        val runShooter get() = operatorController.rightTriggerAxis * -1.0 // invert direction
+        val runIntake get() = operatorController.leftTriggerAxis.processInput()
+        val runShooter get() = operatorController.rightTriggerAxis.processInput() * -1.0 // invert direction
         val invertDirection get() = operatorController.rightBumperButton
         val toggleChildMode get() = operatorController.leftBumperButton
 
