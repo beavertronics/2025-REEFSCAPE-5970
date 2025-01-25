@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
+import edu.wpi.first.math.geometry.Translation2d
 import frc.robot.subsystems.Drivetrain
 
 /*
@@ -31,11 +32,15 @@ object TeleOp : Command() {
      */
     override fun execute() {
         //===== DRIVETRAIN =====//
-        if ( OI.toggleFieldOriented > 0.01) { Drivetrain.setFieldOriented(false) }
-        else if (!Drivetrain.isFieldOriented) { Drivetrain.setFieldOriented(true) }
-        var speed = Drivetrain.makeChassisSpeed(OI.driveFieldOrientedForwards, OI.driveFieldOrientedSideways, OI.rotateRobot)
-        if (Drivetrain.isFieldOriented) { Drivetrain.driveFieldOriented(speed) }
-        else { Drivetrain.drive(speed) }
+        val driveTranslation = Translation2d(
+            OI.driveFieldOrientedSideways * 9, // todo maybe dont multiply here???
+            OI.driveFieldOrientedForwards * 9 // todo maybe dont multiply here???
+        )
+        Drivetrain.drive(
+            translation = driveTranslation,
+            rotation = OI.rotateRobot,
+            fieldOriented = OI.toggleFieldOriented
+        )
         //===== SUBSYSTEMS =====//
         // todo
     }
@@ -72,7 +77,7 @@ object TeleOp : Command() {
         val driveFieldOrientedForwards get() = drivingController.leftY.processInput()
         val driveFieldOrientedSideways get() = drivingController.leftX.processInput()
         val rotateRobot get() = drivingController.rightX.processInput()
-        val toggleFieldOriented get() = drivingController.rightTriggerAxis
+        val toggleFieldOriented get() = drivingController.rightBumperButtonPressed
     }
 }
 
