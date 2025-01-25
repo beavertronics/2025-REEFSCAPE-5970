@@ -6,6 +6,7 @@ import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
 import frc.robot.subsystems.Drivetrain
+import frc.robot.subsystems.Lights
 import org.dyn4j.collision.narrowphase.FallbackCondition
 
 /*
@@ -22,7 +23,7 @@ object TeleOp : Command() {
      * and that there isn't a time gap between things being called.
      */
     override fun initialize() {
-        addRequirements(Drivetrain) // todo add systems
+        addRequirements(Drivetrain,Lights) // todo add systems
     }
 
     /**
