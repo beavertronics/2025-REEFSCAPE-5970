@@ -22,20 +22,20 @@ object `Robot info` {
      */
 
     // Drivetrain
-    const val frontLeftDrive = 2
-    const val frontRightDrive = 3
-    const val backLeftDrive = 4
-    const val backRightDrive = 5
-    const val frontLeftSteer = 6
-    const val frontRightSteer = 7
-    const val backLeftSteer = 8
-    const val backrightSteer = 9
+    const val FrontLeftDrive = 2
+    const val FrontRightDrive = 3
+    const val BackLeftDrive = 4
+    const val BackRightDrive = 5
+    const val FrontLeftSteer = 6
+    const val FrontRightSteer = 7
+    const val BackLeftSteer = 8
+    const val BackrightSteer = 9
 
     // Subsystem - Climb
     const val ClimbID = 10
-    const val ampLimit = 30
-    const val voltLimit = 12
-    const val limitSwitchDIO = 0
+    const val AmpLimit = 30
+    const val VoltLimit = 12
+    const val LimitSwitchDIO = 0
 
     // Subsystem - LED
     const val LEDPWM = 9
