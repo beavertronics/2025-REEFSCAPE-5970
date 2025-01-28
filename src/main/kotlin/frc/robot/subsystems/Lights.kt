@@ -27,6 +27,7 @@ object Lights : SubsystemBase() {
     var buffer = AddressableLEDBuffer(length);
 
     // Patterns:
+    val off = LEDPattern.solid(Color.kBlack)
     val scrollingRainbow = LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(1.0),density); //255 = max saturation, 128 = half brightness, scroll at 1 m/s
     val Transflag = LEDPattern.steps(
         mutableMapOf(
@@ -38,14 +39,20 @@ object Lights : SubsystemBase() {
     ).scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(0.5),density).atBrightness(Percent.of(75.0))
     val AceFlag = LEDPattern.steps(
         mutableMapOf(
-            Pair(0, beaverColor(0, 0, 250)), //blue
-            Pair(0.2, beaverColor(245, 85, 92)), //blue
-            Pair(0.4, beaverColor(255,255,255)), //blue
-            Pair(0.6, beaverColor(245, 85, 92)), //blue
-            Pair(0.8, beaverColor(45, 102, 250))) //blue
-    ).scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(1.0),density).atBrightness(Percent.of(75.0))
+            Pair(0, beaverColor(0, 0, 0)), //blue
+            Pair(0.25, beaverColor(50, 50, 50)), //blue
+            Pair(0.5, beaverColor(255,255,255)), //blue
+            Pair(0.75, beaverColor(128, 0, 128))) //blue
+    ).scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(0.5),density).atBrightness(Percent.of(75.0))
+    val BiFlag = LEDPattern.steps(
+        mutableMapOf(
+            Pair(0.0, beaverColor(214, 2, 112)), //blue
+            Pair(0.35, beaverColor(110, 20, 110)), //blue
+            Pair(0.7, beaverColor(0, 56, 168)),
+        )//blue
+    ).scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(0.5),density).atBrightness(Percent.of(75.0))
     init {
-        defaultCommand = runPattern(Transflag).withName("Trans")
+        defaultCommand = runPattern(off).withName("Trans")
     }
     fun init() {
         lights.setLength(length) // Length in meters times 60
@@ -63,5 +70,8 @@ object Lights : SubsystemBase() {
     fun runPattern(pattern: LEDPattern) : Command {
         val command : Command = run { pattern.applyTo(buffer) }.repeatedly().ignoringDisable(true)
         return command
+    }
+    class cyclePatterns(vararg pattern: LEDPattern, cycleTime : Double) : Command() {
+        
     }
 }
