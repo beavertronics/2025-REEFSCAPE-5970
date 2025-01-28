@@ -6,11 +6,18 @@ import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
 import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.wpilibj.Joystick
+import frc.robot.subsystems.Climb
 import frc.robot.subsystems.Drivetrain
 
 /*
 Controls the robot based off of inputs from the humans operating the driving station.
  */
+
+object TeleOpConstants {
+    const val spoolClimbButton = 11
+    const val unspoolClimbButton = 12
+}
 
 /**
  * class for managing systems and inputs
@@ -22,7 +29,7 @@ object TeleOp : Command() {
      * and that there isn't a time gap between things being called.
      */
     override fun initialize() {
-        addRequirements(Drivetrain) // todo add systems
+        addRequirements(Drivetrain, Climb) // todo add subsystems
     }
 
     /**
@@ -33,8 +40,8 @@ object TeleOp : Command() {
     override fun execute() {
         //===== DRIVETRAIN =====//
         val driveTranslation = Translation2d(
-            OI.driveFieldOrientedSideways * 9, // todo maybe dont multiply here???
-            OI.driveFieldOrientedForwards * 9 // todo maybe dont multiply here???
+            OI.driveSideways * 9, // todo maybe dont multiply here???
+            OI.driveForwards * 9 // todo maybe dont multiply here???
         )
         Drivetrain.drive(
             translation = driveTranslation,
@@ -42,7 +49,8 @@ object TeleOp : Command() {
             fieldOriented = OI.toggleFieldOriented
         )
         //===== SUBSYSTEMS =====//
-        // todo
+        if (OI.spoolClimb) {Climb.spoolClimb()}
+        else if (OI.unspoolclimb) {Climb.spoolClimb(true)}
     }
 
     /**
@@ -51,7 +59,7 @@ object TeleOp : Command() {
      */
     object OI {
         private val drivingController = XboxController(0) // todo fix port ID
-        private val operatorController = XboxController(0) // todo fix port ID
+        private val operatorController = Joystick(0) // todo fix port ID
 
         /**
          * Allows you to tweak controller inputs (ie get rid of deadzone, make input more sensitive by squaring or cubing it, etc).
@@ -73,11 +81,14 @@ object TeleOp : Command() {
         /**
          * Values for inputs go here
          */
-        // todo
-        val driveFieldOrientedForwards get() = drivingController.leftY.processInput()
-        val driveFieldOrientedSideways get() = drivingController.leftX.processInput()
+        //===== DRIVETRAIN =====//
+        val driveForwards get() = drivingController.leftY.processInput()
+        val driveSideways get() = drivingController.leftX.processInput()
         val rotateRobot get() = drivingController.rightX.processInput()
         val toggleFieldOriented get() = drivingController.rightBumperButtonPressed
+        //===== SUBSYSTEMS =====//
+        val spoolClimb get() = operatorController.getRawButtonPressed(TeleOpConstants.spoolClimbButton)
+        val unspoolclimb get() = operatorController.getRawButtonPressed(TeleOpConstants.unspoolClimbButton)
     }
 }
 

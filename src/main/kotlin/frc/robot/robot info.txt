@@ -44,10 +44,12 @@ IDs
 
 SUBSYSTEMS
 Climb:
-    Elevator motor: NEO for now, may be changed later
-    Elevator motor will have limit switches through spark max
+    spark id: 10
+    30A, 12V
+    limit switch on RIO
 
-    Grab: NEO, no limit switches/encoder
+LED:
+    PWM 9
 
-    There will be motors for coral manipulation as well
-    and sensor
+Climb limit switch:
+    DIO 0
