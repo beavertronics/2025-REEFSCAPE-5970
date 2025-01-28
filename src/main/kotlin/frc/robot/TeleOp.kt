@@ -1,17 +1,19 @@
-package frc.robot.commands
+package frc.robot
 
 import edu.wpi.first.wpilibj.XboxController
-import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
-import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick
+import frc.robot.commands.RunClimb
+import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.subsystems.Climb
 import frc.robot.subsystems.Drivetrain
 
 /*
-Controls the robot based off of inputs from the humans operating the driving station.
+Sets up the operator interface (controller inputs), as well as
+calling the drive function command
  */
 
 object TeleOpConstants {
@@ -22,35 +24,28 @@ object TeleOpConstants {
 /**
  * class for managing systems and inputs
  */
-object TeleOp : Command() {
+object TeleOp {
 
-    /**
-     * Makes sure that everything intializes together,
-     * and that there isn't a time gap between things being called.
-     */
-    override fun initialize() {
-        addRequirements(Drivetrain, Climb) // todo add subsystems
+    val teleOpDrive: TeleopDriveCommand =
+        TeleopDriveCommand(
+            { OI.driveForwards },
+            { OI.driveStrafe },
+            { OI.rotateRobot },
+            { OI.toggleFieldOriented },
+            { false },
+        )
+
+    init {
+        Drivetrain.defaultCommand = teleOpDrive
+        configureBindings()
     }
 
     /**
-     * The main executing loops for driving
-     * the robot and whatnot.
-     * Executed very frame
+     * configures things to run on specific inputs
      */
-    override fun execute() {
-        //===== DRIVETRAIN =====//
-        val driveTranslation = Translation2d(
-            OI.driveSideways * 9, // todo maybe dont multiply here???
-            OI.driveForwards * 9 // todo maybe dont multiply here???
-        )
-        Drivetrain.drive(
-            translation = driveTranslation,
-            rotation = OI.rotateRobot,
-            fieldOriented = OI.toggleFieldOriented
-        )
-        //===== SUBSYSTEMS =====//
-        if (OI.spoolClimb) {Climb.spoolClimb()}
-        else if (OI.unspoolclimb) {Climb.spoolClimb(true)}
+    fun configureBindings() {
+        OI.spoolClimb.whileTrue(RunClimb())
+        OI.unpsoolClimb.whileTrue(RunClimb(true))
     }
 
     /**
@@ -59,7 +54,7 @@ object TeleOp : Command() {
      */
     object OI {
         private val drivingController = XboxController(0) // todo fix port ID
-        private val operatorController = Joystick(0) // todo fix port ID
+        private val operatorController = CommandJoystick(0) // todo fix port ID
 
         /**
          * Allows you to tweak controller inputs (ie get rid of deadzone, make input more sensitive by squaring or cubing it, etc).
@@ -83,12 +78,12 @@ object TeleOp : Command() {
          */
         //===== DRIVETRAIN =====//
         val driveForwards get() = drivingController.leftY.processInput()
-        val driveSideways get() = drivingController.leftX.processInput()
+        val driveStrafe get() = drivingController.leftX.processInput()
         val rotateRobot get() = drivingController.rightX.processInput()
         val toggleFieldOriented get() = drivingController.rightBumperButtonPressed
         //===== SUBSYSTEMS =====//
-        val spoolClimb get() = operatorController.getRawButtonPressed(TeleOpConstants.spoolClimbButton)
-        val unspoolclimb get() = operatorController.getRawButtonPressed(TeleOpConstants.unspoolClimbButton)
+        val spoolClimb = operatorController.button(TeleOpConstants.spoolClimbButton)
+        val unpsoolClimb = operatorController.button(TeleOpConstants.unspoolClimbButton)
     }
 }
 

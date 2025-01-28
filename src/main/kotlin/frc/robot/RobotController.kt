@@ -2,7 +2,6 @@ package frc.robot
 
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import frc.robot.commands.TeleOp
 
 /*
  Main code for controlling the robot. Mainly just links everything together.
@@ -43,9 +42,7 @@ object RobotController : TimedRobot() {
     /**
      * runs when teleop is ready
      */
-    override fun teleopInit() {
-        TeleOp.schedule()
-    }
+    override fun teleopInit() {}
 
     /**
      * runs on every frame of teleop
