@@ -29,7 +29,7 @@ object RobotController : TimedRobot() {
      * runs when robot turns on, should be used for any initialization of robot
      */
     override fun robotInit() {
-        teleOpContainer = TeleOp() // todo fix
+        teleOpContainer = TeleOp // todo fix
     }
 
     /**
