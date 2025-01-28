@@ -1,6 +1,7 @@
 package frc.robot
 
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 
 /*
@@ -8,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 
  Driver control is defined in TeleOp.kt.
 
- The hardware of the robot (what motor controllers, etc) is defined in "robot info.txt"
+ The hardware of the robot (what motor controllers, etc) is defined in "robot info.kt"
 */
 
 /**
@@ -18,22 +19,25 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 object RobotController : TimedRobot() {
     //val autos: Map<String,Command> = mapOf(
         //TODO: Autos go here!
-        //ie 
+        //ie
         //"Description of auto" to TaxiAuto
-    //)    
+    //)
+    lateinit var teleOpContainer: TeleOp
+    val commandScheduler = CommandScheduler.getInstance()
 
     /**
      * runs when robot turns on, should be used for any initialization of robot
      */
     override fun robotInit() {
-        }
+        teleOpContainer = TeleOp() // todo fix
+    }
 
     /**
      * runs when the robot is on, regardless of enabled or not
      * used for telemetry, command scheduler, etc
      */
     override fun robotPeriodic() {
-        CommandScheduler.getInstance().run()
+        commandScheduler.run()
     }
 
     override fun autonomousInit() {}
@@ -69,6 +73,8 @@ object RobotController : TimedRobot() {
      */
     override fun disabledPeriodic() {}
 
-    override fun testInit() {}
+    override fun testInit() {
+        commandScheduler.cancelAll()
+    }
     override fun testPeriodic() {}
 }

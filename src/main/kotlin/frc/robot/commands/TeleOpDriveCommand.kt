@@ -60,7 +60,7 @@ class TeleopDriveCommand(
                 forwardVelocity * DriveConstants.MaxSpeed,
                 strafeVelocity * DriveConstants.MaxSpeed),
             angVelocity * controller.config.maxAngularVelocity,
-            driveMode.asBoolean,
+            driveMode.asBoolean
         )
     }
 

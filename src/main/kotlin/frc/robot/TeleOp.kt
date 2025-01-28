@@ -4,16 +4,14 @@ import edu.wpi.first.wpilibj.XboxController
 import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
-import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import frc.robot.commands.RunClimb
 import frc.robot.commands.swerve.TeleopDriveCommand
-import frc.robot.subsystems.Climb
 import frc.robot.subsystems.Drivetrain
 
 /*
 Sets up the operator interface (controller inputs), as well as
-calling the drive function command
+setting up the commands for running the drivetrain and the subsystems
  */
 
 object TeleOpConstants {
@@ -36,8 +34,9 @@ object TeleOp {
         )
 
     init {
-        Drivetrain.defaultCommand = teleOpDrive
-        configureBindings()
+        initializeObjects()
+        Drivetrain.defaultCommand = teleOpDrive // sets what function is called every frame (somewhere?)
+        configureBindings() // sets what buttons what trigger events
     }
 
     /**
@@ -46,6 +45,13 @@ object TeleOp {
     fun configureBindings() {
         OI.spoolClimb.whileTrue(RunClimb())
         OI.unpsoolClimb.whileTrue(RunClimb(true))
+    }
+
+    /**
+     * initializes objects?
+     */
+    private fun initializeObjects() {
+        Drivetrain
     }
 
     /**

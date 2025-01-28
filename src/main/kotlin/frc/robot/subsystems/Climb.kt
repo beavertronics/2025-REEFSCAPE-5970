@@ -3,12 +3,11 @@ package frc.robot.subsystems
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.wpilibj.DigitalInput
-import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 
 object ClimbConstants {
     const val climbWinchMotorID = 10
-    const val climbLimitSwitchID = 0
+    const val climbLimitSwitchID = 0 // DIO
 }
 object Climb : SubsystemBase() {
     val climbMotor = SparkMax(ClimbConstants.climbWinchMotorID, SparkLowLevel.MotorType.kBrushless)
@@ -25,6 +24,10 @@ object Climb : SubsystemBase() {
         climbMotor.set(motorSpeed)
     }
 
+    /**
+     * runs every frame, makes sure that if at any point the
+     * limit switch is pressed, the motor can not spin
+     */
     override fun periodic() {
         if (climbLimitSwitch.get()) {climbMotor.set(0.0)}
     }
