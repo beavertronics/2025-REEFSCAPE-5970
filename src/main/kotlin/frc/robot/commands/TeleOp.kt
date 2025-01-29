@@ -1,13 +1,11 @@
 package frc.robot.commands
-import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj.XboxController
 import edu.wpi.first.wpilibj2.command.Command
 import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
-import frc.robot.subsystems.Drivetrain
+import frc.robot.subsystems.InfraredSensor
 import frc.robot.subsystems.Lights
-import org.dyn4j.collision.narrowphase.FallbackCondition
 
 /*
 Controls the robot based off of inputs from the humans operating the driving station.
@@ -23,7 +21,7 @@ object TeleOp : Command() {
      * and that there isn't a time gap between things being called.
      */
     override fun initialize() {
-        addRequirements(Drivetrain,Lights) // todo add systems
+        addRequirements(Lights, InfraredSensor) // todo add systems
     }
 
     /**
@@ -33,11 +31,11 @@ object TeleOp : Command() {
      */
     override fun execute() {
         //===== DRIVETRAIN =====//
-        if ( OI.toggleFieldOriented > 0.01) { Drivetrain.setFieldOriented(false) }
-        else if (!Drivetrain.isFieldOriented) { Drivetrain.setFieldOriented(true) }
-        var speed = Drivetrain.makeChassisSpeed(OI.driveFieldOrientedForwards, OI.driveFieldOrientedSideways, OI.rotateRobot)
-        if (Drivetrain.isFieldOriented) { Drivetrain.driveFieldOriented(speed) }
-        else { Drivetrain.drive(speed) }
+//        if ( OI.toggleFieldOriented > 0.01) { Drivetrain.setFieldOriented(false) }
+//        else if (!Drivetrain.isFieldOriented) { Drivetrain.setFieldOriented(true) }
+//        var speed = Drivetrain.makeChassisSpeed(OI.driveFieldOrientedForwards, OI.driveFieldOrientedSideways, OI.rotateRobot)
+//        if (Drivetrain.isFieldOriented) { Drivetrain.driveFieldOriented(speed) }
+//        else { Drivetrain.drive(speed) }
         //===== SUBSYSTEMS =====//
         // todo
     }
