@@ -52,7 +52,7 @@ object Lights : SubsystemBase() {
         )//blue
     ).scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(0.5),density).atBrightness(Percent.of(75.0))
     init {
-        defaultCommand = runPattern(off).withName("Trans")
+        defaultCommand = cyclePatterns(10.0, scrollingRainbow, Transflag, AceFlag, BiFlag).withName("Trans")
     }
     fun init() {
         lights.setLength(length) // Length in meters times 60
@@ -61,17 +61,50 @@ object Lights : SubsystemBase() {
     }
 
     override fun periodic() {
-
-        //Transflag.applyTo(buffer);
         lights.setData(buffer);
-        //if(timer.hasElapsed(5.0))
     }
 
     fun runPattern(pattern: LEDPattern) : Command {
         val command : Command = run { pattern.applyTo(buffer) }.repeatedly().ignoringDisable(true)
         return command
     }
-    class cyclePatterns(vararg pattern: LEDPattern, cycleTime : Double) : Command() {
-        
+    fun runPatternAtBrightness(pattern: LEDPattern, brightness : ()->Double) : Command {
+        val command : Command = run { pattern.atBrightness(Percent.of(100 * brightness())); pattern.applyTo(buffer) }.repeatedly().ignoringDisable(true)
+        return command
+    }
+
+
+    /**
+     * Iterates through each patter in vararg patterns in order, looping
+     * @param patterns List of paterns to iterate through
+     * @param cycleTime to between each cycle
+     */
+    class cyclePatterns(val cycleTime : Double, vararg val patterns: LEDPattern) : Command() {
+        var iterator : Int = 0
+        val timer = Timer()
+        override fun initialize() { timer.restart() }
+        override fun execute() {
+            patterns[iterator].applyTo(buffer)
+            if(timer.hasElapsed(cycleTime)) {
+                timer.restart()
+                iterator = (iterator + 1) % patterns.size
+            }
+        }
+    }
+    /**
+     * Iterates through each patter in vararg patterns in order, looping
+     * @param patterns List of paterns to iterate through
+     * @param cycleTime to between each cycle
+     */
+    class randomCyclePatterns(val cycleTime : Double, vararg val patterns: LEDPattern) : Command() {
+        var iterator : Int = 0
+        val timer = Timer()
+
+        override fun initialize() { timer.restart(); iterator = (0..patterns.size).random() }
+        override fun execute() {
+            timer.restart()
+            patterns[iterator].applyTo(buffer)
+            if(timer.hasElapsed(cycleTime)) { timer.restart(); iterator = (0..patterns.size).random() }
+        }
     }
 }
