@@ -47,7 +47,7 @@ object TeleOp : Command() {
      * getting inputs from controllers and whatnot.
      */
     object OI {
-        private val drivingController = XboxController(0) // todo fix port ID
+        private val drivingController = XboxController(2) // todo fix port ID
         private val operatorController = XboxController(0) // todo fix port ID
 
         /**

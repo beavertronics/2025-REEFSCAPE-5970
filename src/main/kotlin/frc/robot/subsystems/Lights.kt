@@ -9,9 +9,14 @@ import edu.wpi.first.units.Units
 import edu.wpi.first.units.Units.Percent
 import edu.wpi.first.units.measure.Dimensionless
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj2.command.Command
+import frc.robot.commands.TeleOp
 import jdk.jfr.Percentage
+import kotlin.math.absoluteValue
 import kotlin.math.round
 import kotlin.math.roundToInt
 
@@ -52,7 +57,18 @@ object Lights : SubsystemBase() {
         )//blue
     ).scrollAtAbsoluteSpeed(Units.MetersPerSecond.of(0.5),density).atBrightness(Percent.of(75.0))
     init {
-        defaultCommand = cyclePatterns(10.0, scrollingRainbow, Transflag, AceFlag, BiFlag).withName("Trans")
+        defaultCommand = //runPatternAtBrightness(scrollingRainbow, { TeleOp.OI.driveFieldOrientedForwards.absoluteValue })
+            fromShuffleBoard(
+            mapOf(
+                Pair("Off", LEDPattern.solid(Color.kBlack)),
+                Pair("Rainbow", scrollingRainbow),
+                Pair("TransFlag", Transflag),
+                Pair("AceFlag", AceFlag),
+                Pair("BiFlag", BiFlag),
+
+                ))
+
+    //randomCyclePatterns(10.0, scrollingRainbow, Transflag, AceFlag, BiFlag).withName("Trans").ignoringDisable(true)
     }
     fun init() {
         lights.setLength(length) // Length in meters times 60
@@ -69,7 +85,7 @@ object Lights : SubsystemBase() {
         return command
     }
     fun runPatternAtBrightness(pattern: LEDPattern, brightness : ()->Double) : Command {
-        val command : Command = run { pattern.atBrightness(Percent.of(100 * brightness())); pattern.applyTo(buffer) }.repeatedly().ignoringDisable(true)
+        val command : Command = run { pattern.atBrightness(Percent.of(100 * brightness())).applyTo(buffer); }.repeatedly().ignoringDisable(true)
         return command
     }
 
@@ -82,8 +98,11 @@ object Lights : SubsystemBase() {
     class cyclePatterns(val cycleTime : Double, vararg val patterns: LEDPattern) : Command() {
         var iterator : Int = 0
         val timer = Timer()
+        init { addRequirements(Lights) }
+        override fun runsWhenDisabled(): Boolean { return true }
         override fun initialize() { timer.restart() }
         override fun execute() {
+            println(iterator)
             patterns[iterator].applyTo(buffer)
             if(timer.hasElapsed(cycleTime)) {
                 timer.restart()
@@ -99,12 +118,38 @@ object Lights : SubsystemBase() {
     class randomCyclePatterns(val cycleTime : Double, vararg val patterns: LEDPattern) : Command() {
         var iterator : Int = 0
         val timer = Timer()
+        init { addRequirements(Lights) }
+        override fun runsWhenDisabled(): Boolean { return true }
 
         override fun initialize() { timer.restart(); iterator = (0..patterns.size).random() }
         override fun execute() {
-            timer.restart()
             patterns[iterator].applyTo(buffer)
             if(timer.hasElapsed(cycleTime)) { timer.restart(); iterator = (0..patterns.size).random() }
+        }
+    }
+    /**
+     * Iterates through each patter in vararg patterns in order, looping
+     * @param patterns List of paterns to iterate through
+     * @param cycleTime to between each cycle
+     */
+    class fromShuffleBoard(val patterns: Map<String, LEDPattern>) : Command() {
+        val patternChooser = SendableChooser<LEDPattern>()
+        init { addRequirements(Lights) }
+        override fun runsWhenDisabled(): Boolean { return true }
+
+        override fun initialize() {
+            var i = 0
+            patterns.forEach {
+                name: String, pattern : LEDPattern ->
+                if(i == 0) patternChooser.setDefaultOption(name, pattern)
+                    else patternChooser.addOption(name, pattern)
+                i++
+
+            }
+            SmartDashboard.putData("LEDPatterns", patternChooser)
+        }
+        override fun execute() {
+            if(patternChooser.selected != null) patternChooser.selected.applyTo(buffer)
         }
     }
 }
