@@ -2,16 +2,19 @@ package frc.robot.subsystems
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
+import com.revrobotics.spark.config.SparkBaseConfig
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.engine.utils.initMotorControllers
+import frc.robot.RobotInfo
 
-object ClimbConstants {
-    const val climbWinchMotorID = 10
-    const val climbLimitSwitchID = 0 // DIO
-}
 object Climb : SubsystemBase() {
-    val climbMotor = SparkMax(ClimbConstants.climbWinchMotorID, SparkLowLevel.MotorType.kBrushless)
-    val climbLimitSwitch = DigitalInput(ClimbConstants.climbLimitSwitchID)
+    private val climbMotor = SparkMax(RobotInfo.ClimbMotorWinchID, SparkLowLevel.MotorType.kBrushless)
+    private val climbLimitSwitch = DigitalInput(RobotInfo.ClimbLimitSwitchDIO)
+
+    init {
+        initMotorControllers(RobotInfo.ClimbAmpLimit, SparkBaseConfig.IdleMode.kCoast, climbMotor)
+    }
 
     /**
      * runs the motor to spool up the string, retracting climb

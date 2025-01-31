@@ -1,6 +1,6 @@
 package frc.robot
 
-object `Robot info` {
+object RobotInfo {
     /**
      * SPECS
      * - WCP X2S swerve modules
@@ -32,10 +32,15 @@ object `Robot info` {
     const val BackrightSteer = 9
 
     // Subsystem - Climb
-    const val ClimbID = 10
-    const val AmpLimit = 30
-    const val VoltLimit = 12
-    const val LimitSwitchDIO = 0
+    const val ClimbMotorWinchID = 10
+    const val ClimbAmpLimit = 30
+    const val ClimbVoltLimit = 12
+    const val ClimbLimitSwitchDIO = 0 // todo
+
+    // Subystem - Arm
+    const val ArmMotorID = 0 // todo
+    const val ArmAmpLimit = 0 // todo
+    const val ArmVoltLimit = 0 // todo
 
     // Subsystem - LED
     const val LEDPWM = 9
