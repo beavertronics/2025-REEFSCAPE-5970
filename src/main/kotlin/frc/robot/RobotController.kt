@@ -3,6 +3,8 @@ package frc.robot
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import frc.robot.commands.TeleOp
+import frc.robot.subsystems.Lights
 
 /*
  Main code for controlling the robot. Mainly just links everything together.
@@ -30,6 +32,7 @@ object RobotController : TimedRobot() {
      */
     override fun robotInit() {
         teleOpContainer = TeleOp
+        Lights.init()
     }
 
     /**
