@@ -1,7 +1,5 @@
 package frc.robot.subsystems
 
-import beaverlib.utils.Units.Angular.degrees
-import beaverlib.utils.Units.Linear.metersPerSecond
 import com.revrobotics.spark.ClosedLoopSlot
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
@@ -10,52 +8,88 @@ import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
 import edu.wpi.first.math.controller.ArmFeedforward
 import edu.wpi.first.math.trajectory.TrapezoidProfile
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints
-import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.RobotInfo
-import kotlin.math.absoluteValue
+import frc.robot.commands.Arm.ArmTherapy
+
+object ArmConstants {
+    // trapezoidal profile things (assume m/s)
+    const val maxVelocity = 1.0 // todo
+    const val maxAcceleration = 1.0 // todo
+    // pid things
+    const val KP = 0.0
+    const val KI = 0.0
+    const val KD = 0.0
+    // arm feed forward things?
+    const val KS = 0.0 // sin
+    const val KG = 0.0 // minimum voltage to move (K static)
+    const val KV = 0.0 // to multiply to maintain velocity
+    const val KA = 0.0 // to multiply desired acceleration
+    // limit switch things
+    const val FrontLimitSwitchAngle = 0.0 // todo (degrees or radians?)
+    const val BackLimitSwitchAngle = 0.0 // todo (degrees or radians?)
+    // other things
+    const val chainBackslash = 0.0 // todo, is the amount of slack in the chain
+
+    // enums for position states
+    enum class PositionState(val direction : Int) {
+        kFrontPosition(1),
+        kBackPosition(-1)
+    }
+}
 
 object Arm : SubsystemBase() {
-    private val armMotor = SparkMax(RobotInfo.ArmMotorID, SparkLowLevel.MotorType.kBrushless)
+    val armMotor = SparkMax(RobotInfo.ArmMotorID, SparkLowLevel.MotorType.kBrushless)
+    val frontLimitSwitch = DigitalInput(RobotInfo.ArmStartLimitSwitchDIO) // intake position
+    val backLimitSwitch = DigitalInput(RobotInfo.ArmEndLimitSwitchDIO) // deposit position
 
     init {
+        // do custom config instead of using initMotorControllers from Beaverlib
+        // to add closed loop PID
         val config = SparkMaxConfig()
         config.idleMode(SparkBaseConfig.IdleMode.kCoast)
         config.smartCurrentLimit(RobotInfo.ArmAmpLimit)
         config.closedLoop.pid(
-            0.0,
-            0.0,
-            0.0,
+            ArmConstants.KP,
+            ArmConstants.KI,
+            ArmConstants.KD
         )
 
         // Don't persist parameters since it takes time and this change is temporary
         armMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters)
+        defaultCommand = ArmTherapy()
     }
 
     // point to go to basically
-    var setPoint = 0.degrees // todo
-    val feedforward = ArmFeedforward(/* sin */ 0.0, /* k static*/ 0.0, 0.0,0.0)
-    val profile = TrapezoidProfile(TrapezoidProfile.Constraints(1.0, 1.0))
+    var setPoint = 0.0 // todo
+    // in a perfect world, how to go from point a to b
+    val feedforward = ArmFeedforward(
+        ArmConstants.KS,
+        ArmConstants.KG,
+        ArmConstants.KV,
+        ArmConstants.KA
+    )
+    // imagine a trapezoid on a graph. This helps with speeding up
+    // and slowing down to move to where you want to go
+    val profile = TrapezoidProfile(TrapezoidProfile.Constraints(ArmConstants.maxVelocity, ArmConstants.maxAcceleration))
 
-    fun applyPIDF(time : Double, goalPosition : Double, goal : TrapezoidProfile.State) {
-        val current : TrapezoidProfile.State = TrapezoidProfile.State(
-            armMotor.encoder.position,
-            armMotor.encoder.velocity
-        )
-        val m_setpoint = profile.calculate(time,current, goal)
-        armMotor.closedLoopController.setReference(goalPosition,
+    /**
+     * Applies PID values to trying moving to the set point
+     * @param goalVelocity the velocity you want to be at
+     */
+    fun applyPIDF(goalVelocity : Double) {
+
+        // finding out how to get to goal
+        // finding out where am I and where I want to go
+        // starts paying taxes, getting a job, filing for divorce
+        // the whole deal
+        armMotor.closedLoopController.setReference(
+            setPoint,
             SparkBase.ControlType.kPosition,
-            ClosedLoopSlot.kSlot0, //fixme no idea what this does
+            ClosedLoopSlot.kSlot0, //todo fixme no idea what this does
             feedforward.calculate(
                 armMotor.encoder.position,
-                m_setpoint.velocity))
-    }
-    class MoveArm(position : Double) : Command() {
-        val timer = Timer()
-        val goal : TrapezoidProfile.State = TrapezoidProfile.State(
-            position,
-            0.0
+                goalVelocity))
     }
 }
