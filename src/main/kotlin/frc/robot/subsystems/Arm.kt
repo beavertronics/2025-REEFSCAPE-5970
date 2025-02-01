@@ -2,6 +2,7 @@ package frc.robot.subsystems
 
 import beaverlib.utils.Units.Angular.degrees
 import beaverlib.utils.Units.Linear.metersPerSecond
+import com.revrobotics.spark.ClosedLoopSlot
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
@@ -38,13 +39,18 @@ object Arm : SubsystemBase() {
     val feedforward = ArmFeedforward(/* sin */ 0.0, /* k static*/ 0.0, 0.0,0.0)
     val profile = TrapezoidProfile(TrapezoidProfile.Constraints(1.0, 1.0))
 
-    fun applyPIDF(time : Double, goal : TrapezoidProfile.State) {
+    fun applyPIDF(time : Double, goalPosition : Double, goal : TrapezoidProfile.State) {
         val current : TrapezoidProfile.State = TrapezoidProfile.State(
             armMotor.encoder.position,
             armMotor.encoder.velocity
         )
         val m_setpoint = profile.calculate(time,current, goal)
-        //TODO RUN MOTOR WITH PIDF
+        armMotor.closedLoopController.setReference(goalPosition,
+            SparkBase.ControlType.kPosition,
+            ClosedLoopSlot.kSlot0, //fixme no idea what this does
+            feedforward.calculate(
+                armMotor.encoder.position,
+                m_setpoint.velocity))
     }
     class MoveArm(position : Double) : Command() {
         val timer = Timer()
@@ -52,9 +58,7 @@ object Arm : SubsystemBase() {
             position,
             0.0
         )
-        override fun initialize() {
-            profile.calculate()
-        }
+        \
 
     }
 }
