@@ -8,7 +8,7 @@ import frc.robot.subsystems.Arm
 import frc.robot.subsystems.Arm.applyPIDF
 import frc.robot.subsystems.Arm.armMotor
 import frc.robot.subsystems.Arm.profile
-import frc.robot.subsystems.Arm.setPoint
+import frc.robot.subsystems.Arm.m_setpoint
 
 /**
  * Moves the arm to the target position
@@ -28,7 +28,7 @@ class MoveArm(
 
     override fun initialize() {
         timer.restart()
-        setPoint = position
+        Arm.set_setpoint(position)
     }
 
     override fun execute() {

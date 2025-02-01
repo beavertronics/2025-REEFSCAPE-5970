@@ -1,12 +1,13 @@
 package frc.robot.subsystems
 
-import com.revrobotics.spark.ClosedLoopSlot
+import com.revrobotics.RelativeEncoder
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
 import edu.wpi.first.math.controller.ArmFeedforward
+import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -33,16 +34,24 @@ object ArmConstants {
     const val chainBackslash = 0.0 // todo, is the amount of slack in the chain
 
     // enums for position states
-    enum class PositionState(val direction : Int) {
-        kFrontPosition(1),
-        kBackPosition(-1)
+    enum class PositionState(val direction : Int, val encoderValue : Double) {
+        kFrontPosition(1, FrontLimitSwitchAngle),
+        kBackPosition(-1, BackLimitSwitchAngle)
     }
 }
 
 object Arm : SubsystemBase() {
     val armMotor = SparkMax(RobotInfo.ArmMotorID, SparkLowLevel.MotorType.kBrushless)
+    val encoder : RelativeEncoder = armMotor.encoder
+    val pid : PIDController = PIDController(ArmConstants.KP, ArmConstants.KV, ArmConstants.KD)
     val frontLimitSwitch = DigitalInput(RobotInfo.ArmStartLimitSwitchDIO) // intake position
     val backLimitSwitch = DigitalInput(RobotInfo.ArmEndLimitSwitchDIO) // deposit position
+    // point to go to basically
+    var m_setpoint = 0.0 // todo
+    fun set_setpoint(setpoint: Double){
+        m_setpoint = setpoint
+        pid.setpoint = setpoint
+    }
 
     init {
         // do custom config instead of using initMotorControllers from Beaverlib
@@ -50,19 +59,22 @@ object Arm : SubsystemBase() {
         val config = SparkMaxConfig()
         config.idleMode(SparkBaseConfig.IdleMode.kCoast)
         config.smartCurrentLimit(RobotInfo.ArmAmpLimit)
-        config.closedLoop.pid(
+        /*config.closedLoop.pid(
             ArmConstants.KP,
             ArmConstants.KI,
             ArmConstants.KD
-        )
+        )*/
 
         // Don't persist parameters since it takes time and this change is temporary
         armMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters)
         defaultCommand = ArmTherapy()
+        //armMotor.setPositionConversionFactor todo
+    }
+    fun resetEncoder(limitSwitchHit : ArmConstants.PositionState){
+        encoder.position = limitSwitchHit.encoderValue
     }
 
-    // point to go to basically
-    var setPoint = 0.0 // todo
+
     // in a perfect world, how to go from point a to b
     val feedforward = ArmFeedforward(
         ArmConstants.KS,
@@ -79,17 +91,26 @@ object Arm : SubsystemBase() {
      * @param goalVelocity the velocity you want to be at
      */
     fun applyPIDF(goalVelocity : Double) {
-
         // finding out how to get to goal
         // finding out where am I and where I want to go
         // starts paying taxes, getting a job, filing for divorce
         // the whole deal
-        armMotor.closedLoopController.setReference(
+        var voltage = pid.calculate(armMotor.encoder.position) + feedforward.calculate(armMotor.encoder.position, goalVelocity)
+        if(frontLimitSwitch.get()) {
+            voltage = voltage.coerceAtMost(0.0)
+            resetEncoder(ArmConstants.PositionState.kFrontPosition) }
+        else if(backLimitSwitch.get()) {
+            voltage = voltage.coerceAtLeast(0.0)
+            resetEncoder(ArmConstants.PositionState.kBackPosition) }
+
+        armMotor.setVoltage(voltage)
+
+        /*armMotor.closedLoopController.setReference(
             setPoint,
             SparkBase.ControlType.kPosition,
             ClosedLoopSlot.kSlot0, //todo fixme no idea what this does
             feedforward.calculate(
                 armMotor.encoder.position,
-                goalVelocity))
+                goalVelocity))*/
     }
 }
