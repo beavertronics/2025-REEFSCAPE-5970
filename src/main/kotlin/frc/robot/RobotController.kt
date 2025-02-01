@@ -3,7 +3,7 @@ package frc.robot
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import frc.robot.commands.TeleOp
+import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Lights
 
 /*
@@ -24,14 +24,15 @@ object RobotController : TimedRobot() {
         //ie
         //"Description of auto" to TaxiAuto
     //)
-    lateinit var teleOpContainer: TeleOp
     val commandScheduler = CommandScheduler.getInstance()
 
+    init {
+        Drivetrain.defaultCommand = TeleOp.teleOpDrive
+    }
     /**
      * runs when robot turns on, should be used for any initialization of robot
      */
     override fun robotInit() {
-        teleOpContainer = TeleOp
         Lights.init()
     }
 
