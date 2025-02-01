@@ -57,8 +57,5 @@ object Arm : SubsystemBase() {
         val goal : TrapezoidProfile.State = TrapezoidProfile.State(
             position,
             0.0
-        )
-        \
-
     }
 }
