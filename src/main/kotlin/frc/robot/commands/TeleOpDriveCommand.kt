@@ -11,12 +11,6 @@ import frc.robot.subsystems.Drivetrain
 import java.util.function.BooleanSupplier
 import java.util.function.DoubleSupplier
 
-///////////////////////////////////////////////////
-/*
-Responsible for running the robot ONLY
- */
-///////////////////////////////////////////////////
-
 /**
  * A command that controls the swerve drive using controller inputs.
  * @param vForward The x velocity of the robot.
