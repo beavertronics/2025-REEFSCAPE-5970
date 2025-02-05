@@ -6,6 +6,7 @@ import beaverlib.utils.Units.Linear.VelocityUnit
 import beaverlib.utils.Units.Linear.metersPerSecond
 import beaverlib.utils.Units.Linear.metersPerSecondSquared
 import com.pathplanner.lib.auto.AutoBuilder
+import com.pathplanner.lib.auto.NamedCommands
 import com.pathplanner.lib.commands.PathPlannerAuto
 import com.pathplanner.lib.config.PIDConstants
 import com.pathplanner.lib.config.RobotConfig
@@ -15,10 +16,16 @@ import com.pathplanner.lib.path.PathConstraints
 import com.pathplanner.lib.path.PathPlannerPath
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import frc.robot.commands.Arm.MoveArm
+import frc.robot.commands.Arm.ReefLevel
+import frc.robot.commands.Manipulator.DumpL1
+import frc.robot.commands.NoAuto
 import java.nio.file.Path
 import kotlin.math.PI
 
@@ -51,14 +58,19 @@ object PathPlanner {
             Drivetrain // Reference to this subsystem to set requirements
         );
     }
+    val autoChooser: SendableChooser<Command> = AutoBuilder.buildAutoChooser("noAuto")
+
     fun getInvert() : Boolean{
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
+        val alliance = DriverStation.getAlliance();
+        if (alliance.isPresent) {
             return alliance.get() == DriverStation.Alliance.Red;
         }
         return false
     }
-    fun generatePath(vararg pose2dWaypoints: Pose2d, endRotation : AngleUnit = (-90).degrees,
+
+    fun generatePath(vararg pose2dWaypoints: Pose2d,
+                     endRotation : AngleUnit = (-90).degrees,
+                     endVelocity: VelocityUnit = 0.0.metersPerSecond,
                      maxVelocity : VelocityUnit = 3.0.metersPerSecond,
                      maxAcceleration : Acceleration = 3.0.metersPerSecondSquared,
                      maxAngularVelocity : AngularVelocity = (2* PI).radiansPerSecond,
@@ -76,7 +88,7 @@ object PathPlanner {
             constraints,
             null,  // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
             GoalEndState(
-                0.0,
+                endVelocity.asMetersPerSecond,
                 Rotation2d(endRotation.asRadians)
             ) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
         )
@@ -90,16 +102,20 @@ object PathPlanner {
         // pre-loaded auto/path
         return PathPlannerAuto(autoName)
     }
-    val autoChooser = AutoBuilder.buildAutoChooser();
-    fun initPathplanner(){
-        //NamedCommands.registerCommand("autoBalance", swerve.autoBalanceCommand());
 
-        // Another option that allows you to specify the default auto by its name
-        // autoChooser = AutoBuilder.buildAutoChooser("My Default Auto");
+    /**
+     * Adds auto chooser to
+     */
+    fun initPathplanner(){
+        NamedCommands.registerCommand("ArmToL1", MoveArm(ReefLevel.L1));
+        NamedCommands.registerCommand("DumpL1", DumpL1());
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
+    /**
+     * Returns the selected auto command, null if none is selected
+     */
     fun getAutonomousCommand(): Command? {
         return autoChooser.selected
     }
