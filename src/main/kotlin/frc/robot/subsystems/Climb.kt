@@ -1,12 +1,12 @@
 package frc.robot.subsystems
 
-import com.revrobotics.spark.SparkLowLevel
+import  com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 
 object ClimbConstants {
-    const val climbWinchMotorID = 10
+    const val climbWinchMotorID = 6
     const val climbLimitSwitchID = 0 // DIO
 }
 object Climb : SubsystemBase() {
@@ -18,8 +18,8 @@ object Climb : SubsystemBase() {
      * @param unspool whether to release string instead of pulling it in
      */
     fun spoolClimb(unspool: Boolean = false) {
-        var motorSpeed = 12.0
-        if (unspool) {motorSpeed * -1.0}
+        var motorSpeed = -0.1
+        if (unspool) {motorSpeed *= -1.0}
         if (climbLimitSwitch.get()) {motorSpeed = 0.0} // override motor and stop if switch pressed
         climbMotor.set(motorSpeed)
     }

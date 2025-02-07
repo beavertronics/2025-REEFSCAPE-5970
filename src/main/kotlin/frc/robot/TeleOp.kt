@@ -5,9 +5,10 @@ import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.RunClimb
 import frc.robot.commands.swerve.TeleopDriveCommand
-import frc.robot.subsystems.Drivetrain
+//import frc.robot.subsystems.Drivetrain
 
 /*
 Sets up the operator interface (controller inputs), as well as
@@ -35,8 +36,7 @@ object TeleOp {
 
     init {
         initializeObjects()
-        Drivetrain.defaultCommand = teleOpDrive // sets what function is called every frame (somewhere?)
-        configureBindings() // sets what buttons what trigger events
+//        Drivetrain.defaultCommand = teleOpDrive // sets what function is called every frame (somewhere?)
     }
 
     /**
@@ -51,7 +51,7 @@ object TeleOp {
      * initializes objects?
      */
     private fun initializeObjects() {
-        Drivetrain
+        //Drivetrain
     }
 
     /**
@@ -59,7 +59,7 @@ object TeleOp {
      * getting inputs from controllers and whatnot.
      */
     object OI {
-        private val drivingController = XboxController(0) // todo fix port ID
+        private val drivingController = CommandXboxController(2) // todo fix port ID
         private val operatorController = CommandJoystick(0) // todo fix port ID
 
         /**
@@ -86,10 +86,10 @@ object TeleOp {
         val driveForwards get() = drivingController.leftY.processInput()
         val driveStrafe get() = drivingController.leftX.processInput()
         val rotateRobot get() = drivingController.rightX.processInput()
-        val toggleFieldOriented get() = drivingController.rightBumperButtonPressed
+        val toggleFieldOriented get() = true // todo
         //===== SUBSYSTEMS =====//
-        val spoolClimb = operatorController.button(TeleOpConstants.spoolClimbButton)
-        val unpsoolClimb = operatorController.button(TeleOpConstants.unspoolClimbButton)
+        val spoolClimb = drivingController.a()
+        val unpsoolClimb = drivingController.y()
     }
 }
 
