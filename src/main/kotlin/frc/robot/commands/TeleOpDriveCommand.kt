@@ -33,7 +33,7 @@ class TeleopDriveCommand(
     val driveMode: BooleanSupplier,
     val slowMode: BooleanSupplier,
 ) : Command() {
-    /*private val controller = Drivetrain.swerveDrive.getSwerveController()
+    private val controller = Drivetrain.swerveDrive.getSwerveController()
 
     // each subsystem adds itself as a requirement
     init { addRequirements(Drivetrain) }
@@ -70,5 +70,5 @@ class TeleopDriveCommand(
     /** @suppress */
     override fun isFinished(): Boolean {
         return false
-    }*/
+    }
 }
