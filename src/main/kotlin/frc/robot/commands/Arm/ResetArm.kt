@@ -15,7 +15,8 @@ import frc.robot.subsystems.Climb
  */
 class ResetArm(
     val endGoal : ArmConstants.PositionState,
-    val speed: Double = 2.0)
+    val speed: Double = 2.0
+)
 : Command() {
 
     init { addRequirements(Arm) }

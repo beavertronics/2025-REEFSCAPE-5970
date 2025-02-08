@@ -8,9 +8,15 @@ import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
 import edu.wpi.first.math.controller.ArmFeedforward
 import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.math.controller.struct.DifferentialDriveWheelVoltagesStruct
 import edu.wpi.first.math.trajectory.TrapezoidProfile
+import edu.wpi.first.units.Units.*
+import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.RobotController
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import frc.robot.RobotInfo
 import frc.robot.commands.Arm.ArmTherapy
 
@@ -99,13 +105,17 @@ object Arm : SubsystemBase() {
             resetEncoder(ArmConstants.PositionState.kBackPosition) }
 
         armMotor.setVoltage(voltage)
-
-        /*armMotor.closedLoopController.setReference(
-            setPoint,
-            SparkBase.ControlType.kPosition,
-            ClosedLoopSlot.kSlot0, //todo fixme no idea what this does
-            feedforward.calculate(
-                armMotor.encoder.position,
-                goalVelocity))*/
     }
+    val voltageDrive : (Voltage) -> Unit = { armMotor.setVoltage(it.`in`(Volts)) }
+    val log  : (SysIdRoutineLog) -> Unit = { log : SysIdRoutineLog ->
+        // Record a frame for the shooter motor.
+        log.motor("arm-motor")
+            .voltage(
+                m_appliedVoltage.mut_replace(
+                    armMotor.get() * RobotController., Volts))
+            .angularPosition(m_angle.mut_replace(encoder.position, Rotations))
+            .angularVelocity(
+                m_velocity.mut_replace(encoder.velocity, RotationsPerSecond));
+    },
+    // Tell SysId to ma
 }

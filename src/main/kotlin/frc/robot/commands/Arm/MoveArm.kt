@@ -15,7 +15,8 @@ import frc.robot.subsystems.Arm.profile
  * @position the position we want to move the arm to
  */
 class MoveArm(
-    val position : Double)
+    val position : Double
+)
 : Command() {
 
     val timer = Timer()
