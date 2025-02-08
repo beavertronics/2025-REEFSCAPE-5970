@@ -1,129 +1,89 @@
 package frc.robot.subsystems
 
-import beaverlib.utils.Units.Electrical.VoltageUnit
-import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.wpilibj.Filesystem
-import edu.wpi.first.wpilibj2.command.Command
+import beaverlib.controls.Controller
+import com.revrobotics.spark.SparkLowLevel
+import com.revrobotics.spark.SparkMax
+import com.revrobotics.spark.config.SparkBaseConfig
+import com.revrobotics.RelativeEncoder
+import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
-import swervelib.SwerveDrive
-import swervelib.SwerveDriveTest
-import swervelib.parser.SwerveParser
-import swervelib.telemetry.SwerveDriveTelemetry
-import swervelib.telemetry.SwerveDriveTelemetry.*
-import java.io.File
+import frc.engine.utils.*
+import frc.robot.RobotInfo
 
-/**
- * class for all constants for drivetrain
- */
-object DriveConstants {
-    // for YAGSL to find swerve directory
-    val DriveConfig = File(Filesystem.getDeployDirectory(), "swerve")
-    val MaxSpeed = 10.0 // in m/s
-}
 
-/**
- * the main class for the drivetrain, containing everything
- */
 object Drivetrain : SubsystemBase() {
+    private val       leftMain = SparkMax(RobotInfo.FrontLeftDrive, SparkLowLevel.MotorType.kBrushed) // todo
+    private val  leftSecondary = SparkMax(RobotInfo.BackLeftDrive,  SparkLowLevel.MotorType.kBrushed) // todo
+    private val      rightMain = SparkMax(RobotInfo.FrontRightDrive, SparkLowLevel.MotorType.kBrushed) // todo
+    private val rightSecondary = SparkMax(RobotInfo.BackRightDrive,  SparkLowLevel.MotorType.kBrushed) // todo
 
-    // create anything that is set later (late init)
-    var swerveDrive: SwerveDrive
+    val    leftEncoder: RelativeEncoder = leftMain.encoder
+    val   rightEncoder: RelativeEncoder = rightMain.encoder
 
-    /**
-     * init file that runs on intialization of drivetrain class
-     */
+    private val drive = DifferentialDrive(leftMain, rightMain)
+
+    private val leftPid = Controller.PID(0.0, 0.0)
+    private val rightPid = Controller.PID(0.0, 0.0)
+    private val leftFeedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
+    private val rightFeedForward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
+
+    private fun allMotors(code: SparkMax.() -> Unit) { //Run a piece of code for each drive motor controller.
+        for (motor in listOf(leftMain, rightMain, leftSecondary, rightSecondary)) {
+            motor.apply(code)
+        }
+    }
+
     init {
-        // set up swerve drive :D
-        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH
-        swerveDrive = SwerveParser(DriveConstants.DriveConfig).createSwerveDrive(DriveConstants.MaxSpeed)
+        Engine.initMotorControllers(RobotInfo.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
+        Engine.initMotorControllers(RobotInfo.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, rightMain)
+        Engine.setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, true, leftSecondary, leftMain)
+        Engine.setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
+
+        drive.setDeadband(0.0)
     }
-    /**
-     * Directly send voltage to the drive motors.
-     * @param volts The voltage to send to the motors.
-     */
-    fun setDriveMotorVoltageRaw(volts: VoltageUnit){
-        swerveDrive.modules.forEach {
-            it.driveMotor.voltage = volts.asVolts
-        }
+    /** Drive by setting left and right power (-1 to 1).
+     * @param left Power for left motors [-1.0.. 1.0]. Forward is positive.
+     * @param right Voltage for right motors [-1.0.. 1.0]. Forward is positive.
+     * */
+    fun tankDrive(left: Double, right: Double) {
+        drive.tankDrive(left, right, false)
     }
-    /**
-     * Directly send voltage to the angle motors.
-     * @param volts The voltage to send to the motors.
-     */
-    fun setAngleMotorVoltageRaw(volts: VoltageUnit){
-        swerveDrive.modules.forEach {
-            it.angleMotor.voltage = volts.asVolts
-        }
+    /** Drive by setting left and right voltage (-12v to 12v)
+     * @param left Voltage for left motors
+     * @param right Voltage for right motors
+     * */
+    fun rawDrive(left: Double, right: Double) {
+        //TODO: Prevent voltages higher than 12v or less than -12v? Or not neccesary?
+        leftMain.setVoltage(left)
+        rightMain.setVoltage(right)
+        drive.feed()
     }
 
-    /**
-     * Advanced drive method that translates and rotates the robot, with a custom center of rotation.
-     * @param translation The desired X and Y velocity of the robot.
-     * @param rotation The desired rotational velocity of the robot.
-     * @param fieldOriented Whether the robot's motion should be field oriented or robot oriented.
-     * @param centerOfRotation The center of rotation of the robot.
-     */
-    fun drive(
-        translation: Translation2d,
-        rotation: Double = 0.0,
-        fieldOriented: Boolean = false,
-        centerOfRotation: Translation2d = Translation2d()
-    ) {
-        swerveDrive.drive(translation, rotation, fieldOriented, false, centerOfRotation)
+    fun stop(){
+        rawDrive(0.0,0.0)
     }
-    /**
-     * Advanced drive method that translates and rotates the robot, with a custom center of rotation.
-     * @param translation The desired X and Y velocity of the robot.
-     * @param rotation The desired rotational velocity of the robot.
-     * @param fieldOriented Whether the robot's motion should be field oriented or robot oriented.
-     * @param centerOfRotation The center of rotation of the robot.
+    /** Drive by setting left and right speed, in M/s, using PID and FeedForward to correct for errors.
+     * @param left Desired speed for the left motors, in M/s
+     * @param right Desired speed for the right motors, in M/s
      */
-    fun driveOpenLoop(
-        translation: Translation2d,
-        rotation: Double = 0.0,
-        fieldOriented: Boolean = false,
-        centerOfRotation: Translation2d = Translation2d()
-    ) {
-        swerveDrive.drive(translation, rotation, fieldOriented, true, centerOfRotation)
+    fun closedLoopDrive(left: Double, right: Double) {
+        leftPid.setpoint = left
+        rightPid.setpoint = right
+
+        val lPidCalculated = leftPid.calculate(leftEncoder.velocity)
+        val rPidCalculated = rightPid.calculate(rightEncoder.velocity)
+
+        val lFFCalculated = leftFeedForward.calculate(leftPid.setpoint)
+        val rFFCalculated = rightFeedForward.calculate(rightPid.setpoint)
+
+        rawDrive(lPidCalculated+lFFCalculated, rPidCalculated + rFFCalculated )
     }
 
-    /**
-     * Simple drive method that uses ChassisSpeeds to control the robot.
-     * @param velocity The desired ChassisSpeeds of the robot
-     * @param fieldOriented if false, drive the robot such that forwards is in the direction the robot is facing
-     * if true, forward will be forward relative to the field.
-     */
-    fun drive(velocity: ChassisSpeeds, fieldOriented: Boolean = false) {
-        if(fieldOriented) swerveDrive.driveFieldOriented(velocity); else swerveDrive.drive(velocity)
+
+
+    private fun rawDrive(left: Double) {
+
     }
 
-    /**
-     * Return SysID command for drive motors from YAGSL
-     * @return A command that SysIDs the drive motors.
-     */
-    fun sysIdDriveMotor(): Command? {
-        return SwerveDriveTest.generateSysIdCommand(
-            SwerveDriveTest.setDriveSysIdRoutine(
-                SysIdRoutine.Config(),
-                this,
-                swerveDrive, 12.0),
-            3.0, 5.0, 3.0
-        )
-    }
-
-    /**
-     * Return SysID command for angle motors from YAGSL
-     * @return A command that SysIDs the angle1 motors.
-     */
-    fun sysIdAngleMotorCommand(): Command {
-        return SwerveDriveTest.generateSysIdCommand(
-            SwerveDriveTest.setAngleSysIdRoutine(
-                SysIdRoutine.Config(),
-                this, swerveDrive
-            ),
-            3.0, 5.0, 3.0
-        )
-    }
 }
