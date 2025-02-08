@@ -29,7 +29,7 @@ object DriveConstants {
 object Drivetrain : SubsystemBase() {
 
     // create anything that is set later (late init)
-    /*var swerveDrive: SwerveDrive
+    var swerveDrive: SwerveDrive
 
     /**
      * init file that runs on intialization of drivetrain class
@@ -125,6 +125,5 @@ object Drivetrain : SubsystemBase() {
             ),
             3.0, 5.0, 3.0
         )
-    }*/
-
+    }
 }

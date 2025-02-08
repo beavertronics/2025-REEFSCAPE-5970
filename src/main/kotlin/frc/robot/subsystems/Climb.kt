@@ -1,6 +1,5 @@
 package frc.robot.subsystems
 
-import com.revrobotics.spark.SparkBase
 import  com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
@@ -17,7 +16,7 @@ object Climb : SubsystemBase() {
     val climbLimitSwitch = DigitalInput(ClimbConstants.climbLimitSwitchID)
     init {
         initMotorControllers(10, SparkBaseConfig.IdleMode.kCoast, climbMotor)
-        defaultCommand = run { runClimb(0.0) }.repeatedly().withName("stop")
+        defaultCommand = run { runClimb(0.0) }.repeatedly().withName("stop climb")
     }
 
     /**

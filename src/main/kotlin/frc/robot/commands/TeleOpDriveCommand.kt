@@ -13,7 +13,7 @@ import java.util.function.DoubleSupplier
 
 ///////////////////////////////////////////////////
 /*
-Responsible for running the robot ONLY
+Responsible for running the drivetrain ONLY
  */
 ///////////////////////////////////////////////////
 
