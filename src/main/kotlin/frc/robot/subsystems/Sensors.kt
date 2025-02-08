@@ -15,6 +15,8 @@ import kotlin.math.PI
 inline val DutyCycleEncoder.rotations : AngleUnit get() = this.get().rotations
 
 object Sensors : SubsystemBase() {
+    // motor to encoder: 30:48
+    // encoder to arm: 3:1
     val encoder = DutyCycleEncoder(
         RobotInfo.ArmThroughboreEncoderDIO
     )

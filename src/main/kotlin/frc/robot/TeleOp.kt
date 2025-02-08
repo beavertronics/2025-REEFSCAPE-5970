@@ -10,12 +10,10 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.RunClimb
-import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.subsystems.Climb
 import frc.robot.subsystems.Sensors
 
 // todo uncomment below when drivetrain is ready
-// import frc.robot.subsystems.Drivetrain
 
 /*
 Sets up the operator interface (controller inputs), as well as
@@ -27,19 +25,8 @@ setting up the commands for running the drivetrain and the subsystems
  */
 object TeleOp {
 
-    val teleOpDrive: TeleopDriveCommand =
-        TeleopDriveCommand(
-            { OI.driveForwards },
-            { OI.driveStrafe },
-            { OI.rotateRobot },
-            { OI.toggleFieldOriented },
-            { false },
-        )
-
     init {
         Climb
-        // todo uncomment below when drivetrain is ready
-        // Drivetrain.defaultCommand = teleOpDrive // sets what function is called every frame (somewhere?)
         Sensors
     }
 
