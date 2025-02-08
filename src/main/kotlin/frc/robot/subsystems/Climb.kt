@@ -1,9 +1,12 @@
 package frc.robot.subsystems
 
+import com.revrobotics.spark.SparkBase
 import  com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
+import com.revrobotics.spark.config.SparkBaseConfig
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.engine.utils.initMotorControllers
 
 object ClimbConstants {
     const val climbWinchMotorID = 6
@@ -12,23 +15,17 @@ object ClimbConstants {
 object Climb : SubsystemBase() {
     val climbMotor = SparkMax(ClimbConstants.climbWinchMotorID, SparkLowLevel.MotorType.kBrushless)
     val climbLimitSwitch = DigitalInput(ClimbConstants.climbLimitSwitchID)
-
-    /**
-     * runs the motor to spool up the string, retracting climb
-     * @param unspool whether to release string instead of pulling it in
-     */
-    fun spoolClimb(unspool: Boolean = false) {
-        var motorSpeed = -0.1
-        if (unspool) {motorSpeed *= -1.0}
-        if (climbLimitSwitch.get()) {motorSpeed = 0.0} // override motor and stop if switch pressed
-        climbMotor.set(motorSpeed)
+    init {
+        initMotorControllers(10, SparkBaseConfig.IdleMode.kBrake, climbMotor)
+        defaultCommand = run { runClimb(0.0) }.repeatedly().withName("stop")
     }
 
     /**
-     * runs every frame, makes sure that if at any point the
-     * limit switch is pressed, the motor can not spin
+     * runs the motor to spool up the string, retracting climb
+     * @param speed what percent speed to run [climbMotor] at
      */
-    override fun periodic() {
-        if (climbLimitSwitch.get()) {climbMotor.set(0.0)}
+    fun runClimb(speed: Double ) {
+        if (climbLimitSwitch.get()) { climbMotor.set(0.0); return} // override motor and stop if switch pressed
+        climbMotor.set(speed)
     }
 }

@@ -4,10 +4,16 @@ import edu.wpi.first.wpilibj.XboxController
 import kotlin.math.*
 
 import beaverlib.utils.Sugar.within
+import edu.wpi.first.wpilibj.GenericHID
+import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Subsystem
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.RunClimb
 import frc.robot.commands.swerve.TeleopDriveCommand
+
 //import frc.robot.subsystems.Drivetrain
 
 /*
@@ -44,7 +50,7 @@ object TeleOp {
      */
     fun configureBindings() {
         OI.spoolClimb.whileTrue(RunClimb())
-        OI.unpsoolClimb.whileTrue(RunClimb(true))
+        OI.unpsoolClimb.whileTrue(RunClimb())
     }
 
     /**
@@ -58,8 +64,8 @@ object TeleOp {
      * Class for the operator interface
      * getting inputs from controllers and whatnot.
      */
-    object OI {
-        private val drivingController = CommandXboxController(2) // todo fix port ID
+    object OI : SubsystemBase() {
+        val drivingController = CommandXboxController(2) // todo fix port ID
         private val operatorController = CommandJoystick(0) // todo fix port ID
 
         /**
@@ -77,6 +83,16 @@ object TeleOp {
         }
         private fun Double.abs_GreaterThan(target: Double): Boolean{
             return this.absoluteValue > target
+        }
+        class Rumble(val controller : CommandXboxController, val time: Double = 1.0, val rumblePower : Double = 1.0, val rumbleSide : GenericHID.RumbleType = GenericHID.RumbleType.kRightRumble ) : Command() {
+            val timer = Timer()
+            init { addRequirements(OI) }
+            override fun initialize() { timer.restart(); controller.setRumble(rumbleSide, rumblePower) }
+            override fun execute() { controller.setRumble(rumbleSide, rumblePower) }
+
+            override fun end(interrupted: Boolean) { controller.setRumble(rumbleSide, 0.0) }
+
+            override fun isFinished(): Boolean { return timer.hasElapsed(time) }
         }
 
         /**
