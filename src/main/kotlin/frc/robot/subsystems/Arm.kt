@@ -107,15 +107,13 @@ object Arm : SubsystemBase() {
         armMotor.setVoltage(voltage)
     }
     val voltageDrive : (Voltage) -> Unit = { armMotor.setVoltage(it.`in`(Volts)) }
-    val log  : (SysIdRoutineLog) -> Unit = { log : SysIdRoutineLog ->
+    val logMotors  : (SysIdRoutineLog) -> Unit = { log : SysIdRoutineLog ->
         // Record a frame for the shooter motor.
         log.motor("arm-motor")
             .voltage(
-                m_appliedVoltage.mut_replace(
-                    armMotor.get() * RobotController., Volts))
-            .angularPosition(m_angle.mut_replace(encoder.position, Rotations))
-            .angularVelocity(
-                m_velocity.mut_replace(encoder.velocity, RotationsPerSecond));
-    },
+                Volts.mutable(0.0).mut_replace(armMotor.get() * RobotController.getBatteryVoltage(), Volts))
+            .angularPosition(Radians.mutable(0.0).mut_replace(encoder.position, Rotations))
+            .angularVelocity(RadiansPerSecond.mutable(0.0).mut_replace(encoder.velocity, RotationsPerSecond));
+    }
     // Tell SysId to ma
 }
