@@ -46,12 +46,7 @@ object Arm : SubsystemBase() {
     val pid : PIDController = PIDController(ArmConstants.KP, ArmConstants.KV, ArmConstants.KD)
     val frontLimitSwitch = DigitalInput(RobotInfo.ArmStartLimitSwitchDIO) // intake position
     val backLimitSwitch = DigitalInput(RobotInfo.ArmEndLimitSwitchDIO) // deposit position
-    // point to go to basically
-    var m_setpoint = 0.0 // todo
-    fun set_setpoint(setpoint: Double){
-        m_setpoint = setpoint
-        pid.setpoint = setpoint
-    }
+    var goal = TrapezoidProfile.State(encoder.position, 0.0)
 
     init {
         // do custom config instead of using initMotorControllers from Beaverlib
