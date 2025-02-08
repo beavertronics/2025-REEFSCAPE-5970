@@ -34,6 +34,7 @@ object RobotController : TimedRobot() {
      */
     override fun robotInit() {
         Lights.init()
+        TeleOp
     }
 
     /**

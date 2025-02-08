@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.RunClimb
 import frc.robot.commands.swerve.TeleopDriveCommand
+import frc.robot.subsystems.Climb
 
 //import frc.robot.subsystems.Drivetrain
 
@@ -41,7 +42,7 @@ object TeleOp {
         )
 
     init {
-        initializeObjects()
+        Climb
 //        Drivetrain.defaultCommand = teleOpDrive // sets what function is called every frame (somewhere?)
     }
 
@@ -51,13 +52,6 @@ object TeleOp {
     fun configureBindings() {
         OI.spoolClimb.whileTrue(RunClimb())
         OI.unpsoolClimb.whileTrue(RunClimb())
-    }
-
-    /**
-     * initializes objects?
-     */
-    private fun initializeObjects() {
-        //Drivetrain
     }
 
     /**

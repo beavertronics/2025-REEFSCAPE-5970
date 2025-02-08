@@ -16,7 +16,7 @@ object Climb : SubsystemBase() {
     val climbMotor = SparkMax(ClimbConstants.climbWinchMotorID, SparkLowLevel.MotorType.kBrushless)
     val climbLimitSwitch = DigitalInput(ClimbConstants.climbLimitSwitchID)
     init {
-        initMotorControllers(10, SparkBaseConfig.IdleMode.kBrake, climbMotor)
+        initMotorControllers(10, SparkBaseConfig.IdleMode.kCoast, climbMotor)
         defaultCommand = run { runClimb(0.0) }.repeatedly().withName("stop")
     }
 
