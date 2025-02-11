@@ -25,7 +25,7 @@ class MoveArm(
         0.0
     )
     var current: TrapezoidProfile.State = TrapezoidProfile.State(
-        Arm.encoder.position.rotations.asRadians,
+        Arm.encoder.get().rotations.asRadians,
         0.0
     )
 

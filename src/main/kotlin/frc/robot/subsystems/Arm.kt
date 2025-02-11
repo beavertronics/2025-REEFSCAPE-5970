@@ -1,5 +1,6 @@
 package frc.robot.subsystems
 
+import beaverlib.utils.Units.Angular.radians
 import com.revrobotics.RelativeEncoder
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
@@ -12,13 +13,18 @@ import edu.wpi.first.math.controller.struct.DifferentialDriveWheelVoltagesStruct
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Voltage
+import edu.wpi.first.wpilibj.AnalogEncoder
 import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.DutyCycleEncoder
 import edu.wpi.first.wpilibj.RobotController
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import frc.robot.RobotInfo
 import frc.robot.commands.Arm.ArmTherapy
+import java.awt.Robot
+import kotlin.math.PI
 
 object ArmConstants {
     // trapezoidal profile things (assume m/s)
@@ -48,11 +54,11 @@ object ArmConstants {
 
 object Arm : SubsystemBase() {
     val armMotor = SparkMax(RobotInfo.ArmMotorID, SparkLowLevel.MotorType.kBrushless)
-    val encoder : RelativeEncoder = armMotor.encoder
+    val encoder : DutyCycleEncoder = DutyCycleEncoder(RobotInfo.ArmEncoderDIO, 2 * PI, 0.0) // todo set offset (expectedZero)
     val pid : PIDController = PIDController(ArmConstants.KP, ArmConstants.KV, ArmConstants.KD)
     val frontLimitSwitch = DigitalInput(RobotInfo.ArmStartLimitSwitchDIO) // intake position
     val backLimitSwitch = DigitalInput(RobotInfo.ArmEndLimitSwitchDIO) // deposit position
-    var goal = TrapezoidProfile.State(encoder.position, 0.0)
+    var goal = TrapezoidProfile.State(encoder.get(), 0.0)
 
     init {
         // do custom config instead of using initMotorControllers from Beaverlib
@@ -71,9 +77,9 @@ object Arm : SubsystemBase() {
         defaultCommand = ArmTherapy()
         //armMotor.setPositionConversionFactor todo
     }
-    fun resetEncoder(limitSwitchHit : ArmConstants.PositionState){
-        encoder.position = limitSwitchHit.encoderValue
-    }
+//    fun resetEncoder(limitSwitchHit : ArmConstants.PositionState){
+//        encoder.position = limitSwitchHit.encoderValue
+//    }
 
 
     // in a perfect world, how to go from point a to b
@@ -99,10 +105,12 @@ object Arm : SubsystemBase() {
         var voltage = pid.calculate(armMotor.encoder.position) + feedforward.calculate(armMotor.encoder.position, goalVelocity)
         if(frontLimitSwitch.get()) {
             voltage = voltage.coerceAtMost(0.0)
-            resetEncoder(ArmConstants.PositionState.kFrontPosition) }
+//            resetEncoder(ArmConstants.PositionState.kFrontPosition)
+            }
         else if(backLimitSwitch.get()) {
             voltage = voltage.coerceAtLeast(0.0)
-            resetEncoder(ArmConstants.PositionState.kBackPosition) }
+//            resetEncoder(ArmConstants.PositionState.kBackPosition)
+            }
 
         armMotor.setVoltage(voltage)
     }
@@ -112,8 +120,8 @@ object Arm : SubsystemBase() {
         log.motor("arm-motor")
             .voltage(
                 Volts.mutable(0.0).mut_replace(armMotor.get() * RobotController.getBatteryVoltage(), Volts))
-            .angularPosition(Radians.mutable(0.0).mut_replace(encoder.position, Rotations))
-            .angularVelocity(RadiansPerSecond.mutable(0.0).mut_replace(encoder.velocity, RotationsPerSecond));
+            .angularPosition(Radians.mutable(0.0).mut_replace(encoder.get(), Rotations))
+            .angularVelocity(RadiansPerSecond.mutable(0.0).mut_replace(encoder.get() /*todo velocity??*/, RotationsPerSecond));
     }
     // Tell SysId to ma
 }

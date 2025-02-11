@@ -43,6 +43,7 @@ object RobotInfo {
     const val ArmVoltLimit = 0 // todo
     const val ArmStartLimitSwitchDIO = 0 // todo
     const val ArmEndLimitSwitchDIO = 0 // todo
+    const val ArmEncoderDIO = 1 // todo
 
     // Subsystem - LED
     const val LEDPWM = 9
