@@ -94,7 +94,7 @@ object TeleOp {
         val rotateRobot get() = drivingController.rightX.processInput()
         val toggleFieldOriented get() = drivingController.rightTriggerAxis > 0.1 // todo
         //===== SUBSYSTEMS =====//
-        val spoolClimb = operatorController.a() // todo
+        val spoolClimb = drivingController.a() // todo
     }
 }
 
