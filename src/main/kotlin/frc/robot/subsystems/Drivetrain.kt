@@ -1,14 +1,20 @@
 package frc.robot.subsystems
 
 import beaverlib.controls.Controller
+import com.revrobotics.RelativeEncoder
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
-import com.revrobotics.RelativeEncoder
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.units.Units.*
+import edu.wpi.first.units.measure.Voltage
+import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.engine.utils.*
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 import frc.robot.RobotInfo
 
 
@@ -80,10 +86,49 @@ object Drivetrain : SubsystemBase() {
         rawDrive(lPidCalculated+lFFCalculated, rPidCalculated + rFFCalculated )
     }
 
+    private val sysIdRoutine =
+        SysIdRoutine( // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+            SysIdRoutine.Config(),
+            Mechanism( // Tell SysId how to plumb the driving voltage to the motors.
+                { voltage: Voltage? ->
+                    leftMain.setVoltage(voltage)
+                    rightMain.setVoltage(voltage)
+                },  // Tell SysId how to record a frame of data for each motor on the mechanism being
+                // characterized.*/
+                { log: SysIdRoutineLog ->
+                    // Record a frame for the left motors.  Since these share an encoder, we consider
+                    // the entire group to be one motor.
+                    log.motor("drive-left")
+                        .voltage( Volts.mutable(leftMain.get() * RobotController.getBatteryVoltage()) )
+                        .linearPosition(Meters.mutable(leftEncoder.position)) //todo should be distance
+                        .linearVelocity( MetersPerSecond.mutable(leftEncoder.velocity) ) //todo should be velocity
+                    // Record a frame for the right motors.  Since these share an encoder, we consider
+                    // the entire group to be one motor.
+                    log.motor("drive-right")
+                        .voltage(Volts.mutable(rightMain.get() * RobotController.getBatteryVoltage() ) )
+                        .linearPosition(Meters.mutable(rightEncoder.position)) //todo should be distance
+                        .linearVelocity( MetersPerSecond.mutable(rightEncoder.velocity) ) //todo should be velocity
+                },  // Tell SysId to make generated commands require this subsystem, suffix test state in
+                // WPILog with this subsystem's name ("drive")
+                this
+            )
+        )
 
-
-    private fun rawDrive(left: Double) {
-
+    /**
+     * Returns a command that will execute a quasistatic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    fun sysIdQuasistatic(direction: SysIdRoutine.Direction?): Command? {
+        return sysIdRoutine.quasistatic(direction)
     }
 
+    /**
+     * Returns a command that will execute a dynamic test in the given direction.
+     *
+     * @param direction The direction (forward or reverse) to run the test in
+     */
+    fun sysIdDynamic(direction: SysIdRoutine.Direction?): Command? {
+        return sysIdRoutine.dynamic(direction)
+    }
 }
