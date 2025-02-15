@@ -1,6 +1,7 @@
 package frc.robot.subsystems
 
 import beaverlib.controls.Controller
+import beaverlib.utils.Units.Linear.VelocityUnit
 import com.revrobotics.RelativeEncoder
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
@@ -17,12 +18,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 import frc.robot.RobotInfo
 
-
+object DriveConstants {
+    val MaxVoltage = 1.0 //todo
+}
 object Drivetrain : SubsystemBase() {
-    private val       leftMain = SparkMax(RobotInfo.FrontLeftDrive, SparkLowLevel.MotorType.kBrushed) // todo
-    private val  leftSecondary = SparkMax(RobotInfo.BackLeftDrive,  SparkLowLevel.MotorType.kBrushed) // todo
-    private val      rightMain = SparkMax(RobotInfo.FrontRightDrive, SparkLowLevel.MotorType.kBrushed) // todo
-    private val rightSecondary = SparkMax(RobotInfo.BackRightDrive,  SparkLowLevel.MotorType.kBrushed) // todo
+    private val       leftMain = SparkMax(RobotInfo.FrontLeftDrive, SparkLowLevel.MotorType.kBrushless) // todo
+    private val  leftSecondary = SparkMax(RobotInfo.BackLeftDrive,  SparkLowLevel.MotorType.kBrushless) // todo
+    private val      rightMain = SparkMax(RobotInfo.FrontRightDrive, SparkLowLevel.MotorType.kBrushless) // todo
+    private val rightSecondary = SparkMax(RobotInfo.BackRightDrive,  SparkLowLevel.MotorType.kBrushless) // todo
 
     val    leftEncoder: RelativeEncoder = leftMain.encoder
     val   rightEncoder: RelativeEncoder = rightMain.encoder
@@ -73,9 +76,9 @@ object Drivetrain : SubsystemBase() {
      * @param left Desired speed for the left motors, in M/s
      * @param right Desired speed for the right motors, in M/s
      */
-    fun closedLoopDrive(left: Double, right: Double) {
-        leftPid.setpoint = left
-        rightPid.setpoint = right
+    fun closedLoopDrive(left: VelocityUnit, right: VelocityUnit) {
+        leftPid.setpoint = left.asMetersPerSecond
+        rightPid.setpoint = right.asMetersPerSecond
 
         val lPidCalculated = leftPid.calculate(leftEncoder.velocity)
         val rPidCalculated = rightPid.calculate(rightEncoder.velocity)
@@ -94,13 +97,13 @@ object Drivetrain : SubsystemBase() {
                     leftMain.setVoltage(voltage)
                     rightMain.setVoltage(voltage)
                 },  // Tell SysId how to record a frame of data for each motor on the mechanism being
-                // characterized.*/
+                // characterized.*/Double
                 { log: SysIdRoutineLog ->
                     // Record a frame for the left motors.  Since these share an encoder, we consider
                     // the entire group to be one motor.
                     log.motor("drive-left")
                         .voltage( Volts.mutable(leftMain.get() * RobotController.getBatteryVoltage()) )
-                        .linearPosition(Meters.mutable(leftEncoder.position)) //todo should be distance
+                        .linearPosition(Meters.mutable(leftEncoder.position)) //TODO: should be distance
                         .linearVelocity( MetersPerSecond.mutable(leftEncoder.velocity) ) //todo should be velocity
                     // Record a frame for the right motors.  Since these share an encoder, we consider
                     // the entire group to be one motor.
