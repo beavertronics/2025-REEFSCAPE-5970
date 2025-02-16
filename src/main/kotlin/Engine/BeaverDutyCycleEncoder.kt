@@ -37,7 +37,7 @@ class BeaverDutyCycleEncoder(channel : Int,
     companion object {
         inline val AngleUnit.standardPosition: AngleUnit
             get() =
-                if (this.asRadians >= 0.0) { AngleUnit((2 * PI) - (this.asRadians % (2 * PI))) }
+                if (this.asRadians >= 0.0) { AngleUnit((2 * PI) + (this.asRadians % (2 * PI))) }
                 else { AngleUnit(this.asRadians % (2 * PI)) }
         fun AngleUnit.minimumCircleDistanceTo(other: AngleUnit): AngleUnit {
             val normal = this - other
