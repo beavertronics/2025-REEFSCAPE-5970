@@ -84,6 +84,9 @@ object Arm : SubsystemBase() {
 
     override fun periodic() {
         encoder.updateRate()
+        if(backLimitSwitch.get()) {
+            encoder.reset()
+        }
     }
 
 
@@ -113,7 +116,6 @@ object Arm : SubsystemBase() {
             }
         else if(backLimitSwitch.get()) {
             voltage = voltage.coerceAtLeast(0.0)
-            encoder.reset()
         }
 
         armMotor.setVoltage(voltage)
