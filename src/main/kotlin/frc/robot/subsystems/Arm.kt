@@ -82,6 +82,10 @@ object Arm : SubsystemBase() {
         //armMotor.setPositionConversionFactor todo
     }
 
+    override fun periodic() {
+        encoder.updateRate()
+    }
+
 
     // in a perfect world, how to go from point a to b
     val feedforward = ArmFeedforward(
