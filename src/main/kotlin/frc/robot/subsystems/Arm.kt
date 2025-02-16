@@ -1,5 +1,8 @@
 package frc.robot.subsystems
 
+import Engine.BeaverDutyCycleEncoder
+import beaverlib.utils.Units.Angular.asRotations
+import beaverlib.utils.Units.Angular.asRotationsPerSecond
 import beaverlib.utils.Units.Angular.radians
 import com.revrobotics.RelativeEncoder
 import com.revrobotics.spark.SparkBase
@@ -54,13 +57,14 @@ object ArmConstants {
 
 object Arm : SubsystemBase() {
     val armMotor = SparkMax(RobotInfo.ArmMotorID, SparkLowLevel.MotorType.kBrushless)
-    val encoder : DutyCycleEncoder = DutyCycleEncoder(RobotInfo.ArmEncoderDIO, 2 * PI, 0.0) // todo set offset (expectedZero)
+    val encoder : BeaverDutyCycleEncoder = BeaverDutyCycleEncoder(RobotInfo.ArmEncoderDIO, (1.0/3.0) ) // todo set armOffset
     val pid : PIDController = PIDController(ArmConstants.KP, ArmConstants.KV, ArmConstants.KD)
     val frontLimitSwitch = DigitalInput(RobotInfo.ArmStartLimitSwitchDIO) // intake position
     val backLimitSwitch = DigitalInput(RobotInfo.ArmEndLimitSwitchDIO) // deposit position
-    var goal = TrapezoidProfile.State(encoder.get(), 0.0)
+    var goal = TrapezoidProfile.State(encoder.position.asRadians, 0.0)
 
     init {
+
         // do custom config instead of using initMotorControllers from Beaverlib
         // to add closed loop PID
         val config = SparkMaxConfig()
@@ -77,9 +81,6 @@ object Arm : SubsystemBase() {
         defaultCommand = ArmTherapy()
         //armMotor.setPositionConversionFactor todo
     }
-//    fun resetEncoder(limitSwitchHit : ArmConstants.PositionState){
-//        encoder.position = limitSwitchHit.encoderValue
-//    }
 
 
     // in a perfect world, how to go from point a to b
@@ -102,15 +103,14 @@ object Arm : SubsystemBase() {
         // finding out where am I and where I want to go
         // starts paying taxes, getting a job, filing for divorce
         // the whole deal
-        var voltage = pid.calculate(armMotor.encoder.position) + feedforward.calculate(armMotor.encoder.position, goalVelocity)
+        var voltage = pid.calculate(encoder.position.asRadians) + feedforward.calculate(encoder.position.asRadians, goalVelocity)
         if(frontLimitSwitch.get()) {
             voltage = voltage.coerceAtMost(0.0)
-//            resetEncoder(ArmConstants.PositionState.kFrontPosition)
             }
         else if(backLimitSwitch.get()) {
             voltage = voltage.coerceAtLeast(0.0)
-//            resetEncoder(ArmConstants.PositionState.kBackPosition)
-            }
+            encoder.reset()
+        }
 
         armMotor.setVoltage(voltage)
     }
@@ -118,10 +118,8 @@ object Arm : SubsystemBase() {
     val logMotors  : (SysIdRoutineLog) -> Unit = { log : SysIdRoutineLog ->
         // Record a frame for the shooter motor.
         log.motor("arm-motor")
-            .voltage(
-                Volts.mutable(0.0).mut_replace(armMotor.get() * RobotController.getBatteryVoltage(), Volts))
-            .angularPosition(Radians.mutable(0.0).mut_replace(encoder.get(), Rotations))
-            .angularVelocity(RadiansPerSecond.mutable(0.0).mut_replace(encoder.get() /*todo velocity??*/, RotationsPerSecond));
+            .voltage(Volts.mutable(0.0).mut_replace(armMotor.get() * RobotController.getBatteryVoltage(), Volts))
+            .angularPosition(Radians.mutable(0.0).mut_replace(encoder.position.asRadians, Radians))
+            .angularVelocity(RadiansPerSecond.mutable(0.0).mut_replace(encoder.rate.asRadiansPerSecond, RadiansPerSecond));
     }
-    // Tell SysId to ma
 }
