@@ -12,7 +12,7 @@ object Climb : SubsystemBase() {
     val climbMotor = SparkMax(RobotInfo.ClimbMotorWinchID, SparkLowLevel.MotorType.kBrushless)
     val climbLimitSwitch = DigitalInput(RobotInfo.ClimbLimitSwitchDIO)
     init {
-        initMotorControllers(RobotInfo.ClimbCurrentLimit, SparkBaseConfig.IdleMode.kCoast, climbMotor)
+        initMotorControllers(RobotInfo.ClimbCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, climbMotor)
         defaultCommand = run { runClimb(0.0) }.repeatedly().withName("stop climb")
     }
 
@@ -21,7 +21,7 @@ object Climb : SubsystemBase() {
      * @param speed what percent speed to run [climbMotor] at
      */
     fun runClimb(speed: Double ) {
-        if (climbLimitSwitch.get()) { climbMotor.set(0.0); return} // override motor and stop if switch pressed
+        if (climbLimitSwitch.get()) { climbMotor.set(0.0); return} // override motor and stop if switch pressed fixme
         climbMotor.set(speed)
     }
 }

@@ -11,9 +11,11 @@ Responsible for running the climb ONLY
  */
 ///////////////////////////////////////////////////
 
-class RunClimb(
-    val speed: Double = 0.3,
+class RampClimb(
+    val startSpeed: Double = 0.1,
+    val endSpeed : Double = 0.1,
     val holdTime: Double = 0.25,
+    val rampTime : Double = 2.0
 
 ) : Command() {
     val timer = Timer()
@@ -26,9 +28,11 @@ class RunClimb(
 
     /** @suppress */
     override fun execute() {
-        println(Climb.climbLimitSwitch.get())
+        println(timer.get())
         if(timer.hasElapsed(holdTime)) {
             TeleOp.OI.Rumble(TeleOp.OI.drivingController, 0.1, 0.5).schedule()
+            var speed = startSpeed
+            speed += (endSpeed - startSpeed) * ((timer.get() - holdTime) / (rampTime)).coerceAtMost(1.0)
             Climb.runClimb(speed)
         }
     }
@@ -38,6 +42,7 @@ class RunClimb(
     }
 
     override fun isFinished(): Boolean {
-        return Climb.climbLimitSwitch.get()
+    return false //fixme
+    // return Climb.climbLimitSwitch.get()
     }
 }
