@@ -19,13 +19,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 import frc.robot.RobotInfo
 
 object DriveConstants {
-    val MaxVoltage = 1.0 //todo
+    val MaxVoltage = 3.0 //todo
 }
 object Drivetrain : SubsystemBase() {
-    private val       leftMain = SparkMax(RobotInfo.FrontLeftDrive, SparkLowLevel.MotorType.kBrushless) // todo
-    private val  leftSecondary = SparkMax(RobotInfo.BackLeftDrive,  SparkLowLevel.MotorType.kBrushless) // todo
-    private val      rightMain = SparkMax(RobotInfo.FrontRightDrive, SparkLowLevel.MotorType.kBrushless) // todo
-    private val rightSecondary = SparkMax(RobotInfo.BackRightDrive,  SparkLowLevel.MotorType.kBrushless) // todo
+    private val       leftMain = SparkMax(RobotInfo.LeftMainDrive, SparkLowLevel.MotorType.kBrushed) // todo
+    private val  leftSecondary = SparkMax(RobotInfo.LeftSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
+    private val      rightMain = SparkMax(RobotInfo.RightMainDrive, SparkLowLevel.MotorType.kBrushed) // todo
+    private val rightSecondary = SparkMax(RobotInfo.RightSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
 
     val    leftEncoder: RelativeEncoder = leftMain.encoder
     val   rightEncoder: RelativeEncoder = rightMain.encoder
@@ -46,8 +46,8 @@ object Drivetrain : SubsystemBase() {
     init {
         Engine.initMotorControllers(RobotInfo.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
         Engine.initMotorControllers(RobotInfo.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, rightMain)
-        Engine.setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, true, leftSecondary, leftMain)
-        Engine.setMotorFollow(20,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
+        Engine.setMotorFollow(RobotInfo.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, true, leftSecondary, leftMain)
+        Engine.setMotorFollow(RobotInfo.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
 
         drive.setDeadband(0.0)
     }

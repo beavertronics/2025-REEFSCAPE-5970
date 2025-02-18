@@ -26,7 +26,7 @@ class RunClimb(
     /** @suppress */
     override fun execute() {
         if(timer.hasElapsed(holdTime)) {
-            TeleOp.OI.Rumble(TeleOp.OI.drivingController, 0.1, 0.5).schedule()
+            /////TeleOp.OI.Rumble(TeleOp.OI.drivingController, 0.1, 0.5).schedule()
             Climb.runClimb(speed)
         }
     }

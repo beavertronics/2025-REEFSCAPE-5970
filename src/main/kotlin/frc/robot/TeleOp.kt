@@ -30,8 +30,8 @@ object TeleOp {
 
     val teleOpDrive: TeleopDriveCommand =
         TeleopDriveCommand(
-            { OI.leftDrive },
-            { OI.rightDrive },
+            { 1.0 },
+            { 0.0 },
             { OI.slowMode },
         )
 
@@ -44,15 +44,16 @@ object TeleOp {
     /**
      * configures things to run on specific inputs
      */
-    fun configureBindings() { OI.spoolClimb.whileTrue(RunClimb()) }
+    fun configureBindings() {
+        OI.spoolClimb.whileTrue(RunClimb()) }
 
     /**
      * Class for the operator interface
      * getting inputs from controllers and whatnot.
      */
     object OI : SubsystemBase() {
-        val leftDriveController = CommandJoystick(0) // todo fix port ID
-        val rightDriveController = CommandJoystick(1) // todo fix port ID
+        val leftDriveController = CommandJoystick(1) // todo fix port ID
+        val rightDriveController = CommandJoystick(0) // todo fix port ID
         private val operatorController = CommandXboxController(2) // todo fix port ID
 
         /**
@@ -90,8 +91,8 @@ object TeleOp {
          * Values for inputs go here
          */
         //===== DRIVETRAIN =====//
-        val leftDrive get() = leftDriveController.throttle.processInput() // todo is this right
-        val rightDrive get() = rightDriveController.throttle.processInput() // todo is this right
+        val leftDrive get() = leftDriveController.y.processInput() // todo is this right
+        val rightDrive get() = rightDriveController.y.processInput() // todo is this right
         val slowMode get() = rightDriveController.trigger().asBoolean
         //===== SUBSYSTEMS =====//
         val spoolClimb = operatorController.a() // todo
