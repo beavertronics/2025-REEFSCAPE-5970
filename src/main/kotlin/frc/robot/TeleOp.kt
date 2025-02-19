@@ -30,8 +30,8 @@ object TeleOp {
 
     val teleOpDrive: TeleopDriveCommand =
         TeleopDriveCommand(
-            { 1.0 },
-            { 0.0 },
+            { OI.leftDrive },
+            { OI.rightDrive },
             { OI.slowMode },
         )
 
@@ -45,7 +45,8 @@ object TeleOp {
      * configures things to run on specific inputs
      */
     fun configureBindings() {
-        OI.spoolClimb.whileTrue(RunClimb()) }
+        OI.spoolClimb.whileTrue(RunClimb())
+    }
 
     /**
      * Class for the operator interface

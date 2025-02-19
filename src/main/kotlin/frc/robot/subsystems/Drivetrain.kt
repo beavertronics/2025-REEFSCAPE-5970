@@ -45,8 +45,8 @@ object Drivetrain : SubsystemBase() {
 
     init {
         Engine.initMotorControllers(RobotInfo.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
-        Engine.initMotorControllers(RobotInfo.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, rightMain)
-        Engine.setMotorFollow(RobotInfo.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, true, leftSecondary, leftMain)
+        Engine.initMotorControllers(RobotInfo.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, false, rightMain)
+        Engine.setMotorFollow(RobotInfo.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
         Engine.setMotorFollow(RobotInfo.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
 
         drive.setDeadband(0.0)
