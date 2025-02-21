@@ -25,8 +25,6 @@ fun initMotorControllers(currentLimit : Int, idle: SparkBaseConfig.IdleMode, var
         config.smartCurrentLimit(currentLimit)
 
         // Don't persist parameters since it takes time and this change is temporary
-
-        // Don't persist parameters since it takes time and this change is temporary
         it.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters)
 
     }
