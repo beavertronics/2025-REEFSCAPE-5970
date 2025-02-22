@@ -3,10 +3,12 @@ package frc.robot.subsystems
 import beaverlib.controls.Controller
 import beaverlib.utils.Units.Linear.VelocityUnit
 import beaverlib.utils.Units.Linear.inches
+import beaverlib.utils.Units.Linear.metersPerSecond
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.Encoder
@@ -27,10 +29,6 @@ object DriveConstants {
     val RightMainDrive = 6 // todo
     val RightSubDrive = 10 // todo
     val DriveMotorCurrentLimit = 20
-}
-
-object Odometry : SubsystemBase() {
-    val DistancePerRevolution = PI * DriveConstants.WheelDiameter.asMeters
 }
 
 object Drivetrain : SubsystemBase() {
@@ -99,6 +97,15 @@ object Drivetrain : SubsystemBase() {
         val rFFCalculated = rightFeedForward.calculate(rightPid.setpoint)
 
         rawDrive(lPidCalculated+lFFCalculated, rPidCalculated + rFFCalculated )
+    }
+
+    /** Drive by setting left and right speed, in M/s, using PID and FeedForward to correct for errors.
+     * @param left Desired speed for the left motors, in M/s
+     * @param right Desired speed for the right motors, in M/s
+     */
+    fun closedLoopDrive(speeds: ChassisSpeeds) {
+        val differentialSpeeds = `according to all known laws of aviation, our robot should not be able to fly`.kinematics.toWheelSpeeds(speeds)
+        closedLoopDrive(differentialSpeeds.leftMetersPerSecond.metersPerSecond, differentialSpeeds.rightMetersPerSecond.metersPerSecond)
     }
 
     private val sysIdRoutine =

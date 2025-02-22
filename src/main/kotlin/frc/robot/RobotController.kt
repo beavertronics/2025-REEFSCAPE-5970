@@ -1,8 +1,13 @@
 package frc.robot
 
+import com.pathplanner.lib.auto.AutoBuilder
+import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.subsystems.Lights
+
 
 /*
  Main code for controlling the robot. Mainly just links everything together.
@@ -23,6 +28,7 @@ object RobotController : TimedRobot() {
         //"Description of auto" to TaxiAuto
     //)
     val commandScheduler = CommandScheduler.getInstance()
+    val autoChooser = AutoBuilder.buildAutoChooser();
 
     /**
      * runs when robot turns on, should be used for any initialization of robot or subsystems
@@ -30,6 +36,8 @@ object RobotController : TimedRobot() {
     override fun robotInit() {
         Lights
         TeleOp
+        CameraServer.startAutomaticCapture()
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     /**
