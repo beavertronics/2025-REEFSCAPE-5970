@@ -47,8 +47,8 @@ object TeleOp {
      * getting inputs from controllers and whatnot.
      */
     object OI : SubsystemBase() {
-        val leftDriveController = CommandJoystick(1) // todo fix port ID
-        val rightDriveController = CommandJoystick(0) // todo fix port ID
+        val leftDriveController = CommandJoystick(0) // todo fix port ID
+        val rightDriveController = CommandJoystick(1) // todo fix port ID
         private val operatorController = CommandXboxController(2) // todo fix port ID
 
         /**
