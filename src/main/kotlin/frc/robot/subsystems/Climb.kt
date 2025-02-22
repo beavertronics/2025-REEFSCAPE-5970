@@ -8,14 +8,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.utils.initMotorControllers
 
 object ClimbConstants {
-    const val climbWinchMotorID = 6
-    const val climbLimitSwitchID = 0 // DIO
+    val ClimbWinchMotor = 10 // todo
+    val ClimbLimitSwitch = 0 // DIO // todo
+    val ClimbCurrentLimit = 10
 }
 object Climb : SubsystemBase() {
-    val climbMotor = SparkMax(ClimbConstants.climbWinchMotorID, SparkLowLevel.MotorType.kBrushless)
-    val climbLimitSwitch = DigitalInput(ClimbConstants.climbLimitSwitchID)
+    val climbMotor = SparkMax(ClimbConstants.ClimbWinchMotor, SparkLowLevel.MotorType.kBrushless)
+    val climbLimitSwitch = DigitalInput(ClimbConstants.ClimbLimitSwitch)
     init {
-        initMotorControllers(10, SparkBaseConfig.IdleMode.kCoast, climbMotor)
+        initMotorControllers(ClimbConstants.ClimbCurrentLimit, SparkBaseConfig.IdleMode.kCoast, climbMotor)
         defaultCommand = run { runClimb(0.0) }.repeatedly().withName("stop climb")
     }
 

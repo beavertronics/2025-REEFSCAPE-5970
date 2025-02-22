@@ -17,12 +17,17 @@ import kotlin.math.roundToInt
 fun beaverColor(red : Int, green : Int, blue : Int, alpha : Double = 1.0) : Color {
     return Color((green * alpha).roundToInt(), (red * alpha).roundToInt(), round(blue * alpha).roundToInt())
 }
+
+object LightConstants {
+    val LedPWM = 9
+}
+
 object Lights : SubsystemBase() {
     val timer = Timer()
     val length = 5 * 60; // 2 meters times 60 LEDs per meter
     val density = Units.Meters.of(1.0/60);
 
-    val lights = AddressableLED(9); // PWM port 0
+    val lights = AddressableLED(LightConstants.LedPWM); // PWM port 0
     var buffer = AddressableLEDBuffer(length);
 
     // Patterns:

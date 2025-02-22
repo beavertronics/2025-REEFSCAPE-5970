@@ -12,18 +12,21 @@ import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
-import frc.robot.RobotInfo
 import kotlin.math.PI
 
 object DriveConstants {
-    val MaxVoltage = 3.0 //todo
-    val WheelDiameter = 3.5.inches //todo
+    val MaxVoltage = 3.0 // todo
+    val WheelDiameter = 3.5.inches // todo
+    val LeftMainDrive = 13 // todo
+    val LeftSubDrive = 7 // todo
+    val RightMainDrive = 6 // todo
+    val RightSubDrive = 10 // todo
+    val DriveMotorCurrentLimit = 20
 }
 
 object Odometry : SubsystemBase() {
@@ -31,10 +34,10 @@ object Odometry : SubsystemBase() {
 }
 
 object Drivetrain : SubsystemBase() {
-    private val       leftMain = SparkMax(RobotInfo.LeftMainDrive, SparkLowLevel.MotorType.kBrushed) // todo
-    private val  leftSecondary = SparkMax(RobotInfo.LeftSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
-    private val      rightMain = SparkMax(RobotInfo.RightMainDrive, SparkLowLevel.MotorType.kBrushed) // todo
-    private val rightSecondary = SparkMax(RobotInfo.RightSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
+    private val       leftMain = SparkMax(DriveConstants.LeftMainDrive, SparkLowLevel.MotorType.kBrushed) // todo
+    private val  leftSecondary = SparkMax(DriveConstants.LeftSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
+    private val      rightMain = SparkMax(DriveConstants.RightMainDrive, SparkLowLevel.MotorType.kBrushed) // todo
+    private val rightSecondary = SparkMax(DriveConstants.RightSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
     val leftEncoder = Encoder(0, 1, false)
     val rightEncoder = Encoder(2, 3, false)
 
@@ -49,20 +52,13 @@ object Drivetrain : SubsystemBase() {
         for (motor in listOf(leftMain, rightMain, leftSecondary, rightSecondary)) {
             motor.apply(code)
         }
-//        leftEncoder.decodingScaleFactor = Odometry.DistancePerRevolution // todo fix :C
-//        rightEncoder. // todo fix
-    }
-
-    override fun periodic() {
-        SmartDashboard.putNumber("left encoder", leftEncoder.distance)
-        SmartDashboard.putNumber("  right encoder", rightEncoder.distance)
     }
 
     init {
-        Engine.initMotorControllers(RobotInfo.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
-        Engine.initMotorControllers(RobotInfo.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, false, rightMain)
-        Engine.setMotorFollow(RobotInfo.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
-        Engine.setMotorFollow(RobotInfo.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
+        Engine.initMotorControllers(DriveConstants.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
+        Engine.initMotorControllers(DriveConstants.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, false, rightMain)
+        Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
+        Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
 
 
 
