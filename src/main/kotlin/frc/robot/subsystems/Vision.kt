@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.*
 import edu.wpi.first.math.numbers.N1
 import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.commands.UwULang
 import org.photonvision.PhotonCamera
 import org.photonvision.PhotonPoseEstimator
 import org.photonvision.PhotonPoseEstimator.PoseStrategy
@@ -15,7 +16,7 @@ import org.photonvision.targeting.PhotonPipelineResult
 
 
 object VisionConstants {
-    const val cameraName : String = "Camera name goes here" // todo
+    const val cameraName : String = "victoiA"
 }
 
 
@@ -71,6 +72,7 @@ object Vision : SubsystemBase() {
         PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam)
     init {
         poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE)
+        defaultCommand = UwULang
     }
     override fun periodic(){
         results = cam.allUnreadResults
