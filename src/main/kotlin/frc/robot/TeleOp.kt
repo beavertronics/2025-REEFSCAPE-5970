@@ -1,8 +1,6 @@
 package frc.robot
 
-import edu.wpi.first.wpilibj.XboxController
 import kotlin.math.*
-
 import beaverlib.utils.Sugar.within
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
@@ -14,9 +12,6 @@ import frc.robot.commands.RunClimb
 import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.subsystems.Climb
 import frc.robot.subsystems.Drivetrain
-
-// todo uncomment below when drivetrain is ready
-// import frc.robot.subsystems.Drivetrain
 
 /*
 Sets up the operator interface (controller inputs), as well as
@@ -37,7 +32,6 @@ object TeleOp {
 
     init {
         Climb
-        // todo uncomment below when drivetrain is ready
         Drivetrain.defaultCommand = teleOpDrive // sets what function is called every frame (somewhere?)
     }
 

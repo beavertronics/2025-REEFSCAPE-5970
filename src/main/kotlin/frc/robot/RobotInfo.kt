@@ -24,14 +24,14 @@ object RobotInfo {
     // Drivetrain
     const val LeftMainDrive = 13 // todo
     const val LeftSubDrive = 7 // todo
-    const val RightMainDrive = 9 // todo
+    const val RightMainDrive = 6 // todo
     const val RightSubDrive = 10 // todo
     const val DriveMotorCurrentLimit = 20
 
     // Subsystem - Climb
-    const val ClimbMotorWinchID = 6 // todo
+    const val ClimbMotorWinchID = 14 // todo
     const val ClimbCurrentLimit = 10
-    const val ClimbLimitSwitchDIO = 0
+    const val ClimbLimitSwitchDIO = 0 // todo
 
     // Subystem - Arm
     const val ArmMotorID = 0 // todo
