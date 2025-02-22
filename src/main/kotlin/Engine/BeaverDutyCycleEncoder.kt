@@ -1,7 +1,6 @@
 package Engine
 
 import beaverlib.utils.Units.Angular.AngleUnit
-import beaverlib.utils.Units.Angular.AngularAcceleration
 import beaverlib.utils.Units.Angular.radians
 import beaverlib.utils.Units.Angular.radiansPerSecond
 import beaverlib.utils.Units.seconds
@@ -37,9 +36,9 @@ class BeaverDutyCycleEncoder(channel : Int,
     companion object {
         inline val AngleUnit.standardPosition: AngleUnit
             get() =
-                if (this.asRadians >= 0.0) { AngleUnit((2 * PI) + (this.asRadians % (2 * PI))) }
-                else { AngleUnit(this.asRadians % (2 * PI)) }
-        fun AngleUnit.minimumCircleDistanceTo(other: AngleUnit): AngleUnit {
+                if (this.asRadians >= 0.0) { AngleUnit(this.asRadians % (2 * PI)) }
+                else { AngleUnit((2 * PI) + (this.asRadians % (2 * PI))) }
+        fun AngleUnit.angleDistanceTo(other: AngleUnit): AngleUnit {
             val normal = this - other
             val wrap = -((2 * PI).radians * normal.asRadians.sign - normal)
 //            println("normal: ${normal} wrap: ${wrap} sign: ${normal.sign} angleA: $angleA angleB: $angleB")
@@ -65,7 +64,7 @@ class BeaverDutyCycleEncoder(channel : Int,
      * Run every frame to update the encoders rate
      */
     fun updateRate() {
-        rate = lastPosition.minimumCircleDistanceTo(position) / rateTimer.get().seconds
+        rate = lastPosition.angleDistanceTo(position) / rateTimer.get().seconds
         lastPosition = position
         rateTimer.restart()
     }
