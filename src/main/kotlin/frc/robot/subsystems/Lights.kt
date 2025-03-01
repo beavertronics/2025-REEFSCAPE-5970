@@ -1,29 +1,36 @@
 package frc.robot.subsystems
 
+import edu.wpi.first.units.DimensionlessUnit
 import edu.wpi.first.wpilibj.AddressableLED
 import edu.wpi.first.wpilibj.AddressableLEDBuffer
 import edu.wpi.first.wpilibj.LEDPattern
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.units.Units
 import edu.wpi.first.units.Units.Percent
+import edu.wpi.first.units.measure.Dimensionless
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.RobotInfo
 import kotlin.math.round
 import kotlin.math.roundToInt
 
 fun beaverColor(red : Int, green : Int, blue : Int, alpha : Double = 1.0) : Color {
     return Color((green * alpha).roundToInt(), (red * alpha).roundToInt(), round(blue * alpha).roundToInt())
 }
+
+object LightConstants {
+    val LedPWM = 9
+}
+
 object Lights : SubsystemBase() {
     val timer = Timer()
     val length = 5 * 60; // 2 meters times 60 LEDs per meter
     val density = Units.Meters.of(1.0/60);
 
-    val lights = AddressableLED(RobotInfo.LEDPWM); // PWM port 0
+    val lights = AddressableLED(LightConstants.LedPWM); // PWM port 0
     var buffer = AddressableLEDBuffer(length);
 
     // Patterns:
@@ -54,21 +61,18 @@ object Lights : SubsystemBase() {
     init {
         defaultCommand = //runPatternAtBrightness(scrollingRainbow, { TeleOp.OI.driveFieldOrientedForwards.absoluteValue })
             fromShuffleBoard(
-            mapOf(
-                Pair("Off", LEDPattern.solid(Color.kBlack)),
-                Pair("Rainbow", scrollingRainbow),
-                Pair("TransFlag", Transflag),
-                Pair("AceFlag", AceFlag),
-                Pair("BiFlag", BiFlag),
-
-                ))
-
-    //randomCyclePatterns(10.0, scrollingRainbow, Transflag, AceFlag, BiFlag).withName("Trans").ignoringDisable(true)
-    }
-    fun init() {
+                mapOf(
+                    Pair("Off", LEDPattern.solid(Color.kBlack)),
+                    Pair("Rainbow", scrollingRainbow),
+                    Pair("TransFlag", Transflag),
+                    Pair("AceFlag", AceFlag),
+                    Pair("BiFlag", BiFlag),
+                )
+            )
+        // randomCyclePatterns(10.0, scrollingRainbow, Transflag, AceFlag, BiFlag).withName("Trans").ignoringDisable(true)
         lights.setLength(length) // Length in meters times 60
         lights.start()
-        lights.setData(buffer);
+        lights.setData(buffer)
     }
 
     override fun periodic() {

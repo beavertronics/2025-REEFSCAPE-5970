@@ -11,50 +11,45 @@ import frc.robot.subsystems.Drivetrain
 import java.util.function.BooleanSupplier
 import java.util.function.DoubleSupplier
 
+///////////////////////////////////////////////////
+/*
+Responsible for running the drivetrain ONLY
+ */
+///////////////////////////////////////////////////
+
 /**
  * A command that controls the swerve drive using controller inputs.
- * @param vForward The x velocity of the robot.
- * @param vStrafe The y velocity of the robot.
- * @param omega The angular velocity of the robot.
- * @param driveMode Boolean supplier that returns true if the robot should drive in field-oriented mode.
- * @param slowMode Boolean supplier that returns true if the robot should drive in slow mode.
+ * @param velocityLeftSupplier The percentage to drive the left side of the robot at.
+ * @param velocityRightSupplier The percentage to drive the irght side of the robot at.
+ * @param slowModeSupplier Boolean supplier that returns true if the robot should drive in slow mode.
  * @see Drivetrain
  */
 class TeleopDriveCommand(
-    val vForward: DoubleSupplier,
-    val vStrafe: DoubleSupplier,
-    val omega: DoubleSupplier,
-    val driveMode: BooleanSupplier,
-    val slowMode: BooleanSupplier,
+    private val velocityLeftSupplier: DoubleSupplier,
+    private val velocityRightSupplier: DoubleSupplier,
+    private val slowModeSupplier: BooleanSupplier
 ) : Command() {
-    private val controller = Drivetrain.swerveDrive.getSwerveController()
-
     // each subsystem adds itself as a requirement
     init { addRequirements(Drivetrain) }
 
     /** @suppress */
     override fun execute() {
-        var forwardVelocity = vForward.asDouble
-        var strafeVelocity = vStrafe.asDouble
-        var angVelocity = omega.asDouble
-        val slowMode = slowMode.asBoolean
-        SmartDashboard.putNumber("vX", forwardVelocity)
-        SmartDashboard.putNumber("vY", strafeVelocity)
-        SmartDashboard.putNumber("omega", angVelocity)
+        var leftVelocity = velocityLeftSupplier.asDouble
+        var rightVelocity = velocityRightSupplier.asDouble
+        println(leftVelocity * DriveConstants.MaxVoltage)
+        val slowMode = slowModeSupplier.asBoolean
+        SmartDashboard.putNumber("vL", leftVelocity)
+        SmartDashboard.putNumber("vR", rightVelocity)
 
         if (slowMode) {
-            forwardVelocity *= 0.6
-            strafeVelocity *= 0.6
-            angVelocity *= 0.6
+            leftVelocity *= 0.6
+            rightVelocity *= 0.6
         }
 
         // Drive using raw values
-        Drivetrain.drive(
-            Translation2d(
-                forwardVelocity * DriveConstants.MaxSpeed,
-                strafeVelocity * DriveConstants.MaxSpeed),
-            angVelocity * controller.config.maxAngularVelocity,
-            driveMode.asBoolean
+        Drivetrain.rawDrive(
+            leftVelocity * DriveConstants.MaxVoltage,
+            rightVelocity * DriveConstants.MaxVoltage
         )
     }
 
@@ -62,7 +57,5 @@ class TeleopDriveCommand(
     override fun end(interrupted: Boolean) {}
 
     /** @suppress */
-    override fun isFinished(): Boolean {
-        return false
-    }
+    override fun isFinished(): Boolean { return false }
 }

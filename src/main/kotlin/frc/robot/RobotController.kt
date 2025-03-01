@@ -1,10 +1,14 @@
 package frc.robot
 
+import com.pathplanner.lib.auto.AutoBuilder
+import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.Lights
+
 
 /*
  Main code for controlling the robot. Mainly just links everything together.
@@ -25,25 +29,23 @@ object RobotController : TimedRobot() {
         //"Description of auto" to TaxiAuto
     //)
     val commandScheduler = CommandScheduler.getInstance()
-
-    init {
-        Drivetrain.defaultCommand = TeleOp.teleOpDrive
-    }
+    val autoChooser = AutoBuilder.buildAutoChooser();
 
     /**
-     * runs when robot turns on, should be used for any initialization of robot
+     * runs when robot turns on, should be used for any initialization of robot or subsystems
      */
     override fun robotInit() {
-        Lights.init()
+        Lights
+        TeleOp
+        CameraServer.startAutomaticCapture()
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     /**
      * runs when the robot is on, regardless of enabled or not
      * used for telemetry, command scheduler, etc
      */
-    override fun robotPeriodic() {
-        commandScheduler.run()
-    }
+    override fun robotPeriodic() { commandScheduler.run() }
 
     override fun autonomousInit() {}
     override fun autonomousPeriodic() {} //TODO: Unnecesary with command-based programming?
@@ -51,7 +53,7 @@ object RobotController : TimedRobot() {
     /**
      * runs when teleop is ready
      */
-    override fun teleopInit() {}
+    override fun teleopInit() { TeleOp.configureBindings() }
 
     /**
      * runs on every frame of teleop
@@ -78,8 +80,6 @@ object RobotController : TimedRobot() {
      */
     override fun disabledPeriodic() {}
 
-    override fun testInit() {
-        commandScheduler.cancelAll()
-    }
+    override fun testInit() { commandScheduler.cancelAll() }
     override fun testPeriodic() {}
 }
