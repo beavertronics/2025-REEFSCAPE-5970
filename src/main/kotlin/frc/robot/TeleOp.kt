@@ -8,8 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import frc.robot.commands.Arm.MoveArm
 import frc.robot.commands.RunClimb
 import frc.robot.commands.swerve.TeleopDriveCommand
+import frc.robot.subsystems.ArmConstants
 import frc.robot.subsystems.Climb
 import frc.robot.subsystems.Drivetrain
 
@@ -40,6 +42,8 @@ object TeleOp {
      */
     fun configureBindings() {
         OI.spoolClimb.whileTrue(RunClimb())
+        OI.moveArmForward.whileTrue(MoveArm(ArmConstants.FrontLimitSwitchAngle))
+        OI.moveArmBackward.whileTrue(MoveArm(ArmConstants.BackLimitSwitchAngle))
     }
 
     /**
@@ -86,11 +90,14 @@ object TeleOp {
          * Values for inputs go here
          */
         //===== DRIVETRAIN =====//
-        val leftDrive get() = leftDriveController.y.processInput() // todo is this right
-        val rightDrive get() = rightDriveController.y.processInput() // todo is this right
+        val leftDrive get() = leftDriveController.y.processInput()
+        val rightDrive get() = rightDriveController.y.processInput()
         val slowMode get() = rightDriveController.trigger().asBoolean
         //===== SUBSYSTEMS =====//
-        val spoolClimb = operatorController.a() // todo
+        val spoolClimb get() = operatorController.b()
+        val ejectCoral get() = operatorController.x()
+        val moveArmForward get() = operatorController.y()
+        val moveArmBackward get() = operatorController.a()
     }
 }
 

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.utils.initMotorControllers
 
 object ClimbConstants {
-    val ClimbWinchMotor = 10 // todo
+    val ClimbWinchMotor = 0 // todo
     val ClimbLimitSwitch = 0 // DIO // todo
     val ClimbCurrentLimit = 10
 }

@@ -1,11 +1,11 @@
-package frc.robot.commands.autos
+package frc.robot.commands.Autos
 
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.DriveConstants
 import frc.robot.subsystems.Drivetrain
 
-object driveForward : Command() {
+class driveForward : Command() {
     val timer = Timer()
 
     init { addRequirements(Drivetrain) }

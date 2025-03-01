@@ -1,10 +1,6 @@
 package frc.robot.subsystems
 
 import Engine.BeaverDutyCycleEncoder
-import beaverlib.utils.Units.Angular.asRotations
-import beaverlib.utils.Units.Angular.asRotationsPerSecond
-import beaverlib.utils.Units.Angular.radians
-import com.revrobotics.RelativeEncoder
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
@@ -12,24 +8,23 @@ import com.revrobotics.spark.config.SparkBaseConfig
 import com.revrobotics.spark.config.SparkMaxConfig
 import edu.wpi.first.math.controller.ArmFeedforward
 import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.controller.struct.DifferentialDriveWheelVoltagesStruct
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Voltage
-import edu.wpi.first.wpilibj.AnalogEncoder
 import edu.wpi.first.wpilibj.DigitalInput
-import edu.wpi.first.wpilibj.DutyCycleEncoder
 import edu.wpi.first.wpilibj.RobotController
-import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
-import frc.robot.RobotInfo
 import frc.robot.commands.Arm.ArmTherapy
-import java.awt.Robot
-import kotlin.math.PI
 
 object ArmConstants {
+    // motor IDs and whatnot
+    const val ArmMotorID = 0 // todo
+    const val outtakeMotorID = 0 // todo
+    const val ArmAmpLimit = 0 // todo
+    const val ArmStartLimitSwitchDIO = 0 // todo
+    const val ArmEndLimitSwitchDIO = 0 // todo
+    const val ArmEncoderDIO = 0 // todo
     // trapezoidal profile things (assume m/s)
     const val maxVelocity = 1.0 // todo
     const val maxAcceleration = 1.0 // todo
@@ -56,11 +51,12 @@ object ArmConstants {
 }
 
 object Arm : SubsystemBase() {
-    val armMotor = SparkMax(RobotInfo.ArmMotorID, SparkLowLevel.MotorType.kBrushless)
-    val encoder : BeaverDutyCycleEncoder = BeaverDutyCycleEncoder(RobotInfo.ArmEncoderDIO, (1.0/3.0) ) // todo set armOffset
+    val armMotor = SparkMax(ArmConstants.ArmMotorID, SparkLowLevel.MotorType.kBrushless)
+    val outtakeMotor = SparkMax(ArmConstants.outtakeMotorID, SparkLowLevel.MotorType.kBrushed)
+    val encoder : BeaverDutyCycleEncoder = BeaverDutyCycleEncoder(ArmConstants.ArmEncoderDIO, (1.0/3.0) ) // todo set armOffset
     val pid : PIDController = PIDController(ArmConstants.KP, ArmConstants.KV, ArmConstants.KD)
-    val frontLimitSwitch = DigitalInput(RobotInfo.ArmStartLimitSwitchDIO) // intake position
-    val backLimitSwitch = DigitalInput(RobotInfo.ArmEndLimitSwitchDIO) // deposit position
+    val frontLimitSwitch = DigitalInput(ArmConstants.ArmStartLimitSwitchDIO) // intake position
+    val backLimitSwitch = DigitalInput(ArmConstants.ArmEndLimitSwitchDIO) // deposit position
     var goal = TrapezoidProfile.State(encoder.position.asRadians, 0.0)
 
     init {
@@ -69,7 +65,7 @@ object Arm : SubsystemBase() {
         // to add closed loop PID
         val config = SparkMaxConfig()
         config.idleMode(SparkBaseConfig.IdleMode.kCoast)
-        config.smartCurrentLimit(RobotInfo.ArmAmpLimit)
+        config.smartCurrentLimit(ArmConstants.ArmAmpLimit)
         /*config.closedLoop.pid(
             ArmConstants.KP,
             ArmConstants.KI,

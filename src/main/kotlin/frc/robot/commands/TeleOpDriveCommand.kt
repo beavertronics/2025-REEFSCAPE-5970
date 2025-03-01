@@ -29,7 +29,7 @@ class TeleopDriveCommand(
     private val velocityRightSupplier: DoubleSupplier,
     private val slowModeSupplier: BooleanSupplier
 ) : Command() {
-    // each subsystem adds itself as a requirement
+
     init { addRequirements(Drivetrain) }
 
     /** @suppress */
