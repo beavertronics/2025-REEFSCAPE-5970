@@ -2,9 +2,28 @@ package frc.robot.commands.Arm
 
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Arm
+import edu.wpi.first.wpilibj.Timer
 
-class OuttakeCoral
+/**
+ * Runs the motor to outtake the coral
+ * @param runtime how long to run the outtake motor for, if set to null will run until stopped
+ */
+class OuttakeCoral(
+    val runtime: Double?
+)
 : Command() {
+    val timer = Timer()
 
     init { addRequirements(Arm) }
+
+    override fun initialize() { timer.restart() }
+
+    override fun execute() { Arm.outtakeMotor.setVoltage(1.0) } // todo change speed
+
+    override fun isFinished(): Boolean {
+        if (runtime == null) { return false }
+        else { return timer.hasElapsed(runtime) }
+    }
+
+    override fun end(interrupted: Boolean) { Arm.outtakeMotor.setVoltage(0.0) }
 }

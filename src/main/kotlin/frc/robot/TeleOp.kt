@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.Arm.MoveArm
+import frc.robot.commands.Arm.OuttakeCoral
 import frc.robot.commands.RunClimb
 import frc.robot.commands.swerve.TeleopDriveCommand
 import frc.robot.subsystems.ArmConstants
@@ -24,11 +25,10 @@ setting up the commands for running the drivetrain and the subsystems
  * class for managing systems and inputs
  */
 object TeleOp {
-
     val teleOpDrive: TeleopDriveCommand =
         TeleopDriveCommand(
+            { OI.rightDrive * 1.0 }, // todo artifically lower right to match left (which is weaker)
             { OI.leftDrive },
-            { OI.rightDrive },
             { OI.slowMode },
         )
 
@@ -42,6 +42,7 @@ object TeleOp {
      */
     fun configureBindings() {
         OI.spoolClimb.whileTrue(RunClimb())
+        OI.ejectCoral.whileTrue(OuttakeCoral(null))
         OI.moveArmForward.whileTrue(MoveArm(ArmConstants.FrontLimitSwitchAngle))
         OI.moveArmBackward.whileTrue(MoveArm(ArmConstants.BackLimitSwitchAngle))
     }
@@ -51,9 +52,9 @@ object TeleOp {
      * getting inputs from controllers and whatnot.
      */
     object OI : SubsystemBase() {
-        val leftDriveController = CommandJoystick(0) // todo fix port ID
-        val rightDriveController = CommandJoystick(1) // todo fix port ID
-        private val operatorController = CommandXboxController(2) // todo fix port ID
+        val leftDriveController = CommandJoystick(0) // todo change to xbox controller
+        val rightDriveController = CommandJoystick(1) // todo change to xbox controller
+        private val operatorController = CommandXboxController(2)
 
         /**
          * Allows you to tweak controller inputs (ie get rid of deadzone, make input more sensitive by squaring or cubing it, etc).
@@ -90,8 +91,8 @@ object TeleOp {
          * Values for inputs go here
          */
         //===== DRIVETRAIN =====//
-        val leftDrive get() = leftDriveController.y.processInput()
-        val rightDrive get() = rightDriveController.y.processInput()
+        val leftDrive get() = leftDriveController.y.processInput() * -1
+        val rightDrive get() = rightDriveController.y.processInput() * -1
         val slowMode get() = rightDriveController.trigger().asBoolean
         //===== SUBSYSTEMS =====//
         val spoolClimb get() = operatorController.b()

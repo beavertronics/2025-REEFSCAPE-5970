@@ -12,7 +12,7 @@ import frc.robot.subsystems.Arm.profile
 
 /**
  * Moves the arm to the target position
- * @position the position we want to move the arm to
+ * @param position the position we want to move the arm to
  */
 class MoveArm(
     val position : Double

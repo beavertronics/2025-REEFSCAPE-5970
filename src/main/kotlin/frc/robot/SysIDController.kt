@@ -9,6 +9,7 @@ import frc.robot.commands.Arm.ArmSysIdQuasistatic
 class SysIDController {
     // The driver's controller
     var m_driverController = CommandXboxController(2)
+
     fun configureBindings(){
 
 
