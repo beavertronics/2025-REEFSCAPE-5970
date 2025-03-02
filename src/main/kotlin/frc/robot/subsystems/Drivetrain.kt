@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 
 object DriveConstants {
     val MaxVoltage = 3.0 // todo
-    val WheelDiameter = 3.5.inches // todo
+    val WheelDiameter = 6.0.inches // todo
     val LeftMainDrive = 13 // todo
     val LeftSubDrive = 7 // todo
     val RightMainDrive = 6 // todo

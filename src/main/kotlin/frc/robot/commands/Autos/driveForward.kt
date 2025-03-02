@@ -5,7 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.DriveConstants
 import frc.robot.subsystems.Drivetrain
 
-class driveForward : Command() {
+class driveForward
+: Command() {
     val timer = Timer()
 
     init { addRequirements(Drivetrain) }
