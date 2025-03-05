@@ -8,12 +8,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import frc.robot.commands.Arm.MoveArm
+import frc.robot.commands.Arm.OuttakeCoral
 import frc.robot.commands.Autos.driveForward
-import frc.robot.commands.Autos.forwardAndDepositPreload
-
-
-//import frc.robot.subsystems.Lights
-
+import frc.robot.subsystems.ArmConstants
+import frc.robot.subsystems.Lights
 
 /*
  Main code for controlling the robot. Mainly just links everything together.
@@ -28,29 +29,40 @@ import frc.robot.commands.Autos.forwardAndDepositPreload
  * of the timed robot class
  */
 object RobotController : TimedRobot() {
-    //val autos: Map<String,Command> = mapOf(
-        //TODO: Autos go here!
-        //ie
-        //"Description of auto" to TaxiAuto
-    //)
+    // general things
     val commandScheduler = CommandScheduler.getInstance()
+    // anything relating to autos
+    val manualAutoCommands: Map<String,Command> = mapOf(
+        /**
+         * Drives the robot forwards and deposits the preloaded coral
+         */
+        Pair(
+            "deposit preload",
+            SequentialCommandGroup(
+                driveForward(speed = 0.25, driveTime = 5.5), // todo
+                MoveArm(ArmConstants.BackLimitSwitchAngle),
+                OuttakeCoral(3.0),
+                MoveArm(ArmConstants.FrontLimitSwitchAngle)
+            )
+        )
+    )
 //    val autoChooser = AutoBuilder.buildAutoChooser();
-    private var m_autoSelected: Command? = null
-    private val m_chooser = SendableChooser<Command>()
+    var selectedManualAuto: Command? = null
+    val ManualAutoChooser = SendableChooser<Command>()
 
     /**
      * runs when robot turns on, should be used for any initialization of robot or subsystems
      */
     override fun robotInit() {
-//        Lights
+        Lights
         TeleOp
         CameraServer.startAutomaticCapture()
 //        SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        m_chooser.setDefaultOption("No Auto", Commands.none());
-        m_chooser.addOption("Operation bear minimum", driveForward(speed = 0.25, driveTime = 5.5))
-//        m_chooser.addOption("Scoring preload", forwardAndDepositPreload()) // todo
-        SmartDashboard.putData("Auto choices", m_chooser);
+        ManualAutoChooser.setDefaultOption("No Auto", Commands.none());
+        ManualAutoChooser.addOption("Operation bear minimum", driveForward(speed = 0.25, driveTime = 5.5))
+        ManualAutoChooser.addOption("deposit preload", manualAutoCommands["deposit preload"])
+        SmartDashboard.putData("Auto choices", ManualAutoChooser);
 
     }
 
@@ -61,9 +73,10 @@ object RobotController : TimedRobot() {
     override fun robotPeriodic() { commandScheduler.run() }
 
     override fun autonomousInit() {
-        m_autoSelected = m_chooser.selected
-        m_autoSelected?.schedule()
-        println("Auto selected: " + m_autoSelected)
+        ParallelCommandGroup( MoveArm(ArmConstants.FrontLimitSwitchAngle) ).schedule() // reset arm to front / intake of robot
+        selectedManualAuto = ManualAutoChooser.selected
+        selectedManualAuto?.schedule()
+        println("Auto selected: " + selectedManualAuto)
     }
     override fun autonomousPeriodic() {} //TODO: Unnecesary with command-based programming?
 
@@ -72,7 +85,7 @@ object RobotController : TimedRobot() {
      */
     override fun teleopInit() {
         TeleOp.configureBindings()
-        if (m_autoSelected != null) { m_autoSelected?.cancel() }
+        if (selectedManualAuto != null) { selectedManualAuto?.cancel() }
     }
 
     /**
@@ -101,5 +114,6 @@ object RobotController : TimedRobot() {
     override fun disabledPeriodic() {}
 
     override fun testInit() { commandScheduler.cancelAll() }
+
     override fun testPeriodic() {}
 }
