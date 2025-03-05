@@ -39,8 +39,10 @@ object RobotController : TimedRobot() {
         Pair(
             "deposit preload",
             SequentialCommandGroup(
-                driveForward(speed = 0.25, driveTime = 5.5), // todo
-                MoveArm(ArmConstants.BackLimitSwitchAngle),
+                ParallelCommandGroup(
+                    driveForward(speed = 0.25, driveTime = 5.5), // todo
+                    MoveArm(ArmConstants.BackLimitSwitchAngle), // reset arm to back / outtake of robot
+                ),
                 OuttakeCoral(3.0),
                 MoveArm(ArmConstants.FrontLimitSwitchAngle)
             )
@@ -73,7 +75,6 @@ object RobotController : TimedRobot() {
     override fun robotPeriodic() { commandScheduler.run() }
 
     override fun autonomousInit() {
-        ParallelCommandGroup( MoveArm(ArmConstants.FrontLimitSwitchAngle) ).schedule() // reset arm to front / intake of robot
         selectedManualAuto = ManualAutoChooser.selected
         selectedManualAuto?.schedule()
         println("Auto selected: " + selectedManualAuto)
