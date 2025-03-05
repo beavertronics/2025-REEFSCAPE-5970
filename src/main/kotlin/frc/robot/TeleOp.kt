@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
-import frc.robot.commands.Arm.MoveArm
-import frc.robot.commands.Arm.OuttakeCoral
-import frc.robot.commands.RunClimb
+//import frc.robot.commands.Arm.MoveArm
+//import frc.robot.commands.Arm.OuttakeCoral
+//import frc.robot.commands.RunClimb
 import frc.robot.commands.TeleopDriveCommand
-import frc.robot.subsystems.ArmConstants
-import frc.robot.subsystems.Climb
+//import frc.robot.subsystems.ArmConstants
+//import frc.robot.subsystems.Climb
 import frc.robot.subsystems.Drivetrain
 
 /*
@@ -27,13 +27,13 @@ setting up the commands for running the drivetrain and the subsystems
 object TeleOp {
     val teleOpDrive: TeleopDriveCommand =
         TeleopDriveCommand(
-            { OI.rightDrive * 1.0 }, // todo artifically lower right to match left (which is weaker)
+            { OI.rightDrive * 1.0 * 1.0}, // todo artifically lower right to match left (which is weaker)
             { OI.leftDrive },
             { OI.slowMode },
         )
 
     init {
-        Climb
+//        Climb
         Drivetrain.defaultCommand = teleOpDrive // sets what function is called every frame (somewhere?)
     }
 
@@ -41,10 +41,10 @@ object TeleOp {
      * configures things to run on specific inputs
      */
     fun configureBindings() {
-        OI.spoolClimb.whileTrue(RunClimb())
-        OI.ejectCoral.whileTrue(OuttakeCoral(null))
-        OI.moveArmForward.whileTrue(MoveArm(ArmConstants.FrontLimitSwitchAngle))
-        OI.moveArmBackward.whileTrue(MoveArm(ArmConstants.BackLimitSwitchAngle))
+//        OI.spoolClimb.whileTrue(RunClimb())
+//        OI.ejectCoral.whileTrue(OuttakeCoral(null))
+//        OI.moveArmForward.whileTrue(MoveArm(ArmConstants.FrontLimitSwitchAngle))
+//        OI.moveArmBackward.whileTrue(MoveArm(ArmConstants.BackLimitSwitchAngle))
     }
 
     /**
@@ -91,8 +91,8 @@ object TeleOp {
          * Values for inputs go here
          */
         //===== DRIVETRAIN =====//
-        val leftDrive get() = leftDriveController.y.processInput() * -1
-        val rightDrive get() = rightDriveController.y.processInput() * -1
+        val leftDrive get() = leftDriveController.y.processInput(cubed = true) * -1
+        val rightDrive get() = rightDriveController.y.processInput(cubed = true) * -1
         val slowMode get() = rightDriveController.trigger().asBoolean
         //===== SUBSYSTEMS =====//
         val spoolClimb get() = operatorController.b()

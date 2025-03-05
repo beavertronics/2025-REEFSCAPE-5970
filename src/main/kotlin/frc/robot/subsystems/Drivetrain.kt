@@ -21,12 +21,12 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 
 object DriveConstants {
-    val MaxVoltage = 3.0 // todo
+    val MaxVoltage = 12.0 // todo
     val WheelDiameter = 6.0.inches // todo
-    val LeftMainDrive = 13 // todo
-    val LeftSubDrive = 7 // todo
-    val RightMainDrive = 6 // todo
-    val RightSubDrive = 10 // todo
+    val LeftMainDrive = 16 // todo
+    val LeftSubDrive = 15 // todo
+    val RightMainDrive = 13 // todo
+    val RightSubDrive = 12 // todo
     val DriveMotorCurrentLimit = 20
 }
 
@@ -54,7 +54,7 @@ object Drivetrain : SubsystemBase() {
     init {
         Engine.initMotorControllers(DriveConstants.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
         Engine.initMotorControllers(DriveConstants.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, false, rightMain)
-        Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
+        Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, true, leftSecondary, leftMain)
         Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
 
 

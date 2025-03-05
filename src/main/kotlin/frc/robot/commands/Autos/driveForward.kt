@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.DriveConstants
 import frc.robot.subsystems.Drivetrain
 
-class driveForward
+class driveForward(val speed: Double = 0.1, val driveTime : Double = 1.5)
 : Command() {
     val timer = Timer()
 
@@ -14,10 +14,10 @@ class driveForward
     override fun initialize() { timer.restart() }
 
     override fun execute() {
-        Drivetrain.rawDrive(0.1 * DriveConstants.MaxVoltage, 0.1 * DriveConstants.MaxVoltage)
+        Drivetrain.rawDrive(speed * DriveConstants.MaxVoltage, speed * DriveConstants.MaxVoltage)
     }
 
-    override fun isFinished(): Boolean { return timer.hasElapsed(1.5) } // todo tune time
+    override fun isFinished(): Boolean { return timer.hasElapsed(driveTime) } // todo tune time
 
     override fun end(interrupted: Boolean) { Drivetrain.stop() }
 }

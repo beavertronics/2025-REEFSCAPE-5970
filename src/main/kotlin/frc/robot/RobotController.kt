@@ -3,9 +3,16 @@ package frc.robot
 //import com.pathplanner.lib.auto.AutoBuilder
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import frc.robot.subsystems.Lights
+import edu.wpi.first.wpilibj2.command.Commands
+import frc.robot.commands.Autos.driveForward
+import frc.robot.commands.Autos.forwardAndDepositPreload
+
+
+//import frc.robot.subsystems.Lights
 
 
 /*
@@ -28,15 +35,23 @@ object RobotController : TimedRobot() {
     //)
     val commandScheduler = CommandScheduler.getInstance()
 //    val autoChooser = AutoBuilder.buildAutoChooser();
+    private var m_autoSelected: Command? = null
+    private val m_chooser = SendableChooser<Command>()
 
     /**
      * runs when robot turns on, should be used for any initialization of robot or subsystems
      */
     override fun robotInit() {
-        Lights
+//        Lights
         TeleOp
         CameraServer.startAutomaticCapture()
 //        SmartDashboard.putData("Auto Chooser", autoChooser);
+
+        m_chooser.setDefaultOption("No Auto", Commands.none());
+        m_chooser.addOption("Operation bear minimum", driveForward(speed = 0.25, driveTime = 5.5))
+//        m_chooser.addOption("Scoring preload", forwardAndDepositPreload()) // todo
+        SmartDashboard.putData("Auto choices", m_chooser);
+
     }
 
     /**
@@ -45,13 +60,20 @@ object RobotController : TimedRobot() {
      */
     override fun robotPeriodic() { commandScheduler.run() }
 
-    override fun autonomousInit() {}
+    override fun autonomousInit() {
+        m_autoSelected = m_chooser.selected
+        m_autoSelected?.schedule()
+        println("Auto selected: " + m_autoSelected)
+    }
     override fun autonomousPeriodic() {} //TODO: Unnecesary with command-based programming?
 
     /**
      * runs when teleop is ready
      */
-    override fun teleopInit() { TeleOp.configureBindings() }
+    override fun teleopInit() {
+        TeleOp.configureBindings()
+        if (m_autoSelected != null) { m_autoSelected?.cancel() }
+    }
 
     /**
      * runs on every frame of teleop

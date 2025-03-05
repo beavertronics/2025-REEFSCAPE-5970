@@ -14,7 +14,7 @@ import frc.robot.subsystems.DriveConstants
 import frc.robot.subsystems.Drivetrain
 import kotlin.math.PI
 
-class forwardAndDepositPreload
+class forwardAndDepositPreload(val speed : Double = 0.1, val distance : Double = 88.0, val corralOuttakeTime : Double = 3.0)
 : Command() {
     /*
     - set robot in middle of starting line, vision camera facing reef
@@ -37,7 +37,7 @@ class forwardAndDepositPreload
 
     val bumperDistanceFromCenter = 0.0.inches // todo
     val distancePerRevolution = (DriveConstants.WheelDiameter * PI).asInches
-    val targetDistance = 88.inches - bumperDistanceFromCenter
+    val targetDistance = distance.inches - bumperDistanceFromCenter
     val revolutions = (targetDistance / distancePerRevolution).asInches.degrees.asRotations
     val requiredDegreesRotation = (revolutions * 360).degrees
     var finished = false
@@ -45,12 +45,12 @@ class forwardAndDepositPreload
     init { addRequirements( Drivetrain ) }
 
     override fun execute() {
-        Drivetrain.rawDrive(0.1 * DriveConstants.MaxVoltage, 0.1 * DriveConstants.MaxVoltage) // todo
+        Drivetrain.rawDrive(speed * DriveConstants.MaxVoltage, speed * DriveConstants.MaxVoltage)
         if (Drivetrain.leftEncoder.distance.degrees.asDegrees >= requiredDegreesRotation.asDegrees) {
             Drivetrain.stop()
             SequentialCommandGroup(
                 MoveArm(ArmConstants.BackLimitSwitchAngle),
-                OuttakeCoral(3.0), // todo
+                OuttakeCoral(corralOuttakeTime),
                 MoveArm(ArmConstants.FrontLimitSwitchAngle)
             ).schedule()
             finished = true

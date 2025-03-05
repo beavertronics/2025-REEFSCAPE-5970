@@ -36,7 +36,6 @@ class TeleopDriveCommand(
     override fun execute() {
         var leftVelocity = velocityLeftSupplier.asDouble
         var rightVelocity = velocityRightSupplier.asDouble
-        println(leftVelocity * DriveConstants.MaxVoltage)
         val slowMode = slowModeSupplier.asBoolean
         SmartDashboard.putNumber("vL", leftVelocity)
         SmartDashboard.putNumber("vR", rightVelocity)
