@@ -8,26 +8,26 @@ import frc.robot.commands.Arm.ArmSysIdQuasistatic
 
 class SysIDController {
     // The driver's controller
-    var m_driverController = CommandXboxController(2)
+    var controller = CommandXboxController(2)
 
     fun configureBindings(){
 
 
-        m_driverController
+        controller
             .a()
-            .and(m_driverController.leftBumper())
+            .and(controller.leftBumper())
             .whileTrue(ArmSysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        m_driverController
+        controller
             .b()
-            .and(m_driverController.leftBumper())
+            .and(controller.leftBumper())
             .whileTrue(ArmSysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        m_driverController
+        controller
             .x()
-            .and(m_driverController.leftBumper())
+            .and(controller.leftBumper())
             .whileTrue(ArmSysIdDynamic(SysIdRoutine.Direction.kForward));
-        m_driverController
+        controller
             .y()
-            .and(m_driverController.leftBumper())
+            .and(controller.leftBumper())
             .whileTrue(ArmSysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 }

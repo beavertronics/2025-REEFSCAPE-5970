@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj.Timer
  * @param runtime how long to run the outtake motor for, if set to null will run until stopped
  */
 class OuttakeCoral(
-    val runtime: Double?
+    val runtime: Double?,
+    val speed : Double = 1.0
 )
 : Command() {
     val timer = Timer()
@@ -18,7 +19,7 @@ class OuttakeCoral(
 
     override fun initialize() { timer.restart() }
 
-    override fun execute() { Arm.outtakeMotor.setVoltage(1.0) } // todo change speed
+    override fun execute() { Arm.outtakeMotor.setVoltage(speed) } // todo change speed
 
     override fun isFinished(): Boolean {
         if (runtime == null) { return false }
