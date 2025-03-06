@@ -1,6 +1,7 @@
 package frc.robot.commands.Arm
 
 import beaverlib.utils.Sugar.within
+import beaverlib.utils.Units.Angular.AngleUnit
 import beaverlib.utils.Units.Angular.rotations
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.Timer
@@ -15,17 +16,17 @@ import frc.robot.subsystems.Arm.profile
  * @param position the position we want to move the arm to
  */
 class MoveArm(
-    val position : Double
+    val position : AngleUnit
 )
 : Command() {
 
     val timer = Timer()
     val goal: TrapezoidProfile.State = TrapezoidProfile.State(
-        position,
+        position.asRadians,
         0.0
     )
     var current: TrapezoidProfile.State = TrapezoidProfile.State(
-        Arm.encoder.get().rotations.asRadians,
+        Arm.encoder.position.asRadians,
         0.0
     )
 
@@ -38,11 +39,14 @@ class MoveArm(
     }
 
     override fun execute() {
-        val current = profile.calculate(timer.get(), current, goal)
+        val current = profile.calculate(
+            timer.get(),
+            TrapezoidProfile.State(Arm.encoder.position.asRadians, Arm.encoder.velocity.asRadiansPerSecond),
+            goal)
         applyPIDF(current.velocity)
     }
 
     override fun isFinished(): Boolean {
-        return armMotor.encoder.position.within(1.0, position)
+        return armMotor.encoder.position.within(0.1, position.asRadians)
     }
 }

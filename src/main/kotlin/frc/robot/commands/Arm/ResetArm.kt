@@ -22,8 +22,8 @@ class ResetArm(
     init { addRequirements(Arm) }
 
     override fun end(interrupted: Boolean) {
-        if (frontLimitSwitch.get()) { armMotor.encoder.setPosition(ArmConstants.FrontLimitSwitchAngle) }
-        if (backLimitSwitch.get()) { armMotor.encoder.setPosition(ArmConstants.BackLimitSwitchAngle) }
+        //if (frontLimitSwitch.get()) { Arm.encoder.resetPosition(ArmConstants.FrontLimitSwitchAngle) }
+        //if (backLimitSwitch.get()) { Arm.encoder.setPosition(ArmConstants.BackLimitSwitchAngle) }
     }
 
     override fun execute() { armMotor.set(speed * endGoal.direction) }
