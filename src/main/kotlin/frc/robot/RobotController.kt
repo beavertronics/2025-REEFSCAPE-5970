@@ -14,7 +14,7 @@ import frc.robot.commands.Arm.MoveArm
 import frc.robot.commands.Arm.OuttakeCoral
 import frc.robot.commands.Autos.driveForward
 import frc.robot.subsystems.ArmConstants
-import frc.robot.subsystems.Lights
+//import frc.robot.subsystems.Lights
 
 /*
  Main code for controlling the robot. Mainly just links everything together.
@@ -56,7 +56,7 @@ object RobotController : TimedRobot() {
      * runs when robot turns on, should be used for any initialization of robot or subsystems
      */
     override fun robotInit() {
-        Lights
+//        Lights
         TeleOp
         CameraServer.startAutomaticCapture()
 //        SmartDashboard.putData("Auto Chooser", autoChooser);

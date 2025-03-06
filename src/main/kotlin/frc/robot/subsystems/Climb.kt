@@ -9,7 +9,7 @@ import frc.engine.utils.initMotorControllers
 
 object ClimbConstants {
     val ClimbWinchMotor = 11
-    val ClimbLimitSwitchDIO = 0 // todo
+    val ClimbLimitSwitchDIO = 4
     val ClimbCurrentLimit = 10
 }
 object Climb : SubsystemBase() {

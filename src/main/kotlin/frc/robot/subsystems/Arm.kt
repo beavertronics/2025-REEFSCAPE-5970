@@ -1,9 +1,7 @@
 package frc.robot.subsystems
 
-import Engine.BeaverDutyCycleEncoder
 import Engine.BeaverRelativeEncoder
 import beaverlib.utils.Units.Angular.radians
-import com.revrobotics.RelativeEncoder
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
@@ -19,16 +17,17 @@ import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.robot.commands.Arm.ArmTherapy
+import frc.robot.commands.Arm.Tuning.ArmTuneKG
+import kotlin.math.cos
 
 object ArmConstants {
     // motor IDs and whatnot
-    const val ArmMotorID = 0 // todo
-    const val outtakeMotorID = 0 // todo
-    const val ArmAmpLimit = 0 // todo
-    const val ArmStartLimitSwitchDIO = 0 // todo
-    const val ArmEndLimitSwitchDIO = 0 // todo
-    const val ArmEncoderDIO = 0 // todo
+    const val ArmMotorID = 8
+    const val outtakeMotorID = 14
+    const val ArmAmpLimit = 20
+    const val ArmStartLimitSwitchDIO = 3 // front
+    const val ArmEndLimitSwitchDIO = 2 // back
+    const val ArmBeamBreakDIO = 5
     // trapezoidal profile things (assume m/s)
     const val maxVelocity = 1.0 // todo
     const val maxAcceleration = 1.0 // todo
@@ -57,11 +56,13 @@ object ArmConstants {
 object Arm : SubsystemBase() {
     val armMotor = SparkMax(ArmConstants.ArmMotorID, SparkLowLevel.MotorType.kBrushless)
     val outtakeMotor = SparkMax(ArmConstants.outtakeMotorID, SparkLowLevel.MotorType.kBrushed)
+    val encoderRatio : Double = ((1.0/40.0) * (42.0 / 30.0) * (48.0 / 18.0))
     //val encoder : BeaverDutyCycleEncoder = BeaverDutyCycleEncoder(ArmConstants.ArmEncoderDIO, (1.0/3.0) ) // todo set armOffset
-    val encoder : BeaverRelativeEncoder = BeaverRelativeEncoder(armMotor.encoder)
+    val encoder : BeaverRelativeEncoder = BeaverRelativeEncoder(armMotor.encoder, positionConversionFactor = encoderRatio)
     val pid : PIDController = PIDController(ArmConstants.KP, ArmConstants.KV, ArmConstants.KD)
     val frontLimitSwitch = DigitalInput(ArmConstants.ArmStartLimitSwitchDIO) // intake position
     val backLimitSwitch = DigitalInput(ArmConstants.ArmEndLimitSwitchDIO) // deposit position
+    val IntakeBeamBreak = DigitalInput(ArmConstants.ArmBeamBreakDIO)
     var goal = TrapezoidProfile.State(encoder.position.asRadians, 0.0)
 
     init {
@@ -85,8 +86,8 @@ object Arm : SubsystemBase() {
 
         // Don't persist parameters since it takes time and this change is temporary
         armMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters)
-        defaultCommand = ArmTherapy()
-        //armMotor.setPositionConversionFactor todo
+//        defaultCommand = ArmTherapy()
+        defaultCommand = ArmTuneKG( {ArmConstants.KG * cos(encoder.position.asRadians) + ArmConstants.KS} ) // todo for tuning
     }
 
     override fun periodic() {
@@ -96,12 +97,14 @@ object Arm : SubsystemBase() {
         if(frontLimitSwitch.get()) {
             encoder.resetPosition(ArmConstants.FrontLimitSwitchAngle)
         }
+        SmartDashboard.putBoolean("Coral in?", IntakeBeamBreak.get())
+        SmartDashboard.putNumber("arm encoder", armMotor.encoder.velocity)
+
 
         ArmConstants.KP = SmartDashboard.getNumber("KP", 0.0)
         ArmConstants.KI = SmartDashboard.getNumber("KI", 0.0)
         ArmConstants.KG = SmartDashboard.getNumber("KG", 0.0)
         ArmConstants.KS = SmartDashboard.getNumber("KS", 0.0)
-
         pid.p = ArmConstants.KP
         pid.i = ArmConstants.KI
         feedforward.kg = ArmConstants.KG
