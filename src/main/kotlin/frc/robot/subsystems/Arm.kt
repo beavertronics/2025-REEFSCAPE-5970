@@ -16,6 +16,7 @@ import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.RobotController
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.commands.Arm.ArmTherapy
@@ -32,12 +33,12 @@ object ArmConstants {
     const val maxVelocity = 1.0 // todo
     const val maxAcceleration = 1.0 // todo
     // pid things
-    const val KP = 0.0
-    const val KI = 0.0
+    var KP = 0.0 // todo
+    var KI = 0.0 // todo
     const val KD = 0.0
     // arm feed forward things?
-    const val KS = 0.0 // sin
-    const val KG = 0.0 // minimum voltage to move (K static)
+    var KS = 0.0 // sin // todo
+    var KG = 0.0 // minimum voltage to move (K static) // todo
     const val KV = 0.0 // to multiply to maintain velocity
     const val KA = 0.0 // to multiply desired acceleration
     // limit switch things
@@ -65,6 +66,12 @@ object Arm : SubsystemBase() {
 
     init {
 
+        // dashboard tuning things
+        SmartDashboard.putNumber("KP", ArmConstants.KP)
+        SmartDashboard.putNumber("KI", ArmConstants.KI)
+        SmartDashboard.putNumber("KG", ArmConstants.KG)
+        SmartDashboard.putNumber("KS", ArmConstants.KS)
+
         // do custom config instead of using initMotorControllers from Beaverlib
         // to add closed loop PID
         val config = SparkMaxConfig()
@@ -89,6 +96,16 @@ object Arm : SubsystemBase() {
         if(frontLimitSwitch.get()) {
             encoder.resetPosition(ArmConstants.FrontLimitSwitchAngle)
         }
+
+        ArmConstants.KP = SmartDashboard.getNumber("KP", 0.0)
+        ArmConstants.KI = SmartDashboard.getNumber("KI", 0.0)
+        ArmConstants.KG = SmartDashboard.getNumber("KG", 0.0)
+        ArmConstants.KS = SmartDashboard.getNumber("KS", 0.0)
+
+        pid.p = ArmConstants.KP
+        pid.i = ArmConstants.KI
+        feedforward.kg = ArmConstants.KG
+        feedforward.ks = ArmConstants.KS
     }
 
 
