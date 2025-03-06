@@ -1,6 +1,7 @@
 package frc.robot.subsystems
 
 import Engine.BeaverRelativeEncoder
+import beaverlib.utils.Units.Angular.degrees
 import beaverlib.utils.Units.Angular.radians
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
@@ -17,7 +18,7 @@ import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import frc.robot.commands.Arm.Tuning.ArmTuneKG
+import frc.robot.commands.Arm.Tuning.ArmTune
 import kotlin.math.cos
 
 object ArmConstants {
@@ -36,13 +37,13 @@ object ArmConstants {
     var KI = 0.0 // todo
     const val KD = 0.0
     // arm feed forward things?
-    var KS = 0.0 // sin // todo
-    var KG = 0.0 // minimum voltage to move (K static) // todo
+    var KS = 0.5 // minimum voltage to move (K static) // todo
+    var KG = 0.05 // minimum voltage to stay in place // todo
     const val KV = 0.0 // to multiply to maintain velocity
     const val KA = 0.0 // to multiply desired acceleration
     // limit switch things
-    val FrontLimitSwitchAngle = 0.0.radians // todo (degrees or radians?)
-    val BackLimitSwitchAngle = 0.0.radians // todo (degrees or radians?)
+    val FrontLimitSwitchAngle = 0.0.degrees // todo
+    val BackLimitSwitchAngle = 0.0.degrees // todo
     // other things
     const val chainBackslash = 0.0 // todo, is the amount of slack in the chain
 
@@ -87,7 +88,7 @@ object Arm : SubsystemBase() {
         // Don't persist parameters since it takes time and this change is temporary
         armMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters)
 //        defaultCommand = ArmTherapy()
-        defaultCommand = ArmTuneKG( {ArmConstants.KG * cos(encoder.position.asRadians) + ArmConstants.KS} ) // todo for tuning
+        defaultCommand = ArmTune( {ArmConstants.KG * cos(encoder.position.asRadians) + ArmConstants.KS} ) // todo for tuning
     }
 
     override fun periodic() {
@@ -98,7 +99,6 @@ object Arm : SubsystemBase() {
             encoder.resetPosition(ArmConstants.FrontLimitSwitchAngle)
         }
         SmartDashboard.putBoolean("Coral in?", IntakeBeamBreak.get())
-        SmartDashboard.putNumber("arm encoder", armMotor.encoder.velocity)
 
 
         ArmConstants.KP = SmartDashboard.getNumber("KP", 0.0)
@@ -110,7 +110,6 @@ object Arm : SubsystemBase() {
         feedforward.kg = ArmConstants.KG
         feedforward.ks = ArmConstants.KS
     }
-
 
     // in a perfect world, how to go from point a to b
     val feedforward = ArmFeedforward(

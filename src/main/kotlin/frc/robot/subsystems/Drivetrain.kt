@@ -52,9 +52,9 @@ object Drivetrain : SubsystemBase() {
     }
 
     init {
-        Engine.initMotorControllers(DriveConstants.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
+        Engine.initMotorControllers(DriveConstants.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, false, leftMain)
         Engine.initMotorControllers(DriveConstants.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, false, rightMain)
-        Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, true, leftSecondary, leftMain)
+        Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
         Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
 
 

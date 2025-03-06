@@ -28,7 +28,7 @@ object TeleOp {
         TeleopDriveCommand(
             { OI.rightDrive * 1.0 * 1.0 * 1.0 * 1.0 * 1.0 * 1.0 }, // todo artifically lower right to match left (which is weaker)
             { OI.leftDrive },
-            { OI.slowMode },
+            { false }
         )
 
     init {
@@ -51,9 +51,9 @@ object TeleOp {
      * getting inputs from controllers and whatnot.
      */
     object OI : SubsystemBase() {
-        val leftDriveController = CommandJoystick(0) // todo change to xbox controller
-        val rightDriveController = CommandJoystick(1) // todo change to xbox controller
-        private val operatorController = CommandXboxController(2)
+        val leftDriveController = CommandJoystick(0)
+        val rightDriveController = CommandJoystick(1)
+        val operatorController = CommandXboxController(2)
 
         /**
          * Allows you to tweak controller inputs (ie get rid of deadzone, make input more sensitive by squaring or cubing it, etc).
@@ -92,7 +92,7 @@ object TeleOp {
         //===== DRIVETRAIN =====//
         val leftDrive get() = leftDriveController.y.processInput(cubed = true) * -1
         val rightDrive get() = rightDriveController.y.processInput(cubed = true) * -1
-        val slowMode get() = rightDriveController.trigger().asBoolean
+//        val slowMode get() = rightDriveController.trigger().asBoolean
         //===== SUBSYSTEMS =====//
         val spoolClimb get() = operatorController.b()
         val ejectCoral get() = operatorController.x()

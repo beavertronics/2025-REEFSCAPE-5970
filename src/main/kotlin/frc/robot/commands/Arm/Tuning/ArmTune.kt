@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Arm
 import java.util.function.DoubleSupplier
 
-class ArmTuneKG(
+class ArmTune(
     val voltage : DoubleSupplier
 )
 : Command() {

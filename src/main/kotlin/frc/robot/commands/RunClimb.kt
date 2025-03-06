@@ -10,17 +10,15 @@ class RunClimb(
     val holdTime: Double = 0.25
 ) : Command() {
     val timer = Timer()
-    // each subsystem adds itself as a requirement
+
     init { addRequirements(Climb) }
 
-    override fun initialize() {
-        timer.restart()
-    }
+    override fun initialize() { timer.restart() }
 
     /** @suppress */
     override fun execute() {
         if(timer.hasElapsed(holdTime)) {
-            /////TeleOp.OI.Rumble(TeleOp.OI.drivingController, 0.1, 0.5).schedule()
+            TeleOp.OI.Rumble(TeleOp.OI.operatorController, 0.1, 0.5).schedule()
             Climb.runClimb(speed)
         }
     }
