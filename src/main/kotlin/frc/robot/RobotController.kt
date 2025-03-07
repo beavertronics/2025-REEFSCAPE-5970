@@ -59,7 +59,7 @@ object RobotController : TimedRobot() {
     override fun robotInit() {
 //        Lights
         TeleOp
-        CameraServer.startAutomaticCapture()
+        CameraServer.startAutomaticCapture(0) // todo 0 or 1? no drive cam :c
 //        SmartDashboard.putData("Auto Chooser", autoChooser);
 
         ManualAutoChooser.setDefaultOption("No Auto", Commands.none());
