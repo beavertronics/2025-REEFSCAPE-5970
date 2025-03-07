@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import frc.robot.commands.Arm.JankArm
 import frc.robot.commands.Arm.MoveArm
 import frc.robot.commands.Arm.OuttakeCoral
 import frc.robot.commands.Autos.driveForward
@@ -41,10 +42,10 @@ object RobotController : TimedRobot() {
             SequentialCommandGroup(
                 ParallelCommandGroup(
                     driveForward(speed = 0.25, driveTime = 5.5), // todo
-                    MoveArm(ArmConstants.BackLimitSwitchAngle), // reset arm to back / outtake of robot
+                    JankArm(-3.0), // reset arm to back / outtake of robot
                 ),
                 OuttakeCoral(3.0),
-                MoveArm(ArmConstants.FrontLimitSwitchAngle)
+                JankArm(3.0) // move arm to front of robot
             )
         )
     )
