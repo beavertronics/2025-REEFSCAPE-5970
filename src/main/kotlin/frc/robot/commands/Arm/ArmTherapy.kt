@@ -11,6 +11,9 @@ class ArmTherapy()
 : Command() {
 
     init { addRequirements(Arm) }
-    override fun execute() { applyPIDF(0.0) }
+    override fun execute() {
+//        applyPIDF(0.0)
+        Arm.armMotor.setVoltage(0.0)
+    }
     override fun isFinished(): Boolean { return false }
 }

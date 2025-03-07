@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import frc.robot.commands.Arm.JankArm
 import frc.robot.commands.Arm.MoveArm
 import frc.robot.commands.Arm.OuttakeCoral
 import frc.robot.commands.RunClimb
@@ -40,10 +41,12 @@ object TeleOp {
      * configures things to run on specific inputs
      */
     fun configureBindings() {
-        OI.spoolClimb.whileTrue(RunClimb())
-        OI.ejectCoral.whileTrue(OuttakeCoral(null))
-        OI.moveArmForward.whileTrue(MoveArm(ArmConstants.FrontLimitSwitchAngle))
-        OI.moveArmBackward.whileTrue(MoveArm(ArmConstants.BackLimitSwitchAngle))
+        OI.spoolClimb.whileTrue(RunClimb(speed = -0.6))
+        OI.ejectCoral.whileTrue(OuttakeCoral(null, speed = 6.0))
+//        OI.moveArmForward.whileTrue(MoveArm(ArmConstants.FrontLimitSwitchAngle))
+//        OI.moveArmBackward.whileTrue(MoveArm(ArmConstants.BackLimitSwitchAngle))
+        OI.moveArmForward.whileTrue(JankArm(5.0))
+        OI.moveArmBackward.whileTrue(JankArm(-5.0))
     }
 
     /**

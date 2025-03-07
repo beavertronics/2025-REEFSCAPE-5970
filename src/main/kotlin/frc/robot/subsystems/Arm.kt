@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import frc.robot.commands.Arm.ArmTherapy
 import frc.robot.commands.Arm.Tuning.ArmTune
 import kotlin.math.cos
 
@@ -37,8 +38,8 @@ object ArmConstants {
     var KI = 0.0 // todo
     const val KD = 0.0
     // arm feed forward things?
-    var KS = 0.5 // minimum voltage to move (K static) // todo
-    var KG = 0.05 // minimum voltage to stay in place // todo
+    var KS = 0.0 // minimum voltage to move (K static) // todo
+    var KG = 0.0 // minimum voltage to stay in place // todo
     const val KV = 0.0 // to multiply to maintain velocity
     const val KA = 0.0 // to multiply desired acceleration
     // limit switch things
@@ -59,20 +60,15 @@ object Arm : SubsystemBase() {
     val outtakeMotor = SparkMax(ArmConstants.outtakeMotorID, SparkLowLevel.MotorType.kBrushed)
     val encoderRatio : Double = ((1.0/40.0) * (42.0 / 30.0) * (48.0 / 18.0))
     //val encoder : BeaverDutyCycleEncoder = BeaverDutyCycleEncoder(ArmConstants.ArmEncoderDIO, (1.0/3.0) ) // todo set armOffset
-    val encoder : BeaverRelativeEncoder = BeaverRelativeEncoder(armMotor.encoder, positionConversionFactor = encoderRatio)
+    val encoder : BeaverRelativeEncoder = BeaverRelativeEncoder(armMotor.encoder, startingPosition = ArmConstants.BackLimitSwitchAngle, positionConversionFactor = encoderRatio)
     val pid : PIDController = PIDController(ArmConstants.KP, ArmConstants.KV, ArmConstants.KD)
     val frontLimitSwitch = DigitalInput(ArmConstants.ArmStartLimitSwitchDIO) // intake position
     val backLimitSwitch = DigitalInput(ArmConstants.ArmEndLimitSwitchDIO) // deposit position
     val IntakeBeamBreak = DigitalInput(ArmConstants.ArmBeamBreakDIO)
+//    var goal = 0.0
     var goal = TrapezoidProfile.State(encoder.position.asRadians, 0.0)
 
     init {
-
-        // dashboard tuning things
-        SmartDashboard.putNumber("KP", ArmConstants.KP)
-        SmartDashboard.putNumber("KI", ArmConstants.KI)
-        SmartDashboard.putNumber("KG", ArmConstants.KG)
-        SmartDashboard.putNumber("KS", ArmConstants.KS)
 
         // do custom config instead of using initMotorControllers from Beaverlib
         // to add closed loop PID
@@ -87,8 +83,8 @@ object Arm : SubsystemBase() {
 
         // Don't persist parameters since it takes time and this change is temporary
         armMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters)
-//        defaultCommand = ArmTherapy()
-        defaultCommand = ArmTune( {ArmConstants.KG * cos(encoder.position.asRadians) + ArmConstants.KS} ) // todo for tuning
+        defaultCommand = ArmTherapy()
+//        defaultCommand = ArmTune( {ArmConstants.KG * cos(encoder.position.asRadians) + ArmConstants.KS} ) // todo for tuning
     }
 
     override fun periodic() {
@@ -99,16 +95,6 @@ object Arm : SubsystemBase() {
             encoder.resetPosition(ArmConstants.FrontLimitSwitchAngle)
         }
         SmartDashboard.putBoolean("Coral in?", IntakeBeamBreak.get())
-
-
-        ArmConstants.KP = SmartDashboard.getNumber("KP", 0.0)
-        ArmConstants.KI = SmartDashboard.getNumber("KI", 0.0)
-        ArmConstants.KG = SmartDashboard.getNumber("KG", 0.0)
-        ArmConstants.KS = SmartDashboard.getNumber("KS", 0.0)
-        pid.p = ArmConstants.KP
-        pid.i = ArmConstants.KI
-        feedforward.kg = ArmConstants.KG
-        feedforward.ks = ArmConstants.KS
     }
 
     // in a perfect world, how to go from point a to b
