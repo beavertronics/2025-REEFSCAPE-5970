@@ -10,7 +10,7 @@ import frc.engine.utils.initMotorControllers
 object ClimbConstants {
     val ClimbWinchMotor = 11
     val ClimbLimitSwitchDIO = 4
-    val ClimbCurrentLimit = 10
+    val ClimbCurrentLimit = 15
 }
 object Climb : SubsystemBase() {
     val climbMotor = SparkMax(ClimbConstants.ClimbWinchMotor, SparkLowLevel.MotorType.kBrushless)

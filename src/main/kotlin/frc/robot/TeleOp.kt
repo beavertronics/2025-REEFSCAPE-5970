@@ -41,8 +41,8 @@ object TeleOp {
      * configures things to run on specific inputs
      */
     fun configureBindings() {
-        OI.spoolClimb.whileTrue(RunClimb(speed = -0.6))
-        OI.ejectCoral.whileTrue(OuttakeCoral(null, speed = 6.0))
+        OI.spoolClimb.whileTrue(RunClimb(speed = -0.8))
+        OI.ejectCoral.whileTrue(OuttakeCoral(null, speed = 3.5))
 //        OI.moveArmForward.whileTrue(MoveArm(ArmConstants.FrontLimitSwitchAngle))
 //        OI.moveArmBackward.whileTrue(MoveArm(ArmConstants.BackLimitSwitchAngle))
         OI.moveArmForward.whileTrue(JankArm(5.0))
