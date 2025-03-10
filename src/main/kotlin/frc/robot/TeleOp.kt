@@ -10,8 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.Arm.JankArm
-import frc.robot.commands.Arm.OuttakeCoral
-import frc.robot.commands.Arm.OuttakeCoralNoRequire
+import frc.robot.commands.OuttakeCoral
 import frc.robot.commands.RunClimb
 import frc.robot.commands.TeleopDriveCommand
 import frc.robot.subsystems.Arm
@@ -30,14 +29,14 @@ object TeleOp {
     val teleOpDrive: TeleopDriveCommand =
         TeleopDriveCommand(
             { OI.rightDrive },
-            { OI.leftDrive * 0.95 },
+            { OI.leftDrive * 0.95 }, // right side is artificially weaker to match left side
             { false }
         )
 
     init {
         Climb
         Arm
-        Drivetrain.defaultCommand = teleOpDrive // sets what function is called every frame (somewhere?)
+        Drivetrain.defaultCommand = teleOpDrive
     }
 
     /**
@@ -53,7 +52,7 @@ object TeleOp {
         OI.forwardArmAndOuttake.whileTrue(
             ParallelCommandGroup(
                 JankArm(-3.0), // move arm to back of robot
-                OuttakeCoralNoRequire(3.0, speed = 3.5)
+                OuttakeCoral(3.0, speed = 3.5)
             )
         )
     }
@@ -104,7 +103,7 @@ object TeleOp {
         //===== DRIVETRAIN =====//
         val leftDrive get() = leftDriveController.y.processInput(cubed = true) * -1
         val rightDrive get() = rightDriveController.y.processInput(cubed = true) * -1
-//        val slowMode get() = rightDriveController.trigger().asBoolean
+        val slowMode get() = rightDriveController.trigger().asBoolean
         //===== SUBSYSTEMS =====//
         val spoolClimb get() = operatorController.b()
         val ejectCoral get() = operatorController.x()

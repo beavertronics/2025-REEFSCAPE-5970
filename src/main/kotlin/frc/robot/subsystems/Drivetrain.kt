@@ -3,7 +3,6 @@ package frc.robot.subsystems
 import beaverlib.controls.Controller
 import beaverlib.utils.Units.Linear.VelocityUnit
 import beaverlib.utils.Units.Linear.inches
-import beaverlib.utils.Units.Linear.metersPerSecond
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
@@ -11,7 +10,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Voltage
-import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.drive.DifferentialDrive
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
@@ -21,13 +19,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism
 
 object DriveConstants {
-    val MaxVoltage = 12.0 // todo
+    val MaxVoltage = 12.0
     val WheelDiameter = 6.0.inches // todo
-    val LeftMainDrive = 13 // todo
-    val LeftSubDrive = 7 // todo
-    val RightMainDrive = 10 // todo
-    val RightSubDrive = 6 // todo
-    val DriveMotorCurrentLimit = 20
+    val LeftMainDrive = 13
+    val LeftSubDrive = 7
+    val RightMainDrive = 10
+    val RightSubDrive = 6
+    val DrivetrainCurrentLimit = 20
 }
 
 object Drivetrain : SubsystemBase() {
@@ -52,22 +50,18 @@ object Drivetrain : SubsystemBase() {
     }
 
     init {
-        Engine.initMotorControllers(DriveConstants.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
-        Engine.initMotorControllers(DriveConstants.DriveMotorCurrentLimit, SparkBaseConfig.IdleMode.kCoast, false, rightMain)
-        Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
-        Engine.setMotorFollow(DriveConstants.DriveMotorCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
-
-
-
+        Engine.initMotorControllers(DriveConstants.DrivetrainCurrentLimit, SparkBaseConfig.IdleMode.kCoast, true, leftMain)
+        Engine.initMotorControllers(DriveConstants.DrivetrainCurrentLimit, SparkBaseConfig.IdleMode.kCoast, false, rightMain)
+        Engine.setMotorFollow(DriveConstants.DrivetrainCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, leftSecondary, leftMain)
+        Engine.setMotorFollow(DriveConstants.DrivetrainCurrentLimit,SparkBaseConfig.IdleMode.kCoast, false, rightSecondary, rightMain)
         drive.setDeadband(0.0)
     }
     /** Drive by setting left and right power (-1 to 1).
      * @param left Power for left motors [-1.0.. 1.0]. Forward is positive.
      * @param right Voltage for right motors [-1.0.. 1.0]. Forward is positive.
      * */
-    fun tankDrive(left: Double, right: Double) {
-        drive.tankDrive(left, right, false)
-    }
+    fun tankDrive(left: Double, right: Double) { drive.tankDrive(left, right, false) }
+
     /** Drive by setting left and right voltage (-12v to 12v)
      * @param left Voltage for left motors
      * @param right Voltage for right motors
@@ -140,16 +134,12 @@ object Drivetrain : SubsystemBase() {
      *
      * @param direction The direction (forward or reverse) to run the test in
      */
-    fun sysIdQuasistatic(direction: SysIdRoutine.Direction?): Command? {
-        return sysIdRoutine.quasistatic(direction)
-    }
+    fun sysIdQuasistatic(direction: SysIdRoutine.Direction?): Command? { return sysIdRoutine.quasistatic(direction) }
 
     /**
      * Returns a command that will execute a dynamic test in the given direction.
      *
      * @param direction The direction (forward or reverse) to run the test in
      */
-    fun sysIdDynamic(direction: SysIdRoutine.Direction?): Command? {
-        return sysIdRoutine.dynamic(direction)
-    }
+    fun sysIdDynamic(direction: SysIdRoutine.Direction?): Command? { return sysIdRoutine.dynamic(direction) }
 }

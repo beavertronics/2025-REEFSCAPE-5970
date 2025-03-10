@@ -11,10 +11,9 @@ import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import frc.robot.commands.Arm.JankArm
-import frc.robot.commands.Arm.MoveArm
-import frc.robot.commands.Arm.OuttakeCoral
-import frc.robot.commands.General.Drive
-import frc.robot.subsystems.ArmConstants
+import frc.robot.commands.OuttakeCoral
+import frc.robot.commands.Drive
+
 //import frc.robot.subsystems.Lights
 
 /*
@@ -69,8 +68,6 @@ object RobotController : TimedRobot() {
         ManualAutoChooser.setDefaultOption("No Auto", Commands.none())
         ManualAutoChooser.addOption("drive forwards", manualAutoCommands["drive backwards"])
         ManualAutoChooser.addOption("deposit preload", manualAutoCommands["deposit preload"])
-
-
         SmartDashboard.putData("Auto choices", ManualAutoChooser);
 
     }

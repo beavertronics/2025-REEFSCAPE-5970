@@ -23,11 +23,7 @@ class RunClimb(
         }
     }
 
-    override fun end(interrupted: Boolean) {
-        Climb.runClimb(0.0)
-    }
+    override fun end(interrupted: Boolean) { Climb.runClimb(0.0) }
 
-    override fun isFinished(): Boolean {
-        return Climb.climbLimitSwitch.get()
-    }
+    override fun isFinished(): Boolean { return Climb.climbLimitSwitch.get() }
 }

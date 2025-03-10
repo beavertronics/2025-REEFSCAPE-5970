@@ -2,7 +2,6 @@ package frc.robot.subsystems
 
 import Engine.BeaverRelativeEncoder
 import beaverlib.utils.Units.Angular.degrees
-import beaverlib.utils.Units.Angular.radians
 import com.revrobotics.spark.SparkBase
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
@@ -19,14 +18,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.robot.commands.Arm.ArmTherapy
-import frc.robot.commands.Arm.Tuning.ArmTune
-import kotlin.math.cos
 
 object ArmConstants {
     // motor IDs and whatnot
     const val ArmMotorID = 8
-    const val outtakeMotorID = 14
-    const val ArmAmpLimit = 20
+    const val ArmCurrentLimit = 20
     const val ArmStartLimitSwitchDIO = 3 // front
     const val ArmEndLimitSwitchDIO = 2 // back
     const val ArmBeamBreakDIO = 5
@@ -57,7 +53,6 @@ object ArmConstants {
 
 object Arm : SubsystemBase() {
     val armMotor = SparkMax(ArmConstants.ArmMotorID, SparkLowLevel.MotorType.kBrushless)
-    val outtakeMotor = SparkMax(ArmConstants.outtakeMotorID, SparkLowLevel.MotorType.kBrushed)
     val encoderRatio : Double = ((1.0/40.0) * (42.0 / 30.0) * (48.0 / 18.0))
     //val encoder : BeaverDutyCycleEncoder = BeaverDutyCycleEncoder(ArmConstants.ArmEncoderDIO, (1.0/3.0) ) // todo set armOffset
     val encoder : BeaverRelativeEncoder = BeaverRelativeEncoder(armMotor.encoder, startingPosition = ArmConstants.BackLimitSwitchAngle, positionConversionFactor = encoderRatio)
@@ -74,7 +69,7 @@ object Arm : SubsystemBase() {
         // to add closed loop PID
         val config = SparkMaxConfig()
         config.idleMode(SparkBaseConfig.IdleMode.kCoast)
-        config.smartCurrentLimit(ArmConstants.ArmAmpLimit)
+        config.smartCurrentLimit(ArmConstants.ArmCurrentLimit)
         /*config.closedLoop.pid(
             ArmConstants.KP,
             ArmConstants.KI,
