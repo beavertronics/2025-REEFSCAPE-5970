@@ -30,7 +30,9 @@ class TeleopDriveCommand(
     private val slowModeSupplier: BooleanSupplier
 ) : Command() {
 
-    init { addRequirements(Drivetrain) }
+    init {
+        addRequirements(Drivetrain)
+    }
 
     /** @suppress */
     override fun execute() {

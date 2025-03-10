@@ -5,15 +5,17 @@ import beaverlib.utils.Sugar.within
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.Arm.JankArm
-import frc.robot.commands.Arm.MoveArm
 import frc.robot.commands.Arm.OuttakeCoral
+import frc.robot.commands.Arm.OuttakeCoralNoRequire
 import frc.robot.commands.RunClimb
 import frc.robot.commands.TeleopDriveCommand
-import frc.robot.subsystems.ArmConstants
+import frc.robot.subsystems.Arm
+import frc.robot.subsystems.Climb
 import frc.robot.subsystems.Drivetrain
 
 /*
@@ -27,13 +29,14 @@ setting up the commands for running the drivetrain and the subsystems
 object TeleOp {
     val teleOpDrive: TeleopDriveCommand =
         TeleopDriveCommand(
-            { OI.rightDrive * 1.0 * 1.0 * 1.0 * 1.0 * 1.0 * 1.0 }, // todo artifically lower right to match left (which is weaker)
-            { OI.leftDrive },
+            { OI.rightDrive },
+            { OI.leftDrive * 0.95 },
             { false }
         )
 
     init {
-//        Climb
+        Climb
+        Arm
         Drivetrain.defaultCommand = teleOpDrive // sets what function is called every frame (somewhere?)
     }
 
@@ -41,12 +44,18 @@ object TeleOp {
      * configures things to run on specific inputs
      */
     fun configureBindings() {
-        OI.spoolClimb.whileTrue(RunClimb(speed = -0.8))
+        OI.spoolClimb.whileTrue(RunClimb(speed = -0.7))
         OI.ejectCoral.whileTrue(OuttakeCoral(null, speed = 3.5))
 //        OI.moveArmForward.whileTrue(MoveArm(ArmConstants.FrontLimitSwitchAngle))
 //        OI.moveArmBackward.whileTrue(MoveArm(ArmConstants.BackLimitSwitchAngle))
         OI.moveArmForward.whileTrue(JankArm(5.0))
         OI.moveArmBackward.whileTrue(JankArm(-5.0))
+        OI.forwardArmAndOuttake.whileTrue(
+            ParallelCommandGroup(
+                JankArm(-3.0), // move arm to back of robot
+                OuttakeCoralNoRequire(3.0, speed = 3.5)
+            )
+        )
     }
 
     /**
@@ -101,6 +110,7 @@ object TeleOp {
         val ejectCoral get() = operatorController.x()
         val moveArmForward get() = operatorController.y()
         val moveArmBackward get() = operatorController.a()
+        val forwardArmAndOuttake get() = operatorController.rightBumper()
     }
 }
 

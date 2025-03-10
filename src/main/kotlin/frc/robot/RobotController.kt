@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import frc.robot.commands.Arm.JankArm
 import frc.robot.commands.Arm.MoveArm
 import frc.robot.commands.Arm.OuttakeCoral
-import frc.robot.commands.Autos.driveForward
+import frc.robot.commands.General.Drive
 import frc.robot.subsystems.ArmConstants
 //import frc.robot.subsystems.Lights
 
@@ -41,12 +41,16 @@ object RobotController : TimedRobot() {
             "deposit preload",
             SequentialCommandGroup(
                 ParallelCommandGroup(
-                    driveForward(speed = 0.25, driveTime = 5.5), // todo
+                    Drive(speed = -0.25, driveTime = 1.9),
                     JankArm(-3.0), // reset arm to back / outtake of robot
                 ),
-                OuttakeCoral(3.0),
+                OuttakeCoral(3.0, speed = 3.5),
                 JankArm(3.0) // move arm to front of robot
             )
+        ),
+        Pair(
+            "drive backwards",
+            SequentialCommandGroup(Drive(speed = -0.25, driveTime = 1.9))
         )
     )
 //    val autoChooser = AutoBuilder.buildAutoChooser();
@@ -62,9 +66,11 @@ object RobotController : TimedRobot() {
         CameraServer.startAutomaticCapture(0) // todo 0 or 1? no drive cam :c
 //        SmartDashboard.putData("Auto Chooser", autoChooser);
 
-        ManualAutoChooser.setDefaultOption("No Auto", Commands.none());
-        ManualAutoChooser.addOption("Operation bear minimum", driveForward(speed = 0.25, driveTime = 5.5))
+        ManualAutoChooser.setDefaultOption("No Auto", Commands.none())
+        ManualAutoChooser.addOption("drive forwards", manualAutoCommands["drive backwards"])
         ManualAutoChooser.addOption("deposit preload", manualAutoCommands["deposit preload"])
+
+
         SmartDashboard.putData("Auto choices", ManualAutoChooser);
 
     }
