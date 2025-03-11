@@ -45,9 +45,7 @@ object RobotController : TimedRobot() {
     /**
      * runs when teleop is ready
      */
-    override fun teleopInit() {
-        TeleOpDriveCommand.schedule()
-    }
+    override fun teleopInit() {}
 
     /**
      * runs on every frame of teleop

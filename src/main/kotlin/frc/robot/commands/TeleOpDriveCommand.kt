@@ -1,174 +1,62 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 package frc.robot.commands
-import edu.wpi.first.wpilibj.XboxController
+
+import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import kotlin.math.*
-
-import beaverlib.utils.Sugar.within
+import frc.robot.subsystems.DriveConstants
 import frc.robot.subsystems.Drivetrain
+import java.util.function.BooleanSupplier
+import java.util.function.DoubleSupplier
 
+///////////////////////////////////////////////////
 /*
-Controls the robot based off of inputs from the humans operating the driving station.
+Responsible for running the drivetrain ONLY
  */
-
+///////////////////////////////////////////////////
 
 /**
- * class for managing systems and inputs
+ * A command that controls the swerve drive using controller inputs.
+ * @param velocityLeftSupplier The percentage to drive the left side of the robot at.
+ * @param velocityRightSupplier The percentage to drive the irght side of the robot at.
+ * @param slowModeSupplier Boolean supplier that returns true if the robot should drive in slow mode.
+ * @see Drivetrain
  */
-object TeleOpDriveCommand : Command() {
+class TeleopDriveCommand(
+    private val velocityLeftSupplier: DoubleSupplier,
+    private val velocityRightSupplier: DoubleSupplier,
+    private val slowModeSupplier: BooleanSupplier
+) : Command() {
 
-    /**
-     * Makes sure that everything intializes together,
-     * and that there isn't a time gap between things being called.
-     */
-    override fun initialize() {
+    init {
         addRequirements(Drivetrain)
     }
 
-    /**
-     * The main executing loops for driving
-     * the robot and whatnot.
-     * Executed very frame
-     */
+    /** @suppress */
     override fun execute() {
+        var leftVelocity = velocityLeftSupplier.asDouble
+        var rightVelocity = velocityRightSupplier.asDouble
+        val slowMode = slowModeSupplier.asBoolean
+        SmartDashboard.putNumber("vL", leftVelocity)
+        SmartDashboard.putNumber("vR", rightVelocity)
+
+        if (slowMode) {
+            leftVelocity *= 0.6
+            rightVelocity *= 0.6
+        }
+
+        // Drive using raw values
         Drivetrain.rawDrive(
-        (OI.forwards - OI.strafe) * 12,
-        (OI.forwards + OI.strafe) * 12
+            leftVelocity * DriveConstants.MaxVoltage,
+            rightVelocity * DriveConstants.MaxVoltage
         )
-
-        print("forwards, strafe:")
-        print(OI.forwards)
-        print(", ")
-        println(OI.strafe)
     }
 
-    /**
-     * Class for the operator interface
-     * getting inputs from controllers and whatnot.
-     */
-    object OI {
-        private val drivingController = XboxController(2)
+    /** @suppress */
+    override fun end(interrupted: Boolean) {}
 
-        /**
-         * Allows you to tweak controller inputs (ie get rid of deadzone, make input more sensitive by squaring or cubing it, etc).
-         */
-        private fun Double.processInput(deadzone : Double = 0.1, squared : Boolean = false, cubed : Boolean = false, readjust : Boolean = true) : Double{
-            var processed = this
-            if(readjust) processed = ((this.absoluteValue - deadzone)/(1 - deadzone))*this.sign
-            return when {
-                this.within(deadzone) ->    0.0
-                squared ->                  processed.pow(2) * this.sign
-                cubed   ->                  processed.pow(3)
-                else    ->                  processed
-            }
-        }
-        private fun Double.abs_GreaterThan(target: Double): Boolean{
-            return this.absoluteValue > target
-        }
-
-        val forwards get() = drivingController.leftY.processInput() * -1
-        val strafe get() = drivingController.leftX.processInput()
-    }
+    /** @suppress */
+    override fun isFinished(): Boolean { return false }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// uwu

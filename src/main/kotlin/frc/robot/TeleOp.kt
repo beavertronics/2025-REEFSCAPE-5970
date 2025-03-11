@@ -5,16 +5,9 @@ import beaverlib.utils.Sugar.within
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
-import frc.robot.commands.Arm.JankArm
-import frc.robot.commands.OuttakeCoral
-import frc.robot.commands.RunClimb
 import frc.robot.commands.TeleopDriveCommand
-import frc.robot.subsystems.Arm
-import frc.robot.subsystems.Climb
 import frc.robot.subsystems.Drivetrain
 
 /*
@@ -80,6 +73,6 @@ object TeleOp {
          */
         //===== DRIVETRAIN =====//
         val drive get() = driverController.leftY.processInput()
-        val strafe get() = OI.driverController.leftX.processInput()
+        val strafe get() = driverController.leftX.processInput()
     }
 }

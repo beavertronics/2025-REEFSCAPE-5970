@@ -20,6 +20,9 @@ import frc.engine.utils.initMotorControllers
 import frc.engine.utils.*
 //import frc.robot.subsystems.Odometry.chassisSpeeds
 
+object DriveConstants {
+    val MaxVoltage = 12
+}
 
 object Drivetrain : SubsystemBase() {
     private val       leftMain = SparkMax(15, SparkLowLevel.MotorType.kBrushed)
