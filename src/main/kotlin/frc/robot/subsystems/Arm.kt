@@ -39,8 +39,8 @@ object ArmConstants {
     const val KV = 0.0 // to multiply to maintain velocity
     const val KA = 0.0 // to multiply desired acceleration
     // limit switch things
-    val FrontLimitSwitchAngle = 0.0.degrees // todo
-    val BackLimitSwitchAngle = 0.0.degrees // todo
+    val FrontLimitSwitchAngle = 46.73570459.degrees // todo
+    val BackLimitSwitchAngle = 58.67130713.degrees // todo
     // other things
     const val chainBackslash = 0.0 // todo, is the amount of slack in the chain
 

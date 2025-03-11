@@ -6,7 +6,6 @@ import frc.robot.subsystems.Arm.armMotor
 import frc.robot.subsystems.Arm.backLimitSwitch
 import frc.robot.subsystems.Arm.frontLimitSwitch
 import frc.robot.subsystems.ArmConstants
-import frc.robot.subsystems.Climb
 
 /**
  * resets the arms to the choice position
@@ -15,15 +14,15 @@ import frc.robot.subsystems.Climb
  */
 class ResetArm(
     val endGoal : ArmConstants.PositionState,
-    val speed: Double = 2.0
+    val speed: Double = 1.0
 )
 : Command() {
 
     init { addRequirements(Arm) }
 
     override fun end(interrupted: Boolean) {
-        //if (frontLimitSwitch.get()) { Arm.encoder.resetPosition(ArmConstants.FrontLimitSwitchAngle) }
-        //if (backLimitSwitch.get()) { Arm.encoder.setPosition(ArmConstants.BackLimitSwitchAngle) }
+        if (frontLimitSwitch.get()) { Arm.encoder.resetPosition(ArmConstants.FrontLimitSwitchAngle) }
+        if (backLimitSwitch.get()) { Arm.encoder.resetPosition(ArmConstants.BackLimitSwitchAngle) }
     }
 
     override fun execute() { armMotor.set(speed * endGoal.direction) }
