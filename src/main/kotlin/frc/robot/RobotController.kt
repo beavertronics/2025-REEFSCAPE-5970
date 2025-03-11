@@ -1,7 +1,7 @@
 package frc.robot
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import frc.robot.commands.TeleOp
+import frc.robot.commands.TeleOpDriveCommand
 import frc.robot.subsystems.Drivetrain
 
 /*
@@ -46,7 +46,7 @@ object RobotController : TimedRobot() {
      * runs when teleop is ready
      */
     override fun teleopInit() {
-        TeleOp.schedule()
+        TeleOpDriveCommand.schedule()
     }
 
     /**

@@ -14,7 +14,7 @@ Controls the robot based off of inputs from the humans operating the driving sta
 /**
  * class for managing systems and inputs
  */
-object TeleOp : Command() {
+object TeleOpDriveCommand : Command() {
 
     /**
      * Makes sure that everything intializes together,
