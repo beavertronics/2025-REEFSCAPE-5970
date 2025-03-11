@@ -2,6 +2,7 @@ package frc.robot.commands.Arm
 
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Arm
+import frc.robot.subsystems.Climb
 
 class JankArm(val voltage: Double = 1.0)
 : Command() {
@@ -13,7 +14,7 @@ class JankArm(val voltage: Double = 1.0)
     override fun end(interrupted: Boolean) { Arm.armMotor.stopMotor() }
 
     override fun isFinished(): Boolean {
-        if (voltage > 0) { return Arm.frontLimitSwitch.get() }
+        if (voltage > 0) { return Arm.frontLimitSwitch.get() || Climb.climbLimitSwitch.get() }
         else return Arm.backLimitSwitch.get()
     }
 }
