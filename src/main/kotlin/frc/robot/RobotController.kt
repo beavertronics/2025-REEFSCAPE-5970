@@ -20,7 +20,8 @@ object RobotController : TimedRobot() {
         //TODO: Autos go here!
         //ie 
         //"Description of auto" to TaxiAuto
-    //)    
+    //)
+    val commandScheduler = CommandScheduler.getInstance()
 
     /**
      * runs when robot turns on, should be used for any initialization of robot
@@ -34,7 +35,7 @@ object RobotController : TimedRobot() {
      * used for telemetry, command scheduler, etc
      */
     override fun robotPeriodic() {
-        CommandScheduler.getInstance().run()
+        commandScheduler.run()
     }
 
     override fun autonomousInit() {}
