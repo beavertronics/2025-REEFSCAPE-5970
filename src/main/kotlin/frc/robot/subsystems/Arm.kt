@@ -31,7 +31,7 @@ object ArmConstants {
     const val maxAcceleration = 1.0 // todo
     // pid things
     var KP = 0.0 // todo
-    var KI = 0.0 // todo
+    const val KI = 0.0 // todo
     const val KD = 0.0
     // arm feed forward things?
     var KS = 0.0 // minimum voltage to move (K static) // todo
@@ -40,7 +40,7 @@ object ArmConstants {
     const val KA = 0.0 // to multiply desired acceleration
     // limit switch things
     val FrontLimitSwitchAngle = 46.73570459.degrees // todo
-    val BackLimitSwitchAngle = 58.67130713.degrees // todo
+    val BackLimitSwitchAngle = 180.0.degrees - 58.67130713.degrees // todo
     // other things
     const val chainBackslash = 0.0 // todo, is the amount of slack in the chain
 
@@ -76,6 +76,10 @@ object Arm : SubsystemBase() {
             ArmConstants.KD
         )*/
 
+        SmartDashboard.putNumber("Arm KP", ArmConstants.KP)
+        SmartDashboard.putNumber("Arm KG", ArmConstants.KG)
+        SmartDashboard.putNumber("Arm KS", ArmConstants.KS)
+
         // Don't persist parameters since it takes time and this change is temporary
         armMotor.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kNoPersistParameters)
         defaultCommand = ArmTherapy()
@@ -90,6 +94,10 @@ object Arm : SubsystemBase() {
             encoder.resetPosition(ArmConstants.FrontLimitSwitchAngle)
         }
         SmartDashboard.putBoolean("Coral in?", IntakeBeamBreak.get())
+
+        ArmConstants.KP = SmartDashboard.getNumber("Arm KP", 0.0)
+        ArmConstants.KG = SmartDashboard.getNumber("Arm KG", 0.0)
+        ArmConstants.KS = SmartDashboard.getNumber("Arm KS", 0.0)
     }
 
     // in a perfect world, how to go from point a to b
