@@ -28,8 +28,8 @@ setting up the commands for running the drivetrain and the subsystems
 object TeleOp {
     val teleOpDrive: TeleopDriveCommand =
         TeleopDriveCommand(
-            { OI.rightDrive },
-            { OI.leftDrive * 0.95 }, // right side is artificially weaker to match left side
+            { OI.drive - OI.strafe },
+            { (OI.drive + OI.strafe) * 0.95 }, // right side is artificially weaker to match left side
             { false }
         )
 
@@ -101,9 +101,11 @@ object TeleOp {
          * Values for inputs go here
          */
         //===== DRIVETRAIN =====//
-        val leftDrive get() = leftDriveController.y.processInput(cubed = true) * -1
-        val rightDrive get() = rightDriveController.y.processInput(cubed = true) * -1
-        val slowMode get() = rightDriveController.trigger().asBoolean
+//        val leftDrive get() = leftDriveController.y.processInput(cubed = true) * -1
+        val drive get() = operatorController.leftY.processInput() * -1
+        val strafe get() = operatorController.leftX.processInput() * -1
+//        val rightDrive get() = rightDriveController.y.processInput(cubed = true) * -1
+//        val slowMode get() = rightDriveController.trigger().asBoolean
         //===== SUBSYSTEMS =====//
         val spoolClimb get() = operatorController.b()
         val ejectCoral get() = operatorController.x()
