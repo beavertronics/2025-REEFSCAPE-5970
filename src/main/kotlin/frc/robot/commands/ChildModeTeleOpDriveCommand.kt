@@ -34,14 +34,14 @@ class ChildModeTeleOpDriveCommand(
     /** @suppress */
     override fun execute() {
         // initially set drive inputs to child mode
-        var leftVelocity = TeleOp.OI.childDriveLeft
-        var rightVelocity = TeleOp.OI.childDriveRight
+        var leftVelocity = TeleOp.OI.leftJoystick
+        var rightVelocity = TeleOp.OI.rightJoystick
         var speedMult = 3
         // if child mode is disabled, use child overwatcher inputs instead
         if (TeleOp.OI.toggleChildMode.asBoolean == false) {
-            leftVelocity = TeleOp.OI.drive - TeleOp.OI.strafe
-            rightVelocity = TeleOp.OI.drive + TeleOp.OI.strafe
-            speedMult = 12
+            leftVelocity = TeleOp.OI.controllerDrive - TeleOp.OI.controllerStrafe
+            rightVelocity = TeleOp.OI.controllerDrive + TeleOp.OI.controllerStrafe
+            speedMult = 9
         }
 
         // Drive using raw values

@@ -3,14 +3,15 @@ package frc.robot.commands
 import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.Shooter
 
-class RunShooter : Command() {
-    init {
-        addRequirements(Shooter)
-    }
+class RunShooter(
+    val rawVoltage : Double = 1.0
+) : Command() {
+
+    init { addRequirements(Shooter) }
 
     override fun execute() {
-        Shooter.leftFlywheel.setVoltage(-9.0)
-        Shooter.rightFlywheel.setVoltage(-9.0)
+        Shooter.leftFlywheel.setVoltage(rawVoltage)
+        Shooter.rightFlywheel.setVoltage(rawVoltage)
     }
 
     override fun end(interrupted: Boolean) {

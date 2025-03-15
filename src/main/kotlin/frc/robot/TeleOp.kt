@@ -26,22 +26,24 @@ setting up the commands for running the drivetrain and the subsystems
 object TeleOp {
     val teleOpDrive: TeleopDriveCommand =
         TeleopDriveCommand(
-            { OI.drive - OI.strafe },
-            { OI.drive + OI.strafe },
+            { OI.leftJoystick },
+            { OI.rightJoystick },
             { false }
         )
-    val childModeDrive: ChildModeTeleOpDriveCommand =
-        ChildModeTeleOpDriveCommand()
+    val childModeDrive: ChildModeTeleOpDriveCommand = ChildModeTeleOpDriveCommand()
 
     fun configureBindings() {
         OI.runIntakeIn.whileTrue(RunIntake(0.8))
         OI.runIntakeOut.whileTrue(RunIntake(-0.8))
-        OI.shooter.whileTrue(RunShooter())
+        OI.runShooter.whileTrue(RunShooter(-9.0))
     }
 
     init {
-//        Drivetrain.defaultCommand = teleOpDrive // for normal use
-        Drivetrain.defaultCommand = childModeDrive // for child mode
+        /**
+         * SWAP THE BELOW DEFAULT COMMANDS FOR ENABLING OR DISABLING CHILD MODE!
+         */
+        Drivetrain.defaultCommand = teleOpDrive // for normal use
+//        Drivetrain.defaultCommand = childModeDrive // for child mode
 
     }
 
@@ -89,16 +91,13 @@ object TeleOp {
          * Values for inputs go here
          */
         //===== DRIVETRAIN (MAIN) =====//
-        val drive get() = driverController.leftY.processInput()
-        val strafe get() = driverController.leftX.processInput()
-        val toggleChildMode get() = driverController.rightBumper()
+        val controllerDrive get() = driverController.leftY.processInput()
+        val controllerStrafe get() = driverController.leftX.processInput()
+        val leftJoystick get() = childLeftDrive.y.processInput()
+        val rightJoystick get() = childRightDrive.y.processInput()
         val runIntakeIn get() = driverController.a()
         val runIntakeOut get() = driverController.y()
-        val shooter get() = driverController.x()
-
-
-        //===== DRIVETRAIN (CHILD MODE) =====//
-        val childDriveLeft get() = childLeftDrive.y.processInput()
-        val childDriveRight get() = childRightDrive.y.processInput()
+        val runShooter get() = driverController.x()
+        val toggleChildMode get() = driverController.rightBumper()
     }
 }

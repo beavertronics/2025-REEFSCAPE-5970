@@ -7,15 +7,9 @@ class RunIntake(
     val percent : Double = 0.1
 ) : Command() {
 
-    init {
-        addRequirements(Intake)
-    }
+    init { addRequirements(Intake) }
 
-    override fun execute() {
-        Intake.runIntake(percent)
-    }
+    override fun execute() { Intake.runIntake(percent) }
 
-    override fun end(interrupted: Boolean) {
-        Intake.runIntake(0.0)
-    }
+    override fun end(interrupted: Boolean) { Intake.runIntake(0.0) }
 }
