@@ -5,6 +5,7 @@ package frc.robot.commands
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import frc.robot.TeleOp
 import frc.robot.subsystems.DriveConstants
 import frc.robot.subsystems.Drivetrain
 import java.util.function.BooleanSupplier
@@ -23,10 +24,7 @@ Responsible for running the drivetrain ONLY
  * @param slowModeSupplier Boolean supplier that returns true if the robot should drive in slow mode.
  * @see Drivetrain
  */
-class TeleopDriveCommand(
-    private val velocityLeftSupplier: DoubleSupplier,
-    private val velocityRightSupplier: DoubleSupplier,
-    private val slowModeSupplier: BooleanSupplier
+class ChildModeTeleOpDriveCommand(
 ) : Command() {
 
     init {
@@ -35,21 +33,21 @@ class TeleopDriveCommand(
 
     /** @suppress */
     override fun execute() {
-        var leftVelocity = velocityLeftSupplier.asDouble
-        var rightVelocity = velocityRightSupplier.asDouble
-        val slowMode = slowModeSupplier.asBoolean
-        SmartDashboard.putNumber("vL", leftVelocity)
-        SmartDashboard.putNumber("vR", rightVelocity)
-
-        if (slowMode) {
-            leftVelocity *= 0.6
-            rightVelocity *= 0.6
+        // initially set drive inputs to child mode
+        var leftVelocity = TeleOp.OI.childDriveLeft
+        var rightVelocity = TeleOp.OI.childDriveRight
+        var speedMult = 3
+        // if child mode is disabled, use child overwatcher inputs instead
+        if (TeleOp.OI.toggleChildMode.asBoolean == false) {
+            leftVelocity = TeleOp.OI.drive - TeleOp.OI.strafe
+            rightVelocity = TeleOp.OI.drive + TeleOp.OI.strafe
+            speedMult = 12
         }
 
         // Drive using raw values
         Drivetrain.rawDrive(
-            leftVelocity * DriveConstants.MaxVoltage,
-            rightVelocity * DriveConstants.MaxVoltage
+            leftVelocity * speedMult,
+            rightVelocity * speedMult
         )
     }
 

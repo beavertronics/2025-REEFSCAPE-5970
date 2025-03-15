@@ -5,8 +5,11 @@ import beaverlib.utils.Sugar.within
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import frc.robot.commands.ChildModeTeleOpDriveCommand
 import frc.robot.commands.TeleopDriveCommand
 import frc.robot.subsystems.Drivetrain
 
@@ -25,9 +28,13 @@ object TeleOp {
             { OI.drive + OI.strafe },
             { false }
         )
+    val childModeDrive: ChildModeTeleOpDriveCommand =
+        ChildModeTeleOpDriveCommand()
 
     init {
-        Drivetrain.defaultCommand = teleOpDrive
+//        Drivetrain.defaultCommand = teleOpDrive // for normal use
+        Drivetrain.defaultCommand = childModeDrive // for child mode
+
     }
 
     /**
@@ -36,6 +43,8 @@ object TeleOp {
      */
     object OI : SubsystemBase() {
         val driverController = CommandXboxController(2)
+        val childLeftDrive = CommandJoystick(1)
+        val childRightDrive = CommandJoystick(0)
 
         /**
          * Allows you to tweak controller inputs (ie get rid of deadzone, make input more sensitive by squaring or cubing it, etc).
@@ -71,8 +80,13 @@ object TeleOp {
         /**
          * Values for inputs go here
          */
-        //===== DRIVETRAIN =====//
+        //===== DRIVETRAIN (MAIN) =====//
         val drive get() = driverController.leftY.processInput()
         val strafe get() = driverController.leftX.processInput()
+
+        //===== DRIVETRAIN (CHILD MODE) =====//
+        val childDriveLeft get() = childLeftDrive.y.processInput()
+        val childDriveRight get() = childRightDrive.y.processInput()
+        val toggleChildMode get() = driverController.rightBumper()
     }
 }
