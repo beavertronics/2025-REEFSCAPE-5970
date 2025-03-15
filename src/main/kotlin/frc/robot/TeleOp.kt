@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import frc.robot.commands.ChildModeTeleOpDriveCommand
+import frc.robot.commands.RunIntake
+import frc.robot.commands.RunShooter
 import frc.robot.commands.TeleopDriveCommand
 import frc.robot.subsystems.Drivetrain
 
@@ -30,6 +32,12 @@ object TeleOp {
         )
     val childModeDrive: ChildModeTeleOpDriveCommand =
         ChildModeTeleOpDriveCommand()
+
+    fun configureBindings() {
+        OI.runIntakeIn.whileTrue(RunIntake(0.8))
+        OI.runIntakeOut.whileTrue(RunIntake(-0.8))
+        OI.shooter.whileTrue(RunShooter())
+    }
 
     init {
 //        Drivetrain.defaultCommand = teleOpDrive // for normal use
@@ -83,10 +91,14 @@ object TeleOp {
         //===== DRIVETRAIN (MAIN) =====//
         val drive get() = driverController.leftY.processInput()
         val strafe get() = driverController.leftX.processInput()
+        val toggleChildMode get() = driverController.rightBumper()
+        val runIntakeIn get() = driverController.a()
+        val runIntakeOut get() = driverController.y()
+        val shooter get() = driverController.x()
+
 
         //===== DRIVETRAIN (CHILD MODE) =====//
         val childDriveLeft get() = childLeftDrive.y.processInput()
         val childDriveRight get() = childRightDrive.y.processInput()
-        val toggleChildMode get() = driverController.rightBumper()
     }
 }

@@ -44,7 +44,7 @@ object RobotController : TimedRobot() {
     /**
      * runs when teleop is ready
      */
-    override fun teleopInit() {}
+    override fun teleopInit() { TeleOp.configureBindings() }
 
     /**
      * runs on every frame of teleop

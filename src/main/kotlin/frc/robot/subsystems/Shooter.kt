@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import frc.engine.utils.initMotorControllers
 
 object Shooter : SubsystemBase() {
-    private val leftFlywheel = SparkMax(25, SparkLowLevel.MotorType.kBrushless)
-    private val rightFlywheel = SparkMax(26, SparkLowLevel.MotorType.kBrushless)
+    val leftFlywheel = SparkMax(25, SparkLowLevel.MotorType.kBrushless)
+    val rightFlywheel = SparkMax(26, SparkLowLevel.MotorType.kBrushless)
 
     private val    leftEncoder: RelativeEncoder = leftFlywheel.encoder
     private val   rightEncoder: RelativeEncoder = rightFlywheel.encoder
