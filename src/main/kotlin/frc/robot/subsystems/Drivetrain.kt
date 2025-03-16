@@ -1,5 +1,6 @@
 package frc.robot.subsystems
 
+import Engine.BeaverAbsoluteToRelativeEncoder
 import beaverlib.controls.Controller
 import beaverlib.utils.Units.Linear.VelocityUnit
 import beaverlib.utils.Units.Linear.inches
@@ -30,10 +31,12 @@ object DriveConstants {
 }
 
 object Drivetrain : SubsystemBase() {
-    private val       leftMain = SparkMax(DriveConstants.LeftMainDrive, SparkLowLevel.MotorType.kBrushed) // todo
-    private val  leftSecondary = SparkMax(DriveConstants.LeftSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
-    private val      rightMain = SparkMax(DriveConstants.RightMainDrive, SparkLowLevel.MotorType.kBrushed) // todo
-    private val rightSecondary = SparkMax(DriveConstants.RightSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
+    private val       leftMain = SparkMax(DriveConstants.LeftMainDrive, SparkLowLevel.MotorType.kBrushed)
+    private val  leftSecondary = SparkMax(DriveConstants.LeftSubDrive,  SparkLowLevel.MotorType.kBrushed)
+    private val      rightMain = SparkMax(DriveConstants.RightMainDrive, SparkLowLevel.MotorType.kBrushed)
+    private val rightSecondary = SparkMax(DriveConstants.RightSubDrive,  SparkLowLevel.MotorType.kBrushed)
+    val leftEncoder = BeaverAbsoluteToRelativeEncoder(leftMain.encoder, 1.0) // todo ratio
+    val rightEncoder = BeaverAbsoluteToRelativeEncoder(rightMain.encoder, 1.0) // todo ratio
 
     private val drive = DifferentialDrive(leftMain, rightMain)
 
@@ -82,13 +85,13 @@ object Drivetrain : SubsystemBase() {
         leftPid.setpoint = left.asMetersPerSecond
         rightPid.setpoint = right.asMetersPerSecond
 
-//        val lPidCalculated = leftPid.calculate(leftEncoder.rate)
-//        val rPidCalculated = rightPid.calculate(rightEncoder.rate)
+        val lPidCalculated = leftPid.calculate(leftEncoder.rate.asRadiansPerSecond)
+        val rPidCalculated = rightPid.calculate(rightEncoder.rate.asRadiansPerSecond)
 
         val lFFCalculated = leftFeedForward.calculate(leftPid.setpoint)
         val rFFCalculated = rightFeedForward.calculate(rightPid.setpoint)
 
-//        rawDrive(lPidCalculated+lFFCalculated, rPidCalculated + rFFCalculated )
+        rawDrive(lPidCalculated+lFFCalculated, rPidCalculated + rFFCalculated )
     }
 
     /** Drive by setting left and right speed, in M/s, using PID and FeedForward to correct for errors.
@@ -96,8 +99,8 @@ object Drivetrain : SubsystemBase() {
      * @param right Desired speed for the right motors, in M/s
      */
     fun closedLoopDrive(speeds: ChassisSpeeds) {
-//        val differentialSpeeds = `according to all known laws of aviation, our robot should not be able to fly`.kinematics.toWheelSpeeds(speeds)
-//        closedLoopDrive(differentialSpeeds.leftMetersPerSecond.metersPerSecond, differentialSpeeds.rightMetersPerSecond.metersPerSecond)
+        val differentialSpeeds = `according to all known laws of aviation, our robot should not be able to fly`.kinematics.toWheelSpeeds(speeds)
+        closedLoopDrive(differentialSpeeds.leftMetersPerSecond.metersPerSecond, differentialSpeeds.rightMetersPerSecond.metersPerSecond)
     }
 
     private val sysIdRoutine =
@@ -114,14 +117,14 @@ object Drivetrain : SubsystemBase() {
                     // the entire group to be one motor.
                     log.motor("drive-left")
                         .voltage( Volts.mutable(leftMain.get() * RobotController.getBatteryVoltage()) )
-//                        .linearPosition(Meters.mutable(leftEncoder.distance)) //TODO: should be distance
-//                        .linearVelocity( MetersPerSecond.mutable(leftEncoder.rate) ) //todo should be velocity
+                        .linearPosition(Meters.mutable(leftEncoder.position.asRadians)) //TODO: should be distance
+                        .linearVelocity( MetersPerSecond.mutable(leftEncoder.rate.asRadiansPerSecond) ) //todo should be velocity
                     // Record a frame for the right motors.  Since these share an encoder, we consider
                     // the entire group to be one motor.
                     log.motor("drive-right")
                         .voltage(Volts.mutable(rightMain.get() * RobotController.getBatteryVoltage() ) )
-//                        .linearPosition(Meters.mutable(rightEncoder.distance)) //todo should be distance
-//                        .linearVelocity( MetersPerSecond.mutable(rightEncoder.rate) ) //todo should be velocity
+                        .linearPosition(Meters.mutable(rightEncoder.position.asRadians)) //todo should be distance
+                        .linearVelocity( MetersPerSecond.mutable(rightEncoder.rate.asRadiansPerSecond) ) //todo should be velocity
                 },  // Tell SysId to make generated commands require this subsystem, suffix test state in
                 // WPILog with this subsystem's name ("drive")
                 this

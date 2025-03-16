@@ -5,13 +5,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
 import frc.robot.commands.Arm.ArmSysIdDynamic
 import frc.robot.commands.Arm.ArmSysIdQuasistatic
 
-
 class SysIDController {
     // The driver's controller
     var controller = CommandXboxController(2)
 
     fun configureBindings(){
-
 
         controller
             .a()

@@ -31,7 +31,7 @@ lower-bound - the lowest angle of the objective
 class BeaverDutyCycleEncoder(channel : Int,
                              val ratio : Double = 1.0,
                              var encoderOffset : AngleUnit = 0.0.radians,
-                             var armOffset : AngleUnit = 0.0.radians
+                             var armOffset : AngleUnit = 0.0.radians // todo rename to something less specific
                             ) : DutyCycleEncoder(channel, 2* PI, 0.0) {
     companion object {
         inline val AngleUnit.standardPosition: AngleUnit
