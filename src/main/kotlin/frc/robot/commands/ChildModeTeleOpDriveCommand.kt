@@ -3,10 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.commands
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import frc.robot.TeleOp
-import frc.robot.subsystems.DriveConstants
 import frc.robot.subsystems.Drivetrain
 import java.util.function.BooleanSupplier
 import java.util.function.DoubleSupplier
@@ -25,29 +22,34 @@ Responsible for running the drivetrain ONLY
  * @see Drivetrain
  */
 class ChildModeTeleOpDriveCommand(
+    private val childLeftVelocitySupplier : DoubleSupplier,
+    private val childRightVelocitySupplier : DoubleSupplier,
+    private val adultLeftVelocitySupplier : DoubleSupplier,
+    private val adultRightVelocitySupplier : DoubleSupplier,
+    private val toggleChildModeSupplier : BooleanSupplier,
+    private val maxChildModeSpeed : Double = 3.0,
+    private val maxAdultModeSpeed : Double = 9.0
 ) : Command() {
 
-    init {
-        addRequirements(Drivetrain)
-    }
+    init { addRequirements(Drivetrain) }
 
     /** @suppress */
     override fun execute() {
-        // initially set drive inputs to child mode
-        var leftVelocity = TeleOp.OI.leftJoystick
-        var rightVelocity = TeleOp.OI.rightJoystick
-        var speedMult = 3
-        // if child mode is disabled, use child overwatcher inputs instead
-        if (TeleOp.OI.toggleChildMode.asBoolean == false) {
-            leftVelocity = TeleOp.OI.controllerDrive - TeleOp.OI.controllerStrafe
-            rightVelocity = TeleOp.OI.controllerDrive + TeleOp.OI.controllerStrafe
-            speedMult = 9
+        var leftVelocity = 0.0
+        var rightVelocity = 0.0
+        if (toggleChildModeSupplier.asBoolean) {
+            leftVelocity = childLeftVelocitySupplier.asDouble * maxChildModeSpeed
+            rightVelocity = childRightVelocitySupplier.asDouble * maxChildModeSpeed
+        }
+        else {
+            leftVelocity = adultLeftVelocitySupplier.asDouble * maxAdultModeSpeed
+            rightVelocity = adultRightVelocitySupplier.asDouble * maxAdultModeSpeed
         }
 
         // Drive using raw values
         Drivetrain.rawDrive(
-            leftVelocity * speedMult,
-            rightVelocity * speedMult
+            leftVelocity,
+            rightVelocity
         )
     }
 

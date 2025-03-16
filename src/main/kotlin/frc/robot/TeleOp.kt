@@ -5,7 +5,6 @@ import beaverlib.utils.Sugar.within
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
@@ -30,7 +29,14 @@ object TeleOp {
             { OI.rightJoystick },
             { false }
         )
-    val childModeDrive: ChildModeTeleOpDriveCommand = ChildModeTeleOpDriveCommand()
+    val childModeDrive: ChildModeTeleOpDriveCommand =
+        ChildModeTeleOpDriveCommand(
+            { OI.leftJoystick },
+            { OI.rightJoystick },
+            { OI.parentDrive - OI.parentStrafe },
+            { OI.parentDrive + OI.parentStrafe },
+            { OI.toggleChildMode.asBoolean }
+        )
 
     fun configureBindings() {
         OI.runIntakeIn.whileTrue(RunIntake(0.8))
@@ -91,8 +97,8 @@ object TeleOp {
          * Values for inputs go here
          */
         //===== DRIVETRAIN (MAIN) =====//
-        val controllerDrive get() = driverController.leftY.processInput()
-        val controllerStrafe get() = driverController.leftX.processInput()
+        val parentDrive get() = driverController.leftY.processInput()
+        val parentStrafe get() = driverController.leftX.processInput()
         val leftJoystick get() = childLeftDrive.y.processInput()
         val rightJoystick get() = childRightDrive.y.processInput()
         val runIntakeIn get() = driverController.a()
