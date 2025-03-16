@@ -3,6 +3,7 @@ package frc.robot.subsystems
 import beaverlib.controls.Controller
 import beaverlib.utils.Units.Linear.VelocityUnit
 import beaverlib.utils.Units.Linear.inches
+import beaverlib.utils.Units.Linear.metersPerSecond
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
@@ -33,8 +34,6 @@ object Drivetrain : SubsystemBase() {
     private val  leftSecondary = SparkMax(DriveConstants.LeftSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
     private val      rightMain = SparkMax(DriveConstants.RightMainDrive, SparkLowLevel.MotorType.kBrushed) // todo
     private val rightSecondary = SparkMax(DriveConstants.RightSubDrive,  SparkLowLevel.MotorType.kBrushed) // todo
-//    val leftEncoder = Encoder(0, 1, false)
-//    val rightEncoder = Encoder(2, 3, false)
 
     private val drive = DifferentialDrive(leftMain, rightMain)
 

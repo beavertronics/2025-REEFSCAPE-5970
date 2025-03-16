@@ -1,6 +1,7 @@
 package frc.robot
 
-//import com.pathplanner.lib.auto.AutoBuilder
+import com.pathplanner.lib.auto.AutoBuilder
+import com.pathplanner.lib.commands.PathPlannerAuto
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import frc.robot.commands.Arm.JankArm
 import frc.robot.commands.OuttakeCoral
 import frc.robot.commands.Drive
+//import frc.robot.subsystems.Phatplanner
 
 //import frc.robot.subsystems.Lights
 
@@ -20,8 +22,6 @@ import frc.robot.commands.Drive
  Main code for controlling the robot. Mainly just links everything together.
 
  Driver control is defined in TeleOp.kt.
-
- The hardware of the robot (what motor controllers, etc) is defined in "robot info.kt"
 */
 
 /**
@@ -29,9 +29,10 @@ import frc.robot.commands.Drive
  * of the timed robot class
  */
 object RobotController : TimedRobot() {
-    // general things
     val commandScheduler = CommandScheduler.getInstance()
-    // anything relating to autos
+    // true if running manual autos when enabled
+    // false if running pathplanner autos when enabled
+    var manualAutos = true
     val manualAutoCommands: Map<String,Command> = mapOf(
         /**
          * Drives the robot forwards and deposits the preloaded coral
@@ -52,9 +53,9 @@ object RobotController : TimedRobot() {
             SequentialCommandGroup(Drive(speed = -0.25, driveTime = 1.9))
         )
     )
-//    val autoChooser = AutoBuilder.buildAutoChooser();
     var selectedManualAuto: Command? = null
     val ManualAutoChooser = SendableChooser<Command>()
+    var selectedPathAuto: Command? = null
 
     /**
      * runs when robot turns on, should be used for any initialization of robot or subsystems
@@ -63,12 +64,15 @@ object RobotController : TimedRobot() {
 //        Lights
         TeleOp
         CameraServer.startAutomaticCapture(0) // todo 0 or 1? no drive cam :c
-//        SmartDashboard.putData("Auto Chooser", autoChooser);
-
-        ManualAutoChooser.setDefaultOption("No Auto", Commands.none())
+        // load manual autos
+        ManualAutoChooser.setDefaultOption("no auto", Commands.none())
         ManualAutoChooser.addOption("drive forwards", manualAutoCommands["drive backwards"])
         ManualAutoChooser.addOption("deposit preload", manualAutoCommands["deposit preload"])
-        SmartDashboard.putData("Auto choices", ManualAutoChooser);
+        SmartDashboard.putData("Manual auto choices", ManualAutoChooser)
+        // load pathplanner autos
+//        Phatplanner.autoChooser.setDefaultOption("no auto", Commands.none())
+//        Phatplanner.autoChooser.addOption("3 piece center auto (backwards)", PathPlannerAuto("comp - 3 coral auto"))
+//        SmartDashboard.putData("Pathplanner auto choices", Phatplanner.autoChooser)
 
     }
 
@@ -79,9 +83,18 @@ object RobotController : TimedRobot() {
     override fun robotPeriodic() { commandScheduler.run() }
 
     override fun autonomousInit() {
-        selectedManualAuto = ManualAutoChooser.selected
-        selectedManualAuto?.schedule()
-        println("Auto selected: " + selectedManualAuto)
+        if (manualAutos) {
+            println("Using manual auto")
+            selectedManualAuto = ManualAutoChooser.selected
+            selectedManualAuto?.schedule()
+            println("Auto selected: " + selectedManualAuto)
+        }
+        else {
+            println("using pathplanner auto")
+//            selectedPathAuto = Phatplanner.getAutonomousCommand()
+            selectedPathAuto?.schedule()
+            println("Auto selected: " + selectedPathAuto)
+        }
     }
     override fun autonomousPeriodic() {} //TODO: Unnecesary with command-based programming?
 
@@ -90,7 +103,8 @@ object RobotController : TimedRobot() {
      */
     override fun teleopInit() {
         TeleOp.configureBindings()
-        if (selectedManualAuto != null) { selectedManualAuto?.cancel() }
+        if (manualAutos && selectedManualAuto != null) { selectedManualAuto?.cancel() }
+        else if (!manualAutos && selectedPathAuto != null) { selectedPathAuto?.cancel() }
     }
 
     /**
