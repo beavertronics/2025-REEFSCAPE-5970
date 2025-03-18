@@ -1,5 +1,6 @@
 package frc.robot
 
+import beaverlib.utils.Units.Angular.rotations
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.commands.PathPlannerAuto
 import edu.wpi.first.cameraserver.CameraServer
@@ -14,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import frc.robot.commands.Arm.JankArm
 import frc.robot.commands.OuttakeCoral
 import frc.robot.commands.Drive
+import frc.robot.commands.Rotate
+
 //import frc.robot.subsystems.Phatplanner
 
 //import frc.robot.subsystems.Lights
@@ -44,13 +47,31 @@ object RobotController : TimedRobot() {
                     Drive(speed = -0.25, driveTime = 1.9),
                     JankArm(-3.0), // reset arm to back / outtake of robot
                 ),
-                OuttakeCoral(3.0, speed = 3.5),
+                OuttakeCoral(3.0, 3.5),
                 JankArm(3.0) // move arm to front of robot
             )
         ),
         Pair(
             "drive backwards",
             SequentialCommandGroup(Drive(speed = -0.25, driveTime = 1.9))
+        ),
+        Pair("(reef left) side start and deposit preload",
+            SequentialCommandGroup(
+                Drive(speed = -0.25, driveTime = 1.9),
+                Rotate(-0.0.rotations, 3.0), // todo how much to rotate by
+                Drive(speed = -0.25, driveTime = 1.9), // todo find out how long to drive by
+                JankArm(-3.0),
+                OuttakeCoral(3.0, 3.5)
+            )
+        ),
+        Pair("(reef right) side start and deposit preload",
+            SequentialCommandGroup(
+                Drive(speed = -0.25, driveTime = 1.9),
+                Rotate(0.0.rotations, 3.0), // todo how much to rotate by
+                Drive(speed = -0.25, driveTime = 1.9), // todo find out how long to drive by
+                JankArm(-3.0),
+                OuttakeCoral(3.0, 3.5)
+            )
         )
     )
     var selectedManualAuto: Command? = null
@@ -68,6 +89,8 @@ object RobotController : TimedRobot() {
         ManualAutoChooser.setDefaultOption("no auto", Commands.none())
         ManualAutoChooser.addOption("drive forwards", manualAutoCommands["drive backwards"])
         ManualAutoChooser.addOption("deposit preload", manualAutoCommands["deposit preload"])
+        ManualAutoChooser.addOption("(reef left) side start and deposit preload", manualAutoCommands["(reef left) side start and deposit preload"])
+        ManualAutoChooser.addOption("(reef right) side start and deposit preload", manualAutoCommands["(reef right) side start and deposit preload"])
         SmartDashboard.putData("Manual auto choices", ManualAutoChooser)
         // load pathplanner autos
 //        Phatplanner.autoChooser.setDefaultOption("no auto", Commands.none())

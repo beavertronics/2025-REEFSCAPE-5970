@@ -2,9 +2,9 @@ package frc.robot.subsystems
 
 import Engine.BeaverAbsoluteToRelativeEncoder
 import beaverlib.controls.Controller
-import beaverlib.utils.Units.Linear.VelocityUnit
-import beaverlib.utils.Units.Linear.inches
-import beaverlib.utils.Units.Linear.metersPerSecond
+import beaverlib.utils.Units.Electrical.volts
+import beaverlib.utils.Units.Linear.*
+import beaverlib.utils.Units.seconds
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import com.revrobotics.spark.config.SparkBaseConfig
@@ -101,6 +101,18 @@ object Drivetrain : SubsystemBase() {
     fun closedLoopDrive(speeds: ChassisSpeeds) {
         val differentialSpeeds = `according to all known laws of aviation, our robot should not be able to fly`.kinematics.toWheelSpeeds(speeds)
         closedLoopDrive(differentialSpeeds.leftMetersPerSecond.metersPerSecond, differentialSpeeds.rightMetersPerSecond.metersPerSecond)
+    }
+
+    /**
+     * Calculates and returns how long to run the Drive command at 3 volts in order to go the intended distance
+     * @param goalDistance the distance, in inches, you want to go
+     */
+    // todo test function
+    fun calcDistanceTime(goalDistance: DistanceUnit) : Double {
+        val knownDistance = 0.0.inches // todo
+        val knownTime = 2.0.seconds
+        val goalTime = goalDistance * (knownTime.asSeconds / knownDistance.asInches)
+        return goalTime.asInches
     }
 
     private val sysIdRoutine =
