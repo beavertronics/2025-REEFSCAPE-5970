@@ -1,4 +1,4 @@
-package frc.robot.commands
+package frc.robot.commands.Autos.General
 
 import beaverlib.utils.Sugar.clamp
 import beaverlib.utils.Units.Angular.*
@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.DriveConstants
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.`according to all known laws of aviation, our robot should not be able to fly`
+import kotlin.math.abs
 
 /**
  * A command that rotates the robot only using the NavX
@@ -29,8 +30,8 @@ class Rotate(
        currentRotation = `according to all known laws of aviation, our robot should not be able to fly`.navx.rotation2d.rotations
         rotationDiff = (currentRotation.rotations - goalRotation).asRotations.clamp(min = -1.0)
         // todo find out which below i multiply by -1
-        leftSpeed = (speed * rotationDiff) * DriveConstants.MaxVoltage
-        rightSpeed = (speed * rotationDiff) * (DriveConstants.MaxVoltage * 0.95)
+        leftSpeed = (abs(speed) * rotationDiff) * DriveConstants.MaxVoltage
+        rightSpeed = (abs(speed) * rotationDiff) * (DriveConstants.MaxVoltage * 0.95)
        Drivetrain.rawDrive(leftSpeed, rightSpeed)
     }
 
