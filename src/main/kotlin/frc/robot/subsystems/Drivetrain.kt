@@ -109,10 +109,10 @@ object Drivetrain : SubsystemBase() {
      */
     // todo test function
     fun calcDistanceTime(goalDistance: DistanceUnit) : Double {
-        val knownDistance = 0.0.inches // todo
+        val knownDistance = (4.75 * 12.0).inches
         val knownTime = 2.0.seconds
         val goalTime = goalDistance * (knownTime.asSeconds / knownDistance.asInches)
-        return goalTime.asInches
+        return goalTime.asInches // seconds but need it to be a double
     }
 
     private val sysIdRoutine =

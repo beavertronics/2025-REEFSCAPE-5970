@@ -1,6 +1,7 @@
 package frc.robot
 
 import beaverlib.utils.Units.Angular.rotations
+import beaverlib.utils.Units.Linear.inches
 import com.pathplanner.lib.auto.AutoBuilder
 import com.pathplanner.lib.commands.PathPlannerAuto
 import edu.wpi.first.cameraserver.CameraServer
@@ -16,6 +17,7 @@ import frc.robot.commands.Arm.JankArm
 import frc.robot.commands.OuttakeCoral
 import frc.robot.commands.Drive
 import frc.robot.commands.Rotate
+import frc.robot.subsystems.Drivetrain
 
 //import frc.robot.subsystems.Phatplanner
 
@@ -35,33 +37,46 @@ object RobotController : TimedRobot() {
     val commandScheduler = CommandScheduler.getInstance()
     // true if running manual autos when enabled
     // false if running pathplanner autos when enabled
+    // todo 52 inches from front of robot bumper to reef
     var manualAutos = true
     val manualAutoCommands: Map<String,Command> = mapOf(
         /**
          * Drives the robot forwards and deposits the preloaded coral
          */
         Pair(
+            "calibrate time finder",
+            SequentialCommandGroup(
+                Drive(speed = -0.25, driveTime = 2.0)
+            )
+        ),
+        Pair(
+            "test distance",
+            SequentialCommandGroup(
+                Drive(speed = -0.25, driveTime = Drivetrain.calcDistanceTime(52.0.inches)) // drives to reef
+            )
+        ),
+        Pair(
             "deposit preload",
             SequentialCommandGroup(
                 ParallelCommandGroup(
-                    Drive(speed = -0.25, driveTime = 1.9),
+                    Drive(speed = -0.25, driveTime = Drivetrain.calcDistanceTime(52.0.inches)),
                     JankArm(-3.0), // reset arm to back / outtake of robot
                 ),
-                OuttakeCoral(3.0, 3.5),
+                OuttakeCoral(3.0, -3.5),
                 JankArm(3.0) // move arm to front of robot
             )
         ),
         Pair(
             "drive backwards",
-            SequentialCommandGroup(Drive(speed = -0.25, driveTime = 1.9))
+            SequentialCommandGroup(Drive(speed = -0.25, Drivetrain.calcDistanceTime(52.0.inches)))
         ),
         Pair("(reef left) side start and deposit preload",
             SequentialCommandGroup(
-                Drive(speed = -0.25, driveTime = 1.9),
-                Rotate(-0.0.rotations, 3.0), // todo how much to rotate by
+                Drive(speed = -0.25, driveTime = Drivetrain.calcDistanceTime(52.0.inches)),
+                Rotate(-1.0.rotations, 3.0), // todo how much to rotate by
                 Drive(speed = -0.25, driveTime = 1.9), // todo find out how long to drive by
                 JankArm(-3.0),
-                OuttakeCoral(3.0, 3.5)
+                OuttakeCoral(3.0, -3.5)
             )
         ),
         Pair("(reef right) side start and deposit preload",
@@ -70,7 +85,7 @@ object RobotController : TimedRobot() {
                 Rotate(0.0.rotations, 3.0), // todo how much to rotate by
                 Drive(speed = -0.25, driveTime = 1.9), // todo find out how long to drive by
                 JankArm(-3.0),
-                OuttakeCoral(3.0, 3.5)
+                OuttakeCoral(3.0, -3.5)
             )
         )
     )
@@ -91,6 +106,8 @@ object RobotController : TimedRobot() {
         ManualAutoChooser.addOption("deposit preload", manualAutoCommands["deposit preload"])
         ManualAutoChooser.addOption("(reef left) side start and deposit preload", manualAutoCommands["(reef left) side start and deposit preload"])
         ManualAutoChooser.addOption("(reef right) side start and deposit preload", manualAutoCommands["(reef right) side start and deposit preload"])
+        ManualAutoChooser.addOption("calibrate time finder", manualAutoCommands["calibrate time finder"])
+        ManualAutoChooser.addOption("test distance", manualAutoCommands["test distance"])
         SmartDashboard.putData("Manual auto choices", ManualAutoChooser)
         // load pathplanner autos
 //        Phatplanner.autoChooser.setDefaultOption("no auto", Commands.none())

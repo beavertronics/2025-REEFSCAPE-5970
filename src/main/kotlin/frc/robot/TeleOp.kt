@@ -44,7 +44,7 @@ object TeleOp {
      */
     fun configureBindings() {
         OI.spoolClimb.whileTrue(RunClimb(speed = -0.7))
-        OI.ejectCoral.whileTrue(OuttakeCoral(null, speed = 3.5))
+        OI.ejectCoral.whileTrue(OuttakeCoral(null, speed = -3.5))
 //        OI.moveArmForward.whileTrue(MoveArm(ArmConstants.FrontLimitSwitchAngle))
 //        OI.moveArmBackward.whileTrue(MoveArm(ArmConstants.BackLimitSwitchAngle))
         OI.moveArmForward.whileTrue(JankArm(5.0))
@@ -52,7 +52,7 @@ object TeleOp {
         OI.forwardArmAndOuttake.whileTrue(
             ParallelCommandGroup(
                 JankArm(-3.0), // move arm to back of robot
-                OuttakeCoral(3.0, speed = 3.5)
+                OuttakeCoral(3.0, speed = -3.5)
             )
         )
     }
