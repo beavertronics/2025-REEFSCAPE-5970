@@ -30,8 +30,8 @@ class Rotate(
        currentRotation = `according to all known laws of aviation, our robot should not be able to fly`.navx.rotation2d.rotations
         rotationDiff = (currentRotation.rotations - goalRotation).asRotations.clamp(min = -1.0)
         // todo find out which below i multiply by -1
-        leftSpeed = (abs(speed) * rotationDiff) * DriveConstants.MaxVoltage
-        rightSpeed = (abs(speed) * rotationDiff) * (DriveConstants.MaxVoltage * 0.95)
+        leftSpeed = (-1.0 * (abs(speed)) * rotationDiff) * DriveConstants.MaxVoltage
+        rightSpeed = ((abs(speed)) * rotationDiff) * (DriveConstants.MaxVoltage * 0.95)
        Drivetrain.rawDrive(leftSpeed, rightSpeed)
     }
 
