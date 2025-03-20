@@ -74,11 +74,11 @@ object RobotController : TimedRobot() {
         ),
         Pair(
             "test - turn right",
-            SequentialCommandGroup(Rotate(90.0.degrees.asRotations.rotations, speed = 0.25))
+            SequentialCommandGroup(Rotate(90.0.degrees, speed = 0.25))
         ),
         Pair(
             "test - turn left",
-            SequentialCommandGroup(Rotate(-90.0.degrees.asRotations.rotations, 0.25))
+            SequentialCommandGroup(Rotate(-90.0.degrees, 0.25))
         )
     )
     var selectedManualAuto: Command? = null

@@ -32,6 +32,7 @@ class ReefAdjacentDepositPreload
     val upperDistanceLimit = ((fieldWidth / 2) - 3.0.feet) - (minWallSpacing * 2.0)
     var finished = false
     var reefRight = false
+    var reefRightMult = 1.0
     var wallDistance = 0.0.inches
     var distanceMultiplier = 0.0
 
@@ -42,24 +43,15 @@ class ReefAdjacentDepositPreload
         wallDistance -= minWallSpacing.asInches.inches // adjust wall distance for 3 foot margin
         wallDistance = wallDistance.asInches.clamp(max = upperDistanceLimit.asInches).inches // put wall distance within accepted limits
         distanceMultiplier = wallDistance.asInches.clamp() // how far to drive to get to reef (0 = no distance, 1 = full distance) // todo set lower limit to minimum needed
-    }
+        if (reefRight) { reefRightMult = -1.0 }
 
-    override fun execute() {
-        println("driving forwards and setting arm to outtake")
-        ParallelCommandGroup(
-            JankArm(-3.0),
-            Drive(-0.25, Drivetrain.calcDistanceTime(reefDistance * distanceMultiplier))
-        ).schedule()
-        if (reefRight) {
-            println("rotating robot left 60 degrees")
-            SequentialCommandGroup(Rotate(-60.0.degrees.asRotations.rotations, 0.25)).schedule()
-        }
-        else {
-            println("rotating robot right 60 degrees")
-            SequentialCommandGroup(Rotate(60.0.degrees.asRotations.rotations, 0.25)).schedule()
-        }
-        println("driving towards reef and outtaking coral")
+        // establish and schedule the auto
         SequentialCommandGroup(
+            ParallelCommandGroup(
+                JankArm(-3.0),
+                Drive(-0.25, Drivetrain.calcDistanceTime(reefDistance * distanceMultiplier))
+            ),
+            Rotate(60.0.degrees * reefRightMult, 0.25),
             Drive(-0.25, Drivetrain.calcDistanceTime((fieldWidth / 2) - reefWidth)),
             OuttakeCoral(3.0, -3.5)
         ).schedule()
