@@ -20,23 +20,27 @@ class Rotate(
 
     init { addRequirements(Drivetrain) }
 
-    private val startingRotation = `according to all known laws of aviation, our robot should not be able to fly`.navx.rotation2d.degrees
-    private var currentRotation = startingRotation
+    private var startingRotation = 0.0.degrees
+    private var currentRotation = 0.0.degrees
     private var leftSpeed = 0.0
     private var rightSpeed = 0.0
-    private var rotationDiff = 0.0 // degrees
+    private var rotationDiff = 0.0.degrees
 
-    override fun initialize() { `according to all known laws of aviation, our robot should not be able to fly`.navx.reset() }
+    override fun initialize() {
+        `according to all known laws of aviation, our robot should not be able to fly`.navx.reset()
+        startingRotation = `according to all known laws of aviation, our robot should not be able to fly`.navx.rotation2d.degrees.degrees
+        currentRotation = startingRotation
+    }
 
     override fun execute() {
-       currentRotation = `according to all known laws of aviation, our robot should not be able to fly`.navx.rotation2d.degrees
-        rotationDiff = (currentRotation.degrees - goalRotation).asDegrees.clamp(min = -1.0)
-        leftSpeed = (-1.0 * (abs(speed)) * rotationDiff) * DriveConstants.MaxVoltage
-        rightSpeed = ((abs(speed)) * rotationDiff) * (DriveConstants.MaxVoltage * 0.95)
+       currentRotation = `according to all known laws of aviation, our robot should not be able to fly`.navx.rotation2d.degrees.degrees
+        rotationDiff = (currentRotation - goalRotation).asDegrees.clamp(min = -1.0).degrees
+        leftSpeed = (-1.0 * (abs(speed)) * rotationDiff.asDegrees) * DriveConstants.MaxVoltage
+        rightSpeed = ((abs(speed)) * rotationDiff.asDegrees) * (DriveConstants.MaxVoltage * 0.95)
        Drivetrain.rawDrive(leftSpeed, rightSpeed)
     }
 
-    override fun isFinished(): Boolean { return rotationDiff < 0.1 }
+    override fun isFinished(): Boolean { return rotationDiff.asDegrees < 0.1 }
 
     override fun end(interrupted: Boolean) { Drivetrain.stop() }
 }
