@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import frc.robot.subsystems.DriveConstants
 import frc.robot.subsystems.Drivetrain
 import frc.robot.subsystems.`according to all known laws of aviation, our robot should not be able to fly`
-import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -50,7 +49,7 @@ class Rotate(
                         * (DriveConstants.MaxVoltage * 0.95) // multiplies by max voltage (left is made weaker to match right side)
                 )
         rightSpeed = (
-                ((abs(speed) * rotationDiff.asDegrees) // scale by how close we are to target (slows when approaching target)
+                ((speed * rotationDiff.asDegrees) // scale by how close we are to target (slows when approaching target)
                         + (diffOfDiff * kD).asDegrees) // adds in the error (difference of differences) * a constant
                         * DriveConstants.MaxVoltage // multiplies by max voltage (mechanically weaker than left)
                 ) * -1.0 // multiply by -1 to make this side run opposite speed
