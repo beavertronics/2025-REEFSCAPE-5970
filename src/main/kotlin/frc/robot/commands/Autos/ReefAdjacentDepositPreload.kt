@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import frc.robot.RobotController
 import frc.robot.commands.Arm.JankArm
 import frc.robot.commands.Autos.General.Drive
 import frc.robot.commands.Autos.General.Rotate
@@ -30,20 +31,19 @@ class ReefAdjacentDepositPreload
     // divide field length into 2, then subtract the robots width from it
     // then add in the safety margin on the wall-side and the reef-side (so we don't clip the reef corner)
     val upperDistanceLimit = ((fieldWidth / 2) - 3.0.feet) - (minWallSpacing * 2.0)
-    var finished = false
-    var reefRight = false
-    var reefRightMult = 1.0
+    var processorSide = 1.0
     var wallDistance = 0.0.inches
     var distanceMultiplier = 0.0
+    var finished = false
 
     override fun initialize() {
         // load distance from wall from dashboard
+        // and which side of the field we are on
         wallDistance = SmartDashboard.getNumber("distance from wall (inches)", 0.0).inches
-//        reefRight = SmartDashboard.getBoolean("right of reef (drivers left)", false)
+        processorSide = RobotController.ReefAdjacentSideChooser.selected
         wallDistance -= minWallSpacing.asInches.inches // adjust wall distance for 3 foot margin
         wallDistance = wallDistance.asInches.clamp(max = upperDistanceLimit.asInches).inches // put wall distance within accepted limits
-        distanceMultiplier = wallDistance.asInches.clamp() // how far to drive to get to reef (0 = no distance, 1 = full distance) // todo set lower limit to minimum needed
-        if (reefRight) { reefRightMult = -1.0 }
+        distanceMultiplier = wallDistance.asInches.clamp() // how far to drive to get to reef (0 = no distance, 1 = full distance)
 
         // establish and schedule the auto
         SequentialCommandGroup(
@@ -51,7 +51,8 @@ class ReefAdjacentDepositPreload
                 JankArm(-3.0),
                 Drive(-0.25, Drivetrain.calcDistanceTime(reefDistance * distanceMultiplier))
             ),
-            Rotate(280.0.degrees, 0.25 * reefRightMult),
+//            Rotate(280.0.degrees, 0.25 * processorSide),
+            Rotate(60.0.degrees * processorSide, 0.25),
             Drive(-0.25, Drivetrain.calcDistanceTime((fieldWidth / 2) - reefWidth)),
             OuttakeCoral(3.0, -3.5),
             JankArm(3.0)

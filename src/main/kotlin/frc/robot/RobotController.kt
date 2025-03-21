@@ -74,16 +74,17 @@ object RobotController : TimedRobot() {
         ),
         Pair(
             "test - turn right",
-            SequentialCommandGroup(Rotate(90.0.degrees, speed = 0.15))
+            SequentialCommandGroup(Rotate(90.0.degrees, speed = 0.25))
         ),
         Pair(
             "test - turn left",
-            SequentialCommandGroup(Rotate(-90.0.degrees, 0.15))
+            SequentialCommandGroup(Rotate(-90.0.degrees, 0.25))
         )
     )
     var selectedManualAuto: Command? = null
     val ManualAutoChooser = SendableChooser<Command>()
     var selectedPathAuto: Command? = null
+    val ReefAdjacentSideChooser = SendableChooser<Double>()
 
     /**
      * runs when robot turns on, should be used for any initialization of robot or subsystems
@@ -102,9 +103,12 @@ object RobotController : TimedRobot() {
         ManualAutoChooser.addOption("test - turn left", manualAutoCommands["test - turn left"])
         ManualAutoChooser.addOption("test - turn right", manualAutoCommands["test - turn right"])
         SmartDashboard.putData("Manual auto choices", ManualAutoChooser)
+        // create side chooser for reef adjacent
+        ReefAdjacentSideChooser.addOption("processor side", 1.0) // todo
+        ReefAdjacentSideChooser.addOption("opposite of processor", 1.0) // todo
+        SmartDashboard.putData("Reef adjacent auto side", ReefAdjacentSideChooser)
         // put data for reef adjacent preload auto onto dashboard
         SmartDashboard.putNumber("distance from wall (inches)", 0.0)
-        SmartDashboard.putBoolean("right of reef (drivers left)", false)
         // load pathplanner autos
 //        Phatplanner.autoChooser.setDefaultOption("no auto", Commands.none())
 //        Phatplanner.autoChooser.addOption("3 piece center auto (backwards)", PathPlannerAuto("comp - 3 coral auto"))
