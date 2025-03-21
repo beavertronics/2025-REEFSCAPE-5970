@@ -39,7 +39,7 @@ class ReefAdjacentDepositPreload
     override fun initialize() {
         // load distance from wall from dashboard
         wallDistance = SmartDashboard.getNumber("distance from wall (inches)", 0.0).inches
-        reefRight = SmartDashboard.getBoolean("right of reef (drivers left)", false)
+//        reefRight = SmartDashboard.getBoolean("right of reef (drivers left)", false)
         wallDistance -= minWallSpacing.asInches.inches // adjust wall distance for 3 foot margin
         wallDistance = wallDistance.asInches.clamp(max = upperDistanceLimit.asInches).inches // put wall distance within accepted limits
         distanceMultiplier = wallDistance.asInches.clamp() // how far to drive to get to reef (0 = no distance, 1 = full distance) // todo set lower limit to minimum needed
@@ -51,9 +51,10 @@ class ReefAdjacentDepositPreload
                 JankArm(-3.0),
                 Drive(-0.25, Drivetrain.calcDistanceTime(reefDistance * distanceMultiplier))
             ),
-            Rotate(60.0.degrees * reefRightMult, 0.25),
+            Rotate(280.0.degrees, 0.25 * reefRightMult),
             Drive(-0.25, Drivetrain.calcDistanceTime((fieldWidth / 2) - reefWidth)),
-            OuttakeCoral(3.0, -3.5)
+            OuttakeCoral(3.0, -3.5),
+            JankArm(3.0)
         ).schedule()
         finished = true
     }

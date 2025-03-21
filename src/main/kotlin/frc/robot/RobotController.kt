@@ -74,11 +74,11 @@ object RobotController : TimedRobot() {
         ),
         Pair(
             "test - turn right",
-            SequentialCommandGroup(Rotate(90.0.degrees, speed = 0.25))
+            SequentialCommandGroup(Rotate(90.0.degrees, speed = 0.15))
         ),
         Pair(
             "test - turn left",
-            SequentialCommandGroup(Rotate(-90.0.degrees, 0.25))
+            SequentialCommandGroup(Rotate(-90.0.degrees, 0.15))
         )
     )
     var selectedManualAuto: Command? = null
@@ -99,6 +99,8 @@ object RobotController : TimedRobot() {
         ManualAutoChooser.addOption("reef adjacent deposit preload", ReefAdjacentDepositPreload())
         ManualAutoChooser.addOption("calibrate time finder", manualAutoCommands["calibrate time finder"])
         ManualAutoChooser.addOption("test distance", manualAutoCommands["test distance"])
+        ManualAutoChooser.addOption("test - turn left", manualAutoCommands["test - turn left"])
+        ManualAutoChooser.addOption("test - turn right", manualAutoCommands["test - turn right"])
         SmartDashboard.putData("Manual auto choices", ManualAutoChooser)
         // put data for reef adjacent preload auto onto dashboard
         SmartDashboard.putNumber("distance from wall (inches)", 0.0)

@@ -21,6 +21,9 @@ class Rotate(
     init { addRequirements(Drivetrain) }
 
     private var startingRotation = 0.0.degrees
+    private var lastRotationDiff = 0.0.degrees
+    private var diffOfDiff = 0.0.degrees
+    private val kD = 0.0
     private var currentRotation = 0.0.degrees
     private var leftSpeed = 0.0
     private var rightSpeed = 0.0
@@ -29,18 +32,30 @@ class Rotate(
     override fun initialize() {
         `according to all known laws of aviation, our robot should not be able to fly`.navx.reset()
         startingRotation = `according to all known laws of aviation, our robot should not be able to fly`.navx.rotation2d.degrees.degrees
+        println("reset: " + startingRotation.asDegrees)
         currentRotation = startingRotation
     }
 
     override fun execute() {
        currentRotation = `according to all known laws of aviation, our robot should not be able to fly`.navx.rotation2d.degrees.degrees
-        rotationDiff = (currentRotation - goalRotation).asDegrees.clamp(min = -1.0).degrees
-        leftSpeed = (-1.0 * (abs(speed)) * rotationDiff.asDegrees) * DriveConstants.MaxVoltage
-        rightSpeed = ((abs(speed)) * rotationDiff.asDegrees) * (DriveConstants.MaxVoltage * 0.95)
+        rotationDiff = (currentRotation - goalRotation * -1.0).asDegrees.clamp(min = -1.0).degrees
+        diffOfDiff = ((rotationDiff - lastRotationDiff) * 0.025).asDegrees.clamp(min = -1.0).degrees
+        leftSpeed = (
+                ((abs(speed) * rotationDiff.asDegrees)
+                        + (diffOfDiff * kD).asDegrees)
+                        * DriveConstants.MaxVoltage * 0.95
+                )
+        rightSpeed = (
+                ((abs(speed) * rotationDiff.asDegrees)
+                        + (diffOfDiff * kD).asDegrees)
+                        * DriveConstants.MaxVoltage
+                ) * -1.0
+        println("rotation diff: " + rotationDiff.asDegrees)
        Drivetrain.rawDrive(leftSpeed, rightSpeed)
     }
 
     override fun isFinished(): Boolean { return rotationDiff.asDegrees < 0.1 }
 
-    override fun end(interrupted: Boolean) { Drivetrain.stop() }
+    override fun end(interrupted: Boolean) {
+        Drivetrain.rawDrive(0.0, 0.0) }
 }
