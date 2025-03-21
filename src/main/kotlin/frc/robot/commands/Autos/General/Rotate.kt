@@ -58,5 +58,9 @@ class Rotate(
 
     override fun isFinished(): Boolean { return rotationDiff.asDegrees < 0.1 }
 
-    override fun end(interrupted: Boolean) { Drivetrain.rawDrive(0.0, 0.0) }
+    override fun end(interrupted: Boolean) {
+        // brake the robot then disable drivetrain
+        Drive(-0.1, 0.5).schedule()
+        Drivetrain.stop()
+    }
 }
