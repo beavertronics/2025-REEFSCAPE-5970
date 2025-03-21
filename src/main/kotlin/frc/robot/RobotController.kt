@@ -104,8 +104,8 @@ object RobotController : TimedRobot() {
         ManualAutoChooser.addOption("test - turn right", manualAutoCommands["test - turn right"])
         SmartDashboard.putData("Manual auto choices", ManualAutoChooser)
         // create side chooser for reef adjacent
-        ReefAdjacentSideChooser.addOption("processor side", 1.0) // todo
-        ReefAdjacentSideChooser.addOption("opposite of processor", 1.0) // todo
+        ReefAdjacentSideChooser.addOption("processor side", 1.0)
+        ReefAdjacentSideChooser.addOption("opposite of processor", -1.0)
         SmartDashboard.putData("Reef adjacent auto side", ReefAdjacentSideChooser)
         // put data for reef adjacent preload auto onto dashboard
         SmartDashboard.putNumber("distance from wall (inches)", 0.0)
