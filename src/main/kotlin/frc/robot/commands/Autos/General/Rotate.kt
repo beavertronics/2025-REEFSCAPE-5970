@@ -60,7 +60,7 @@ class Rotate(
 
     override fun end(interrupted: Boolean) {
         // brake the robot then disable drivetrain
-        Drive(-0.1, 0.5).schedule()
+        Brake(driveTime = 0.25, direction = goalRotation.asDegrees.sign.toInt())
         Drivetrain.stop()
     }
 }
