@@ -27,7 +27,7 @@ object DriveConstants {
     val LeftSubDrive = 7
     val RightMainDrive = 10
     val RightSubDrive = 6
-    val DrivetrainCurrentLimit = 20
+    val DrivetrainCurrentLimit = 30
 }
 
 object Drivetrain : SubsystemBase() {

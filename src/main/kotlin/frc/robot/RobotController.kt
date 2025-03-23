@@ -49,7 +49,7 @@ object RobotController : TimedRobot() {
             "deposit preload",
             SequentialCommandGroup(
                 ParallelCommandGroup(
-                    Drive(speed = -0.25, driveTime = Drivetrain.calcDistanceTime(52.0.inches)),
+                    Drive(speed = -0.25, driveTime = Drivetrain.calcDistanceTime(60.0.inches)),
                     JankArm(-3.0), // reset arm to back / outtake of robot
                 ),
                 OuttakeCoral(3.0, -3.5),
@@ -74,11 +74,11 @@ object RobotController : TimedRobot() {
         ),
         Pair(
             "test - turn right",
-            SequentialCommandGroup(Rotate(90.0.degrees, speed = 0.25))
+            SequentialCommandGroup(Rotate(60.0.degrees, speed = 0.25))
         ),
         Pair(
             "test - turn left",
-            SequentialCommandGroup(Rotate(-90.0.degrees, 0.25))
+            SequentialCommandGroup(Rotate(300.0.degrees, 0.25))
         )
     )
     var selectedManualAuto: Command? = null
@@ -104,9 +104,10 @@ object RobotController : TimedRobot() {
         ManualAutoChooser.addOption("test - turn right", manualAutoCommands["test - turn right"])
         SmartDashboard.putData("Manual auto choices", ManualAutoChooser)
         // create side chooser for reef adjacent
-        ReefAdjacentSideChooser.addOption("Side - alliance cage", -1.0)
+        ReefAdjacentSideChooser.setDefaultOption("Side - none", 0.0)
+        ReefAdjacentSideChooser.addOption("Side - alliance cage", 5.0)
         ReefAdjacentSideChooser.addOption("Side - opponent cage", 1.0)
-        SmartDashboard.putData("Reef adjacent auto side", ReefAdjacentSideChooser)
+        SmartDashboard.putData("Field side", ReefAdjacentSideChooser)
         // put data for reef adjacent preload auto onto dashboard
         SmartDashboard.putNumber("distance from wall (inches)", 0.0)
         // load pathplanner autos

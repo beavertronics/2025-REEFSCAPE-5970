@@ -15,13 +15,13 @@ import kotlin.math.sign
  * @param speed the speed to rotate the robot at. This should always be positive.
  */
 class Rotate(
-    val goalRotation : AngleUnit,
+    var goalRotation : AngleUnit,
     var speed : Double = 0.1
 ) : Command() {
 
     init { addRequirements(Drivetrain) }
 
-    private val kD = 0.0
+    private val kD = 3.5
     private var startingRotation = 0.0.degrees
     private var currentRotation = 0.0.degrees
     private var rotationDiff = 0.0.degrees
@@ -34,9 +34,12 @@ class Rotate(
         `according to all known laws of aviation, our robot should not be able to fly`.navx.reset() // reset yaw (rotation) on NavX
         startingRotation = `according to all known laws of aviation, our robot should not be able to fly`.navx.rotation2d.degrees.degrees
         currentRotation = startingRotation
+        println("current rotation: " + startingRotation.asDegrees)
+        println("goal rotation: " + goalRotation.asDegrees)
         // change speed based on intended direction
         speed = speed.absoluteValue // make sure its positive before proceeding
         speed *= goalRotation.asDegrees.sign // multiply by the numbers sign, if negative speed will invert otherwise speed is same (if goal = 0, speed = 0?)
+        println("speed: " + speed)
     }
 
     override fun execute() {
@@ -45,22 +48,19 @@ class Rotate(
         diffOfDiff = ((rotationDiff - lastRotationDiff) * 0.025).asDegrees.clamp(min = -1.0).degrees // difference between last dif and current dif (multiplier to shrink it)
         leftSpeed = (
                 ((speed * rotationDiff.asDegrees) // scale by how close we are to target (slows when approaching target)
-                        + (diffOfDiff * kD).asDegrees) // adds in the error (difference of differences) * a constant
+                        - (diffOfDiff * kD).asDegrees) // adds in the error (difference of differences) * a constant
                         * (DriveConstants.MaxVoltage * 0.95) // multiplies by max voltage (left is made weaker to match right side)
                 )
         rightSpeed = (
                 ((speed * rotationDiff.asDegrees) // scale by how close we are to target (slows when approaching target)
-                        + (diffOfDiff * kD).asDegrees) // adds in the error (difference of differences) * a constant
+                        - (diffOfDiff * kD).asDegrees) // adds in the error (difference of differences) * a constant
                         * DriveConstants.MaxVoltage // multiplies by max voltage (mechanically weaker than left)
                 ) * -1.0 // multiply by -1 to make this side run opposite speed
        Drivetrain.rawDrive(leftSpeed, rightSpeed)
+        println("current rotation: " + currentRotation.asDegrees)
     }
 
-    override fun isFinished(): Boolean { return rotationDiff.asDegrees < 0.1 }
+    override fun isFinished(): Boolean { return rotationDiff.asDegrees.absoluteValue < 0.1 }
 
-    override fun end(interrupted: Boolean) {
-        // brake the robot then disable drivetrain
-        Brake(driveTime = 0.25, direction = goalRotation.asDegrees.sign.toInt())
-        Drivetrain.stop()
-    }
+    override fun end(interrupted: Boolean) { Drivetrain.stop() }
 }

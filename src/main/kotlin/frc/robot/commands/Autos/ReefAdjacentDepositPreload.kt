@@ -41,6 +41,7 @@ class ReefAdjacentDepositPreload
         // and which side of the field we are on
         wallDistance = SmartDashboard.getNumber("distance from wall (inches)", 0.0).inches
         processorSide = RobotController.ReefAdjacentSideChooser.selected
+        if (processorSide == -1.0) { processorSide = 5.0 }
         wallDistance -= minWallSpacing.asInches.inches // adjust wall distance for 3 foot margin
         wallDistance = wallDistance.asInches.clamp(max = upperDistanceLimit.asInches).inches // put wall distance within accepted limits
         distanceMultiplier = wallDistance.asInches.clamp() // how far to drive to get to reef (0 = no distance, 1 = full distance)
@@ -52,7 +53,7 @@ class ReefAdjacentDepositPreload
                 Drive(-0.25, Drivetrain.calcDistanceTime(reefDistance * distanceMultiplier))
             ),
 //            Rotate(280.0.degrees, 0.25 * processorSide),
-            Rotate(60.0.degrees * processorSide, 0.25),
+            Rotate(60.0.degrees * processorSide, 0.3),
             Drive(-0.25, Drivetrain.calcDistanceTime((fieldWidth / 2) - reefWidth)),
             OuttakeCoral(3.0, -3.5),
             JankArm(3.0)
